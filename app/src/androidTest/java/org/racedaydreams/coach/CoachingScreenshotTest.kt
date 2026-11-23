@@ -986,7 +986,7 @@ class CoachingScreenshotTest {
             await("Progress")
             click("Progress")
             // Strength focus opens Progress on its strength tab; this is its empty state.
-            await("Estimated 1RM trend")
+            await("Exercise progression")
             capture("progress-dashboard-empty")
             click("Strength")
             await("Muscle-group workload")
@@ -1032,9 +1032,9 @@ class CoachingScreenshotTest {
             alignHeading("Unplanned training")
             capture("today-strength-scrolled")
             click("Progress")
-            await("Estimated 1RM trend")
+            await("Exercise progression")
             // Strength focus, chart first: the progression chart leads, figures follow.
-            compose.onNodeWithText("Estimated 1RM trend").assertIsDisplayed()
+            compose.onNodeWithText("Exercise progression").assertIsDisplayed()
             compose.onNodeWithTag("kpi-Working sets").assertExists()
             capture("progress-strength-focus")
             closeScenario()
@@ -4067,6 +4067,149 @@ class CoachingScreenshotTest {
     }
 
     @Test
+    fun capturesV3StrengthProgressionVolumeAndWorkload() {
+        // Synthetic year of lifting: two sessions most weeks with gradual progression, a few
+        // missed weeks, and warm-ups that never count. Loads are realistic, not a single point.
+        val store = CoachingStore(context)
+        val zone = java.time.ZoneId.systemDefault()
+        val today = LocalDate.now()
+        fun lift(id: String) = requireNotNull(ExerciseCatalog.definition(id)).exercise()
+        val bench = lift("bench-press")
+        val squat = lift("back-squat")
+        val deadlift = lift("deadlift")
+        val press = lift("overhead-press")
+        val row = lift("barbell-row")
+        fun sets(id: String, reps: Int, kg: Double, count: Int) =
+            listOf(StrengthSession.SetEntry("$id-w", 8, kg * 0.5, null, true)) +
+                (1..count).map { StrengthSession.SetEntry("$id-$it", reps, kg, 7.5, false) }
+        for (week in 0L until 52L) {
+            if (week % 11L == 4L) continue
+            val progress = (51 - week).toDouble()
+            val monday = today.minusDays((today.dayOfWeek.value - 1).toLong()).minusWeeks(week)
+            val dayA = monday.plusDays(1)
+            val dayB = monday.plusDays(4)
+            if (!dayA.isAfter(today)) {
+                val id = "v3-a-$week"
+                store.saveStrength(
+                    StrengthSession(
+                        id,
+                        dayA.atTime(18, 0).atZone(zone).toInstant(),
+                        ZoneOffset.UTC,
+                        Duration.ofMinutes(55),
+                        7.5,
+                        "Synthetic V3 fixture",
+                        listOf(
+                            StrengthSession.ExerciseSets(
+                                bench,
+                                sets("$id-b", 5, 60.0 + progress * 0.5, 3),
+                            ),
+                            StrengthSession.ExerciseSets(
+                                row,
+                                sets("$id-r", 8, 50.0 + progress * 0.4, 3),
+                            ),
+                            StrengthSession.ExerciseSets(
+                                press,
+                                sets("$id-p", 6, 35.0 + progress * 0.25, 3),
+                            ),
+                        ),
+                    )
+                )
+            }
+            if (!dayB.isAfter(today)) {
+                val id = "v3-b-$week"
+                store.saveStrength(
+                    StrengthSession(
+                        id,
+                        dayB.atTime(18, 0).atZone(zone).toInstant(),
+                        ZoneOffset.UTC,
+                        Duration.ofMinutes(60),
+                        8.0,
+                        "Synthetic V3 fixture",
+                        listOf(
+                            StrengthSession.ExerciseSets(
+                                squat,
+                                sets("$id-s", 5, 80.0 + progress * 0.8, 4),
+                            ),
+                            StrengthSession.ExerciseSets(
+                                deadlift,
+                                sets("$id-d", 3, 100.0 + progress * 1.0, 2),
+                            ),
+                        ),
+                    )
+                )
+            }
+        }
+        val originalFont = shell("settings get system font_scale").trim()
+        val originalNight =
+            shell("cmd uimode night").let {
+                if (it.contains("yes")) "yes" else if (it.contains("auto")) "auto" else "no"
+            }
+        fun openStrength() {
+            scenario = ActivityScenario.launch(CoachActivity::class.java)
+            awaitHomeReady(false)
+            dismissCaptureDialogs()
+            clickOriginalNavigationTab("Progress")
+            await("Distance this week")
+            compose.onNodeWithTag("progress-tab-STRENGTH").performScrollTo().performClick()
+            await("Exercise progression")
+        }
+        try {
+            shell("settings put system font_scale 1.0")
+            shell("cmd uimode night no")
+            openStrength()
+            compose.onNodeWithTag("period-TWELVE_WEEKS").performScrollTo().performClick()
+            compose.onNodeWithTag("one-rep-max-chart").assertExists()
+            alignHeading("Exercise progression")
+            capture("strength-progression-12-weeks")
+            repeat(4) {
+                compose.onNodeWithTag("progression-earlier").performScrollTo().performClick()
+            }
+            alignHeading("Exercise progression")
+            capture("strength-progression-selected-week")
+            compose.onNodeWithTag("period-ONE_YEAR").performScrollTo().performClick()
+            alignHeading("Exercise progression")
+            capture("strength-progression-1-year")
+            compose.onNodeWithTag("volume-chart").performScrollTo()
+            alignHeading("Training volume")
+            capture("strength-volume-1-year")
+            // The volume card opens on the latest week with workouts ("this" or "that" week).
+            compose.onNodeWithTag("volume-week-workouts").performScrollTo()
+            compose.waitForIdle()
+            capture("strength-volume-workouts")
+            compose.onNodeWithTag("muscle-LEGS").performScrollTo().performClick()
+            alignHeading("Muscle-group workload")
+            capture("strength-muscle-workload")
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night yes")
+            openStrength()
+            compose.onNodeWithTag("period-TWELVE_WEEKS").performScrollTo().performClick()
+            alignHeading("Exercise progression")
+            capture("strength-progression-dark")
+            compose.onNodeWithTag("volume-chart").performScrollTo()
+            alignHeading("Training volume")
+            capture("strength-volume-dark")
+            closeScenario()
+            scenario = null
+
+            shell("cmd uimode night no")
+            shell("settings put system font_scale 2.0")
+            openStrength()
+            alignHeading("Exercise progression")
+            capture("strength-progression-large-font")
+            compose.onNodeWithTag("one-rep-max-chart").performScrollTo()
+            compose.waitForIdle()
+            capture("strength-chart-large-font")
+        } finally {
+            closeScenario()
+            scenario = null
+            restoreFontScale(originalFont)
+            shell("cmd uimode night $originalNight")
+        }
+    }
+
+    @Test
     fun capturesStrengthProgressWithASingleQualifyingWeek() {
         // One recorded workout: one estimate, which must not be drawn as a trend.
         val exercise = requireNotNull(ExerciseCatalog.definition("bench-press")).exercise()
@@ -4090,10 +4233,10 @@ class CoachingScreenshotTest {
         click("Progress")
         await("Distance this week")
         compose.onNodeWithTag("progress-tab-STRENGTH").performScrollTo().performClick()
-        await("Estimated 1RM trend")
+        await("Exercise progression")
         compose.onNodeWithTag("one-rep-max-single-week").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("one-rep-max-chart").assertDoesNotExist()
-        alignHeadingOrPageEnd("Estimated 1RM trend")
+        alignHeadingOrPageEnd("Exercise progression")
         capture("progress-strength-single-week")
     }
 

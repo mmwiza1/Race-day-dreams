@@ -136,12 +136,26 @@ installations that cannot support them (all existing debug-signed installs).
   - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
   - Do not merge or release without explicit owner approval.
   - Do not start V2, V3, V4 or C1–C8.
+- **V1 merged:** PR #37 was squash-merged as `main` `dbdfac0a`.
+  - The post-merge run 45083875183 passed. API 35 needed one rerun after an onboarding "5K" visibility timing flake.
+  - It republished 0.15.4-test1 / 27 with APK SHA-256 `44f59e31…3f2d` (matching its `.sha256` and the alias), certificate `e7af758a…929d`, manifest commit `dbdfac0a`, and .ipa SHA-256 `ca123db2…d3ee`.
+- **Expressive tab composition:** see `docs/DESIGN_2026.md` §3f.
+  - Applied to Strength and Progress → Strength training in PR #38.
+  - The owner approved the direction app-wide on 23 November 2026, applied per screen purpose rather than copied: V3 final refinements are in PR #38, and each later screen group gets its own draft PR (see `docs/DESIGN_2026.md` §3g). No merge without explicit approval.
+- **Outstanding issue to retest (owner-reported):** the running-goal selection buttons were unresponsive on the owner's physical Galaxy S24.
+  - Retest it on that device after the UI modernisation.
+  - Do not mark it resolved on emulator evidence alone.
+  - Not in V3 scope unless authorised.
+- **V3 Strength progression (owner-authorised 22 November 2026):** see `docs/DESIGN_2026.md` §3e.
+  - Draft PR only: no merge or release without explicit approval.
+  - No further roadmap phase after V3.
 - **Proportional testing (standing owner rule, 22 November 2026):**
   - **SMALL:** focused tests and targeted validation (for example `:sharedUi:testDebugUnitTest --tests …` locally).
   - **MEDIUM:** the relevant module and integration tests.
   - **MAJOR:** progressive testing with broader verification.
   - **RELEASE:** full mandatory release and signing verification.
   - Run a full Android/iOS cycle only when the repository requires it (ready-PR canonical screenshots, merge gates), once, after all changes. Never repeat it for small visual tweaks.
+- **CI monitoring (standing owner rule):** check running CI every 15 minutes and also at each job's estimated completion time. Schedule both whenever a run starts.
 - **CI note:** API 35's "persistence and draft tests" step now runs close to its 30-minute limit (27 min before Phase B's added captures). A timeout with 0 failures is a time-limit issue; rerun once. Raising the limit needs owner agreement.
 - **Rules:**
   - **Do not merge, auto-merge or release without explicit owner approval.**

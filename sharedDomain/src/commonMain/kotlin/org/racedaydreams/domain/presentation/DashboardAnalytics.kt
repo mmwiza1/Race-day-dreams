@@ -322,6 +322,8 @@ object DashboardAnalytics {
         val date: LocalDate? = null,
         val setKilograms: Double? = null,
         val reps: Int? = null,
+        /** Working sets of the exercise that week the existing estimate applies to. */
+        val qualifyingSets: Int = 0,
     )
 
     /** An actual recorded working set (not an estimate). */
@@ -330,6 +332,14 @@ object DashboardAnalytics {
         val date: LocalDate,
         val kilograms: Double,
         val reps: Int,
+    )
+
+    /** Recorded training volume (load × repetitions) of one exercise in a period. */
+    data class ExerciseVolume(
+        val exerciseId: String,
+        val name: String,
+        val loadVolumeKg: Double,
+        val workingSets: Int,
     )
 
     data class RecentWorkout(
@@ -367,6 +377,25 @@ object DashboardAnalytics {
         val muscleGroups: List<GroupWorkload>,
         val unclassifiedSets: Int,
         val recentWorkouts: List<RecentWorkout>,
+        // Presentation groupings of the same recorded data (V3 charts); no new formula.
+        /** Heaviest actual working set of [trendExercise] in each week; null when none. */
+        val heaviestByWeek: List<RecordedSet?> = emptyList(),
+        /** Load × repetitions of weighted load/rep working sets per week; null when none apply. */
+        val volumeByWeek: List<Double?> = emptyList(),
+        /**
+         * The same volume over the equivalent earlier period; null when history does not cover it.
+         */
+        val previousVolume: Double? = null,
+        /** Largest first; only exercises with load × repetitions volume in the period. */
+        val volumeByExercise: List<ExerciseVolume> = emptyList(),
+        /**
+         * Primary set shares per group in the earlier period; empty when history does not cover it.
+         */
+        val previousGroupSets: Map<MuscleGroup, Double> = emptyMap(),
+        /** Exercise names with each group as a primary area, in the period. */
+        val groupExercises: Map<MuscleGroup, List<String>> = emptyMap(),
+        /** The workouts of each week, newest first, with their working sets and volume. */
+        val workoutsByWeek: List<List<RecentWorkout>> = emptyList(),
     ) {
         fun hasAnyWorkout(): Boolean = workouts > 0 || recentWorkouts.isNotEmpty()
 
@@ -437,6 +466,8 @@ object DashboardAnalytics {
         val trendId = trendExerciseId?.takeIf { it in exercises } ?: eligible.firstOrNull()?.id()
 
         val bestByWeek = arrayOfNulls<OneRepMaxPoint>(period.weeks)
+        val qualifyingByWeek = IntArray(period.weeks)
+        val heaviestByWeek = arrayOfNulls<RecordedSet>(period.weeks)
         var heaviest: RecordedSet? = null
         if (trendId != null)
             for (session in inPeriod.sortedBy { it.startedAt() }) {
@@ -453,9 +484,20 @@ object DashboardAnalytics {
                                 (heaviest == null || set.kilograms() > heaviest.kilograms)
                         )
                             heaviest = RecordedSet(session.id(), date, set.kilograms(), set.reps())
+                        if (
+                            block.exercise().mode() == StrengthExercise.Mode.WEIGHTED &&
+                                block.exercise().measurement() ==
+                                    StrengthExercise.MeasurementProfile.LOAD_REPS &&
+                                (heaviestByWeek[index] == null ||
+                                    set.kilograms() >
+                                        requireNotNull(heaviestByWeek[index]).kilograms)
+                        )
+                            heaviestByWeek[index] =
+                                RecordedSet(session.id(), date, set.kilograms(), set.reps())
                         val estimate =
                             StrengthRecordPolicy.estimatedOneRepMax(block.exercise(), set)
                                 ?: continue
+                        qualifyingByWeek[index]++
                         val best = bestByWeek[index]
                         if (best?.kilograms == null || estimate > best.kilograms)
                             bestByWeek[index] =
@@ -472,7 +514,8 @@ object DashboardAnalytics {
             }
         val trend =
             weeks.mapIndexed { i, week ->
-                bestByWeek[i] ?: OneRepMaxPoint(requireNotNull(week.monday()), null)
+                bestByWeek[i]?.copy(qualifyingSets = qualifyingByWeek[i])
+                    ?: OneRepMaxPoint(requireNotNull(week.monday()), null)
             }
 
         val primary = mutableMapOf<MuscleGroup, Double>()
@@ -508,33 +551,70 @@ object DashboardAnalytics {
                     compareByDescending<StrengthSession> { it.startedAt() }.thenBy { it.id() }
                 )
                 .take(3)
-                .map { session ->
-                    var working = 0
-                    var volume = 0.0
-                    var hasVolume = false
-                    for (block in session.exercises()) {
-                        val exercise = block.exercise()
-                        val loadReps =
-                            exercise.mode() == StrengthExercise.Mode.WEIGHTED &&
-                                exercise.measurement() ==
-                                    StrengthExercise.MeasurementProfile.LOAD_REPS
-                        for (set in block.sets()) {
-                            if (set.warmUp()) continue
-                            working++
-                            if (loadReps) {
-                                hasVolume = true
-                                volume += set.kilograms() * set.reps()
-                            }
-                        }
-                    }
-                    RecentWorkout(
-                        session.id(),
-                        dateOf(session),
-                        session.exercises().map { it.exercise().name() }.distinct(),
-                        working,
-                        if (hasVolume) volume else null,
+                .map(::recentWorkout)
+
+        // Presentation groupings for the V3 charts, using the same load × repetitions rule as
+        // [RecentWorkout.loadVolumeKg] and the same primary-area attribution as above.
+        val covered = earliest != null && earliest <= previous.start.toEpochDay()
+        val byWeek = List(period.weeks) { mutableListOf<StrengthSession>() }
+        for (session in inPeriod) {
+            val index = ((dateOf(session).toEpochDay() - window.start.toEpochDay()) / 7).toInt()
+            if (index in byWeek.indices) byWeek[index] += session
+        }
+        val workoutsByWeek =
+            byWeek.map { list ->
+                list
+                    .sortedWith(
+                        compareByDescending<StrengthSession> { it.startedAt() }.thenBy { it.id() }
                     )
+                    .map(::recentWorkout)
+            }
+        val volumeByWeek =
+            workoutsByWeek.map { list ->
+                list.mapNotNull { it.loadVolumeKg }.takeIf { it.isNotEmpty() }?.sum()
+            }
+        val previousVolume =
+            if (!covered) null
+            else
+                counted
+                    .filter { previous.contains(dateOf(it)) }
+                    .mapNotNull { recentWorkout(it).loadVolumeKg }
+                    .takeIf { it.isNotEmpty() }
+                    ?.sum() ?: 0.0
+        val exerciseVolume = mutableMapOf<String, Pair<String, Pair<Double, Int>>>()
+        val groupNames = mutableMapOf<MuscleGroup, MutableSet<String>>()
+        for (session in inPeriod) for (block in session.exercises()) {
+            val exercise = block.exercise()
+            metadata(exercise)?.primaryAreas()?.forEach { area ->
+                groupNames.getOrPut(muscleGroup(area)) { mutableSetOf() } += exercise.name()
+            }
+            if (!loadReps(exercise)) continue
+            for (set in block.sets()) {
+                if (set.warmUp()) continue
+                val (name, totals) =
+                    exerciseVolume[exercise.id()] ?: (exercise.name() to (0.0 to 0))
+                exerciseVolume[exercise.id()] =
+                    name to (totals.first + set.kilograms() * set.reps() to totals.second + 1)
+            }
+        }
+        val volumeByExercise =
+            exerciseVolume
+                .map { (id, value) ->
+                    ExerciseVolume(id, value.first, value.second.first, value.second.second)
                 }
+                .sortedWith(
+                    compareByDescending<ExerciseVolume> { it.loadVolumeKg }.thenBy { it.name }
+                )
+        val previousGroupSets =
+            if (!covered) emptyMap()
+            else {
+                val shares = mutableMapOf<MuscleGroup, Double>()
+                for (week in previousWeeks) for ((area, share) in week.primarySetShares()) {
+                    val group = muscleGroup(area)
+                    shares[group] = (shares[group] ?: 0.0) + (share ?: 0.0)
+                }
+                shares
+            }
 
         return Strength(
             period = period,
@@ -555,6 +635,42 @@ object DashboardAnalytics {
             muscleGroups = workload,
             unclassifiedSets = weeks.sumOf { it.unclassifiedSets() },
             recentWorkouts = recent,
+            heaviestByWeek = heaviestByWeek.toList(),
+            volumeByWeek = volumeByWeek,
+            previousVolume = previousVolume,
+            volumeByExercise = volumeByExercise,
+            previousGroupSets = previousGroupSets,
+            groupExercises = groupNames.mapValues { (_, names) -> names.sorted() },
+            workoutsByWeek = workoutsByWeek,
+        )
+    }
+
+    private fun loadReps(exercise: StrengthExercise) =
+        exercise.mode() == StrengthExercise.Mode.WEIGHTED &&
+            exercise.measurement() == StrengthExercise.MeasurementProfile.LOAD_REPS
+
+    /** A workout's working sets and load × repetitions volume (null when no set applies). */
+    private fun recentWorkout(session: StrengthSession): RecentWorkout {
+        var working = 0
+        var volume = 0.0
+        var hasVolume = false
+        for (block in session.exercises()) {
+            val counts = loadReps(block.exercise())
+            for (set in block.sets()) {
+                if (set.warmUp()) continue
+                working++
+                if (counts) {
+                    hasVolume = true
+                    volume += set.kilograms() * set.reps()
+                }
+            }
+        }
+        return RecentWorkout(
+            session.id(),
+            dateOf(session),
+            session.exercises().map { it.exercise().name() }.distinct(),
+            working,
+            if (hasVolume) volume else null,
         )
     }
 }

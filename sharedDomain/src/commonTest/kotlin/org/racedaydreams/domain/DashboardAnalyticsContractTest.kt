@@ -303,6 +303,48 @@ class DashboardAnalyticsContractTest {
     }
 
     @Test
+    fun v3GroupingsReuseTheRecordedSetsVolumeRuleAndAttribution() {
+        val bench4 =
+            DashboardAnalytics.strength(sessions, today, asOf, Period.FOUR_WEEKS, "bench-press")
+        // Heaviest actual working set per week (warm-ups excluded), separate from the estimate.
+        assertEquals(
+            listOf(
+                null,
+                null,
+                DashboardAnalytics.RecordedSet("last", today.minusDays(8), 75.0, 5),
+                DashboardAnalytics.RecordedSet("now", today.minusDays(1), 82.5, 3),
+            ),
+            bench4.heaviestByWeek,
+        )
+        // Both "now" sets qualify for the existing estimate; the warm-up in "last" does not.
+        assertEquals(2, bench4.oneRepMaxTrend[3].qualifyingSets)
+        assertEquals(1, bench4.oneRepMaxTrend[2].qualifyingSets)
+
+        // Weekly volume uses the per-workout load × repetitions rule; empty weeks stay null.
+        val workouts = bench4.workoutsByWeek
+        assertEquals(listOf("mixed", "now"), workouts[3].map { it.sessionId })
+        assertEquals(listOf(null, null), bench4.volumeByWeek.take(2))
+        assertEquals(375.0, bench4.volumeByWeek[2])
+        assertEquals(workouts[3].mapNotNull { it.loadVolumeKg }.sum(), bench4.volumeByWeek[3])
+        // The earlier period (history covers it) had one 5 × 70 kg set.
+        assertEquals(350.0, bench4.previousVolume)
+        // Back squat: 3 × 5 × 100 kg, the largest exercise volume.
+        val top = bench4.volumeByExercise.first()
+        assertEquals("back-squat", top.exerciseId)
+        assertEquals(1500.0, top.loadVolumeKg)
+        assertEquals(3, top.workingSets)
+        // Earlier-period group shares come from the same attribution; names list contributors.
+        assertTrue(bench4.previousGroupSets.values.sum() > 0.0)
+        assertTrue(bench4.groupExercises.values.flatten().contains(bench.name()))
+
+        // Without earlier history nothing is compared.
+        val recentOnly = sessions.filter { it.id() != "old" }
+        val fresh = DashboardAnalytics.strength(recentOnly, today, asOf, Period.FOUR_WEEKS)
+        assertNull(fresh.previousVolume)
+        assertTrue(fresh.previousGroupSets.isEmpty())
+    }
+
+    @Test
     fun anIneligibleExerciseSelectionFallsBackToAnEligibleOne() {
         assertNull(StrengthRecordPolicy.estimatedOneRepMax(plank, set("k1", 1, 0.0)))
         val overview =

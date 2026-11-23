@@ -177,6 +177,81 @@ The full Training trends screen now uses the Phase B explorer, so Progress and T
 - **Unchanged:** analytics (`sharedRunningTrendPoints`, `RecordedWeekAggregation`), deduplication, schemas, recording, Health Connect/HealthKit, signing, release and the bottom navigation.
 - **Before images:** `docs/design-2026/v1-before/`.
 
+## 3e. V3 Strength progression (owner-authorised; draft PR, not merged)
+
+Strength analytics now follow the V1 chart-first pattern in the plum `ChartHue.PLUM`.
+
+The order on Strength and Progress → Strength training is:
+1. Exercise progression, with actual lifts.
+2. Training volume.
+3. Muscle-group workload.
+4. Supporting figures.
+5. Recent workouts.
+
+Quick actions (Gym now, log, programme) stay at the top of Strength. Hybrid Progress is unchanged, with its compact strength figures and recent workouts, so nothing is duplicated.
+
+- **Exercise progression:**
+  - For the selected exercise, each week shows:
+    - the heaviest **recorded** working set as a filled mark on a solid line;
+    - the existing **estimated** 1RM as a hollow mark on a dashed line.
+  - Both share one mass axis but are always labelled separately ("Heaviest set (recorded)", "Estimated 1RM (calculated)").
+  - The readout shows the actual set first, then the estimate with its source set and the number of qualifying sets that week.
+  - Lines join only weeks with that measure. With fewer than two weeks of data, no chart or line is drawn and the screen says a trend needs a second week.
+  - Tap, drag or use the 48 dp steppers. The workout behind each figure opens, with one button when both figures come from the same workout.
+- **Training volume:**
+  - Weekly bars of accumulated load × repetitions of weighted load/rep working sets (the existing per-workout rule), with a previous-period comparison when history covers it.
+  - The selected week's workouts open from below, and volume by exercise is shown as proportional bars.
+  - Weeks with workouts but no load × reps sets show a hollow ring, and weeks without workouts a dot.
+  - Labelled "not the heaviest weight lifted".
+- **Muscle-group workload:**
+  - Bars of primary working-set shares (the existing attribution), with the earlier period marked by a thin line when history covers it. Secondary-only and unclassified sets are kept separate.
+  - Tapping a group lists the exercises that contributed.
+  - The copy says this is recorded workload, not growth or recovery, and that more is not necessarily better.
+- **Domain:** `DashboardAnalytics.Strength` gained presentation groupings of existing data: weekly heaviest set, qualifying sets, weekly and per-exercise volume, earlier-period shares, contributors and workouts by week. No new formula or schema.
+- **Not in V3:**
+  - The separate Strength analytics/records screens keep their current charts (candidate for C4).
+  - Strength logging (C2) and the exercise library (C4) are unchanged.
+- **Before images:** `docs/design-2026/v3-before/`.
+
+## 3f. Expressive tab composition (owner clarification: modernise the screens, not the analytics)
+
+**Why the tabs looked dated:**
+- Every section was the same tinted rectangle with its title inside, so headings, charts and lists all had equal weight.
+- The page header was a plain text line over three similar pill buttons.
+- The background was a flat colour, with no glyphs or other cues that tell sections apart at a glance.
+
+The information was strong; the composition was not.
+
+**Direction implemented (on Strength and Progress → Strength training in V3, PR #38):** the analytics and charts are unchanged.
+- **Hero header (`ScreenHero`):**
+  - A full-width tonal surface (32 dp corners) in the tab's discipline container colour.
+  - A glyph disc and letter-spaced eyebrow, a display-size title, and one line of context from existing data ("Last workout …").
+  - The primary action as a full-width accent button with a play glyph; secondary actions as quiet translucent surfaces with chevrons.
+  - Progress's hero takes the colour of the selected tab: strength tertiary, running primary, overview secondary.
+- **Section labels outside panels (`SectionLabel`):**
+  - A glyph disc in the section's chart hue (plum for strength), a bold title that is also the accessibility heading, and a short caption.
+  - Sections are separated by labels and space rather than nested borders.
+- **Borderless panels (`Panel`):** surface-container-low, 28 dp corners and 20 dp padding, holding the V3 charts as they are.
+- **Exercise selection:** a scrollable row of 48 dp chips (most qualifying sets first) instead of a dropdown, so the choices are visible.
+- **Glyphs:** a few path-drawn glyphs (dumbbell, trend, volume, body, list, play, chevron), decorative and hidden from screen readers. No new dependency.
+- **Colour:** theme roles and `ChartHue` only, so light, dark and Material You stay consistent.
+- **Also folded in:** the volume card opens on the latest week with workouts.
+
+**Owner-approved refinements (V3 final review, 23 November 2026):**
+- **Training volume:** it still opens on the latest week with workouts when this week is empty. The selected week is always labelled ("This week" or "Week of …"). When it opened on an earlier week, it says "Latest week with workouts · nothing recorded this week yet", and a 48 dp "Go to this week" button returns to the current week.
+- **Compact Progress header (`ScreenHeader`):** Progress has no primary action, so it uses a single-row tonal header with the same discipline colour, glyph disc, eyebrow and bold title at about a third of the hero's height. This moves the analytics up the screen. Strength keeps the full `ScreenHero` because it carries the workout actions.
+- **Muscle-group sets:** whole counts read "279 sets" and "1 set"; fractional counts keep one decimal (`setCount`). Presentation only; the counts themselves are unchanged.
+
+**Considered and set aside:**
+- A dark-first "athletic" theme, which is too disruptive for the whole app.
+- More coloured cards, which add clutter rather than composition.
+
+**Recommended rollout (each a separate, owner-approved PR):**
+- **Home:** a `ScreenHero` built around today's session. It would take the discipline's colour, show today's workout as the title, carry "Start with Live Coach" or "Gym now" as the primary action, and use the existing countdown as context. Below it, "Your next 7 days" and Coming up as labelled sections.
+- **Plan:** a hero showing the block or phase and a progress bar for the existing plan dates. Weeks become labelled sections with session rows, and milestones become glyph-marked entries. Pairs with C1.
+- **Calendar:** a compact hero with the month and the shared mark legend. The grid and lists go in borderless panels, with discipline glyph discs on rows. Pairs with C1.
+- **Shared rule:** one hero per tab, labels outside panels, no nested borders, hues by measure or discipline only.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |
@@ -223,7 +298,7 @@ needs its own owner approval before it starts.
   - Splits become a horizontal pace-per-split chart, where the selected split shows its time, pace, heart rate and elevation, and partial splits are marked.
   - Heart rate over time becomes an area chart with recorded samples only, and gaps shown as gaps.
   - The route map and split chart share a selected split (tap a split to highlight its route segment), using existing route and split data.
-- **V3 — Strength progression (major priority):**
+- **V3 — Strength progression (major priority; in progress, owner-authorised 22 November 2026, see §3e):**
   - Per-exercise estimated-1RM and heaviest-set charts on one axis: recorded as filled points, estimated as hollow, each with "from n sets".
   - Weekly working-sets chart per muscle group, reusing the existing attribution.
   - Session-volume history, labelled training volume.
