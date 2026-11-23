@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import java.time.LocalDate
 import java.util.concurrent.atomic.AtomicReference
@@ -83,6 +84,123 @@ class SharedCalendarScreenTest {
             .performScrollTo()
             .performClick()
         compose.onNodeWithText(label).performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun monthGridDescribesSeveralSessionsAndSelectorAndArrowsNavigate() {
+        val planned =
+            PlannedWorkout(
+                "original-prescription",
+                today,
+                WorkoutCategory.ZONE_2_RUN,
+                5.0,
+                null,
+                emptyList(),
+                "Retained instruction",
+            )
+        val gym =
+            org.racedaydreams.domain.strength.GymProgramme(
+                "gym/one",
+                1,
+                java.time.Instant.parse("2026-11-16T12:00:00Z"),
+                "Athlete accepted programme",
+                org.racedaydreams.domain.strength.GymProgramme.Settings(
+                    org.racedaydreams.domain.strength.GymProgramme.Goal.SUPPORT_RUNNING,
+                    org.racedaydreams.domain.strength.GymProgramme.Priority.RUNNING_FIRST,
+                    org.racedaydreams.domain.strength.GymProgramme.Experience.INTERMEDIATE,
+                    setOf(today.dayOfWeek),
+                    1,
+                    setOf("full gym"),
+                    45,
+                    org.racedaydreams.domain.strength.GymProgramme.Effort.RPE,
+                ),
+                today,
+                today.plusDays(41),
+                listOf(
+                    org.racedaydreams.domain.strength.GymProgramme.Session(
+                        "gym/today",
+                        today,
+                        "Lower body strength",
+                        listOf(
+                            org.racedaydreams.domain.strength.GymProgramme.Prescription(
+                                "back-squat",
+                                3,
+                                5,
+                                8,
+                                null,
+                                null,
+                                6,
+                                7,
+                                120,
+                                "Controlled working sets",
+                            )
+                        ),
+                        "Original prescription",
+                    )
+                ),
+                emptyList(),
+            )
+        val state =
+            mutableStateOf(
+                CoachUiState(
+                    loading = false,
+                    calendarView = "Month",
+                    plannedWorkouts = listOf(planned),
+                    gymProgramme = gym,
+                )
+            )
+        val strength = AtomicReference<String>()
+        compose.setContent {
+            MaterialTheme {
+                SharedActivityCalendarScreen(
+                    state.value,
+                    onViewChange = { state.value = state.value.copy(calendarView = it) },
+                    workout = { error("Unexpected workout navigation") },
+                    strength = { strength.set(it) },
+                    activity = { error("Unexpected actual navigation") },
+                    dates = dates,
+                    distanceLabel = { formatDistance(it, state.value) },
+                    history = { error("Unexpected list presentation") },
+                )
+            }
+        }
+        compose.onNodeWithText("Training calendar").assertIsDisplayed()
+        compose.onNode(hasText("Month") and isSelected()).assertExists()
+        compose.onNode(hasText("Week") and isNotSelected()).assertExists()
+        compose.onNodeWithTag("calendar-mark-key", useUnmergedTree = true).assertExists()
+        // The arrows move by month and Today returns; the selector switches views.
+        compose.onNodeWithContentDescription("Next month").performScrollTo().performClick()
+        compose.onNodeWithText("December 2026").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Today").performScrollTo().performClick()
+        compose.onNodeWithText("November 2026").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Week").performClick()
+        compose.onNode(hasText("Week") and isSelected()).assertExists()
+        compose.onNodeWithText("Week of 16 November 2026").assertExists()
+        compose.onNodeWithContentDescription("Previous week").assertExists()
+        compose.onNodeWithText("Month").performClick()
+        // Both of today's sessions are spoken in the one day cell.
+        compose
+            .onNodeWithContentDescription("17 November 2026, today, selected.", substring = true)
+            .assert(hasContentDescription("Zone 2 run: planned", substring = true))
+            .assert(
+                hasContentDescription(
+                    "Lower body strength · programmed strength: planned",
+                    substring = true,
+                )
+            )
+            .assertHeightIsAtLeast(48.dp)
+            .performScrollTo()
+            .performClick()
+        compose.onNodeWithText("Zone 2 run · 5.0 km · Planned").assertExists()
+        compose
+            .onNodeWithText("Lower body strength · programmed strength · Planned · Log workout")
+            .performScrollTo()
+            .performClick()
+        compose.runOnIdle { assertEquals(today.toString(), strength.get()) }
+        compose.runOnIdle {
+            assertEquals(planned, state.value.plannedWorkouts.single())
+            assertTrue(state.value.strengthSessions.isEmpty())
+        }
     }
 
     @Test

@@ -161,6 +161,141 @@ class SharedTrainingPlanScreenTest {
         }
     }
 
+    /** The base plan with two phases, a long run on Thursday and a gym session on Wednesday. */
+    private fun journeyState(): CoachUiState {
+        val base = state()
+        val original = base.currentPlan!!
+        val long =
+            PlannedWorkout(
+                "original/long",
+                day.plusDays(2),
+                WorkoutCategory.LONG_RUN,
+                12.0,
+                null,
+                emptyList(),
+                "Original long run",
+            )
+        val plan =
+            TrainingPlan(
+                "plan",
+                day,
+                day.plusWeeks(2),
+                listOf(
+                    TrainingPhase(
+                        TrainingPhase.Kind.FOUNDATION,
+                        day,
+                        day.plusDays(6),
+                        "Original phase reason",
+                    ),
+                    TrainingPhase(
+                        TrainingPhase.Kind.RACE_SPECIFIC,
+                        day.plusDays(7),
+                        day.plusWeeks(2),
+                        null,
+                    ),
+                ),
+                original.plan().workouts() + long,
+            )
+        val version =
+            PlanVersion(
+                original.id(),
+                "plan",
+                1,
+                original.createdAt(),
+                original.reason(),
+                original.goalSnapshot(),
+                original.evidenceSnapshot(),
+                plan,
+            )
+        val gym =
+            org.racedaydreams.domain.strength.GymProgramme(
+                "gym/one",
+                1,
+                Instant.parse("2026-11-16T12:00:00Z"),
+                "Athlete accepted programme",
+                org.racedaydreams.domain.strength.GymProgramme.Settings(
+                    org.racedaydreams.domain.strength.GymProgramme.Goal.SUPPORT_RUNNING,
+                    org.racedaydreams.domain.strength.GymProgramme.Priority.RUNNING_FIRST,
+                    org.racedaydreams.domain.strength.GymProgramme.Experience.INTERMEDIATE,
+                    setOf(day.plusDays(1).dayOfWeek),
+                    1,
+                    setOf("full gym"),
+                    45,
+                    org.racedaydreams.domain.strength.GymProgramme.Effort.RPE,
+                ),
+                day,
+                day.plusDays(41),
+                listOf(
+                    org.racedaydreams.domain.strength.GymProgramme.Session(
+                        "gym/wednesday",
+                        day.plusDays(1),
+                        "Lower body strength",
+                        listOf(
+                            org.racedaydreams.domain.strength.GymProgramme.Prescription(
+                                "back-squat",
+                                3,
+                                5,
+                                8,
+                                null,
+                                null,
+                                6,
+                                7,
+                                120,
+                                "Controlled working sets",
+                            )
+                        ),
+                        "Original prescription",
+                    )
+                ),
+                emptyList(),
+            )
+        return base.copy(currentPlan = version, planVersions = listOf(version), gymProgramme = gym)
+    }
+
+    @Test
+    fun journeyHeaderNamesThePhaseAndDayPanelsKeepEveryAction() {
+        val original = journeyState()
+        show(original)
+        // Exactly one "Plan" title, and the week stays on the first screen.
+        compose.onAllNodesWithText("Plan").assertCountEquals(1)
+        compose.onNodeWithText("This week").assertIsDisplayed()
+        compose.onNodeWithText("Week 1 of 3 · Foundation").assertIsDisplayed()
+        compose.onNodeWithTag("plan-journey-track", useUnmergedTree = true).assertExists()
+        compose
+            .onNodeWithText("Programme ends · ${AndroidCoachCalendarDates.label(day.plusWeeks(2))}")
+            .assertExists()
+        compose.onNodeWithText("Week beginning 2026-11-16").assertIsDisplayed()
+        // The long run is the week's key session; its row and cool-down keep their routes.
+        compose.onAllNodesWithText("Key session").assertCountEquals(1)
+        compose.onNodeWithTag("plan-day-${day.plusDays(2)}").assertExists()
+        compose.onAllNodesWithContentDescription("View workout and purpose").assertCountEquals(2)
+        compose
+            .onAllNodesWithContentDescription("View workout and purpose")[1]
+            .performScrollTo()
+            .performClick()
+        compose.runOnIdle { assertEquals(listOf("workout:original/long"), actions) }
+        compose.onNodeWithText("Cool-down · 6 min").performScrollTo().performClick()
+        compose.runOnIdle { assertEquals("routine:cool-demanding:original/long", actions.last()) }
+        // The gym session opens that day's strength workout.
+        compose.onNodeWithText("View strength workout").performScrollTo().performClick()
+        compose.runOnIdle { assertEquals("strength:${day.plusDays(1)}", actions.last()) }
+        // Programme details list phases as milestones with their own explanations.
+        compose.onNodeWithText("Programme details").performScrollTo().performClick()
+        compose.onNodeWithText("Milestones").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Foundation").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Race specific").performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "Now · ${AndroidCoachCalendarDates.label(day)} – ${AndroidCoachCalendarDates.label(day.plusDays(6))}"
+            )
+            .assertExists()
+        compose.runOnIdle {
+            assertEquals(3, original.currentPlan!!.plan().workouts().size)
+            assertEquals(day.plusDays(1), original.gymProgramme!!.sessions().single().date())
+            assertFalse(actions.contains("generate"))
+        }
+    }
+
     @Test
     fun optionalAdjustmentRetainsOriginalProposalAndOnlyDispatchesExplicitChoice() {
         val original = state()
