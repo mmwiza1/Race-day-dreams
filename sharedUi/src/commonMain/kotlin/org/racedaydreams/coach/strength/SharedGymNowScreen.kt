@@ -62,6 +62,7 @@ fun SharedGymNowScreen(
     formatTarget: (org.racedaydreams.domain.strength.GymWorkoutDefinition.Slot) -> String,
     plannedDate: LocalDate? = null,
     backHandler: @Composable (Boolean, () -> Unit) -> Unit,
+    appBarBack: Boolean = false,
 ) {
     LaunchedEffect(model) { model.refresh() }
     var section by
@@ -80,12 +81,16 @@ fun SharedGymNowScreen(
     backHandler(section != "Overview") { section = "Overview" }
 
     CoachPage {
-        TextButton(
-            onClick = { if (section == "Overview") onBack() else section = "Overview" },
-            modifier = Modifier.heightIn(min = 48.dp),
-        ) {
-            Text(if (section == "Overview") "Back" else "Back to Gym Now")
-        }
+        // Where the host's app bar already has a Back that leaves Gym Now (Android), the overview
+        // does not repeat it. iOS has no app bar Back, so it keeps this in-content control.
+        // Sub-sections always keep "Back to Gym Now", which returns to the overview.
+        if (section != "Overview" || !appBarBack)
+            TextButton(
+                onClick = { if (section == "Overview") onBack() else section = "Overview" },
+                modifier = Modifier.heightIn(min = 48.dp),
+            ) {
+                Text(if (section == "Overview") "Back" else "Back to Gym Now")
+            }
         if (section != "Overview")
             ScreenHeader(Discipline.STRENGTH, sectionGlyph(section), "Gym Now", section)
         if (state.loading) CircularProgressIndicator()

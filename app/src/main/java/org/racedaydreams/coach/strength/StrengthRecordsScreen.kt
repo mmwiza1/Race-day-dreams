@@ -32,9 +32,6 @@ fun StrengthRecordsScreen(
                 withContext(Dispatchers.Default) { StrengthRecords.progression(sessions, cutoff) }
         }
     CoachPage {
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
-            Text("Back to Strength")
-        }
         ScreenHeader(Discipline.STRENGTH, Glyph.TREND, "Personal bests", "Strength records")
         Text(
             "What you recorded and what we estimate are kept separate. No maximal test is needed.",
