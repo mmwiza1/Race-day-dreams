@@ -142,6 +142,8 @@ installations that cannot support them (all existing debug-signed installs).
 - **Expressive tab composition:** see `docs/DESIGN_2026.md` §3f.
   - Applied to Strength and Progress → Strength training in PR #38.
   - The owner approved the direction app-wide on 23 November 2026, applied per screen purpose rather than copied: V3 final refinements are in PR #38, and each later screen group gets its own draft PR (see `docs/DESIGN_2026.md` §3g). No merge without explicit approval.
+  - Workstream branches are stacked on V3 (`ccr-60f602a7-tfmok3`) while PR #38 is unmerged. The Home PR targets the V3 branch, so its diff holds only Home changes. Retarget it to `main` once V3 merges. Draft checks for a stacked PR are started by `workflow_dispatch` of "Shared Android and iOS checks" on its branch, because that workflow's `pull_request` trigger only covers PRs into `main`.
+  - Planned order: W1 Home → W2 Plan and Calendar → W3 Progress Running/Overview → W4 activity, live, Gym Now and race/recovery screens → W5 onboarding (with the Galaxy S24 goal-selection retest), library, settings, bouldering and empty states.
 - **Outstanding issue to retest (owner-reported):** the running-goal selection buttons were unresponsive on the owner's physical Galaxy S24.
   - Retest it on that device after the UI modernisation.
   - Do not mark it resolved on emulator evidence alone.

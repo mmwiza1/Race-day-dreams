@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.presentation.StrengthTodaySummary
 import org.racedaydreams.domain.strength.ExerciseCatalog
@@ -30,17 +31,17 @@ fun SharedStrengthTodayScreen(
 ) {
     CoachPage {
         TodayHeader(dateLabel)
-        if (week.any { it.sessions.isNotEmpty() }) {
-            SectionTitle("Your next 7 days", WeekAtAGlance.summary(week))
-            WeekStrip(week, today)
-        }
         // One hero answers what, how long and how to start; logging after the fact is secondary.
-        HeroCard(Discipline.STRENGTH) {
-            DisciplineLabel("Your strength training")
+        HeroSurface(
+            Discipline.STRENGTH,
+            Glyph.DUMBBELL,
+            "Your strength training",
+            Modifier.testTag("today-hero"),
+        ) {
             val session = summary.today()
             val authored = summary.authoredToday()
             if (authored != null) {
-                Text(authored.definition().title(), style = MaterialTheme.typography.headlineLarge)
+                HeroTitle(authored.definition().title())
                 StatRow(
                     listOf(
                         Stat("Exercises", "${authored.definition().slots().size}"),
@@ -50,27 +51,23 @@ fun SharedStrengthTodayScreen(
                 ExercisePreview(authored.definition().slots().map { it.exercise().name() })
                 if (summary.todayCompleted())
                     Text("Actual workout recorded and explicitly linked to this session.")
-                else if (gymNow != null) CoachButton("Start planned workout", gymNow)
-                TextButton(onClick = { openSession(authored.id()) }) {
-                    Text("View workout details")
-                }
+                else if (gymNow != null)
+                    HeroPrimaryAction(Discipline.STRENGTH, "Start planned workout", gymNow)
+                HeroSecondaryActions(
+                    listOf("View workout details" to { openSession(authored.id()) })
+                )
             } else if (session == null) {
-                Text("Your day, your choice", style = MaterialTheme.typography.headlineLarge)
+                HeroTitle("Your day, your choice")
                 Text(
                     if (!hasProgramme)
                         "Build a programme or log a workout independently. No race goal is needed."
                     else "No gym session is planned today. Rest or train independently."
                 )
-                if (!hasProgramme) CoachButton("Create a gym programme") { open("gym") }
-                else
-                    OutlinedButton(
-                        onClick = { open("gym") },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    ) {
-                        Text("View gym programme")
-                    }
+                if (!hasProgramme)
+                    HeroPrimaryAction(Discipline.STRENGTH, "Create a gym programme") { open("gym") }
+                else HeroSecondaryActions(listOf("View gym programme" to { open("gym") }))
             } else {
-                Text(session.title(), style = MaterialTheme.typography.headlineLarge)
+                HeroTitle(session.title())
                 StatRow(
                     listOf(
                         Stat("Exercises", "${session.exercises().size}"),
@@ -86,27 +83,48 @@ fun SharedStrengthTodayScreen(
                 if (summary.todayCompleted()) {
                     Text("Actual workout recorded and explicitly linked to this session.")
                 } else {
-                    if (gymNow != null) CoachButton("Start planned workout", gymNow)
-                    OutlinedButton(
-                        onClick = { open("strength?date=$today") },
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    ) {
-                        Text("Log today's workout")
-                    }
+                    if (gymNow != null)
+                        HeroPrimaryAction(Discipline.STRENGTH, "Start planned workout", gymNow)
                 }
-                TextButton(onClick = { openSession(session.id()) }) { Text("View workout details") }
+                HeroSecondaryActions(
+                    buildList {
+                        if (!summary.todayCompleted())
+                            add("Log today's workout" to { open("strength?date=$today") })
+                        add("View workout details" to { openSession(session.id()) })
+                    }
+                )
             }
+        }
+
+        if (week.any { it.sessions.isNotEmpty() }) {
+            SectionLabel(
+                "Your next 7 days",
+                Glyph.CALENDAR,
+                ChartHue.PLUM,
+                WeekAtAGlance.summary(week),
+            )
+            WeekStrip(week, today)
         }
 
         Text(
             "Unplanned training",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(top = 8.dp).semantics { heading() },
         )
-        QuickStartRow(
+        QuickStartTiles(
             listOf(
-                if (gymNow != null) "Start unplanned workout" to gymNow
-                else "Log a spontaneous workout" to { open("strength/log") }
+                if (gymNow != null)
+                    QuickStart(
+                        "Start unplanned workout",
+                        Glyph.DUMBBELL,
+                        Discipline.STRENGTH,
+                        gymNow,
+                    )
+                else
+                    QuickStart("Log a spontaneous workout", Glyph.LIST, Discipline.STRENGTH) {
+                        open("strength/log")
+                    }
             )
         )
         Text(
@@ -129,9 +147,9 @@ fun SharedStrengthTodayScreen(
         }
 
         // This week as figures rather than sentences; each label names exactly what is counted.
-        SectionTitle("Your week so far")
+        SectionLabel("Your week so far", Glyph.VOLUME, ChartHue.PLUM)
         Surface(
-            shape = MaterialTheme.shapes.large,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
             color = MaterialTheme.colorScheme.surfaceContainerLow,
             modifier = Modifier.fillMaxWidth().testTag("strength-week-figures"),
         ) {
@@ -152,7 +170,7 @@ fun SharedStrengthTodayScreen(
             )
         }
 
-        ActionGroup("More") {
+        ActionGroup("More", glyph = Glyph.LIST, hue = ChartHue.PLUM) {
             ActionRow("PBs & progression", "Recorded bests and history") { open("strength/pbs") }
             ActionRow("Exercises & technique", "Search, favourite and learn") { open("exercises") }
             ActionRow("Strength workout history") { open("history?kind=STRENGTH") }
