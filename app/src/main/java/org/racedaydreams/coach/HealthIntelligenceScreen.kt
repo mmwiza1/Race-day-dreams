@@ -17,7 +17,7 @@ import java.time.LocalDate
     val launcher=rememberLauncherForActivityResult(model.health.permissionContract()){refresh()}
     LaunchedEffect(Unit){load()}
     val available=model.health.availability()==org.racedaydreams.health.HealthAvailability.AVAILABLE
-    CoachHeading("Personal health context")
+    ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Health", "Personal health context")
     Text("Health Connect: ${model.health.availability().name.lowercase().replace('_',' ')}")
     Text("Your own patterns, explained. Optional Health Connect signals stay separate; there is no readiness score.")
     trends.forEach { t -> SharedHealthTrendCard(t) { String.format(java.util.Locale.UK,"%.1f",it) } }

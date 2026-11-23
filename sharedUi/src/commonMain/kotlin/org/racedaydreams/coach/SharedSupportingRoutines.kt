@@ -7,23 +7,45 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.support.RunningRoutines
 
 @Composable
 fun SharedRoutineLibrary(open: (String) -> Unit) = CoachPage {
-    CoachHeading("Movement support")
-    Text(
+    ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Mobility", "Movement support")
+    QuietNote(
         "Optional short routines. Two to four short mobility sessions can be useful when they fit your week. There is no compliance target, load or missed-mobility warning."
     )
+    SectionLabel("Routines", Glyph.LIST, ChartHue.TEAL)
     RunningRoutines.all().forEach { r ->
-        SemanticCard(Tile.Planned) {
-            Text(requireNotNull(r.title()), style = MaterialTheme.typography.titleMedium)
-            Text("${r.minutes()} min · ${r.purpose()}")
-            CoachButton("Start ${r.title()}") { open(requireNotNull(r.id())) }
+        Panel {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    requireNotNull(r.title()),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                )
+                Text(
+                    "${r.minutes()} min · ${r.purpose()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Button(
+                onClick = { open(requireNotNull(r.id())) },
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Discipline.RECOVERY.accent(),
+                        contentColor = Discipline.RECOVERY.onAccent(),
+                    ),
+                modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+            ) {
+                Text("Start ${r.title()}")
+            }
         }
     }
-    Text(
+    QuietNote(
         "General movement guidance. Keep movements comfortable, stop if they cause pain and seek qualified advice when unsure. This is not injury treatment or a recovery guarantee."
     )
 }

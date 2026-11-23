@@ -60,6 +60,10 @@ class TrainingRecoveryScreenTest {
             }
         }
         compose.onNodeWithText(requireNotNull(evidence.explanation())).assertDoesNotExist()
+        compose.onNodeWithTag("screen-header").assertExists()
+        compose
+            .onNodeWithTag("recovery-guidance")
+            .assert(hasAnyDescendant(hasText("Here's what to do")))
         compose
             .onNodeWithText("Supporting evidence ▾")
             .performScrollTo()

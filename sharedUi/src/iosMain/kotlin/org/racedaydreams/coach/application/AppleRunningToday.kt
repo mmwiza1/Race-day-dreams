@@ -39,7 +39,7 @@ internal fun AppleWeeklyReview(
     state: CoachUiState,
     plan: () -> Unit,
 ) = CoachPage {
-    CoachHeading("Weekly review")
+    ScreenHeader(Discipline.RUNNING, Glyph.CALENDAR, "Coaching", "Weekly review")
     val review = state.weeklyReview
     if (review == null)
         Text("A weekly review appears with a running programme and available training evidence.")

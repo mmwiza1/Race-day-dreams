@@ -142,6 +142,8 @@ class SharedBoulderingScreenTest {
             compose.onAllNodesWithText("Start bouldering session").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithTag("kpi-Highest send").assert(hasText("None yet"))
+        // V3 Strength composition: one hero carries starting and logging a session.
+        compose.onNodeWithTag("screen-hero").assert(hasAnyDescendant(hasText("Log a past session")))
         compose.onNodeWithText("No bouldering sessions recorded yet.").performScrollTo().assertExists()
 
         compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()

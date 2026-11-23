@@ -17,7 +17,7 @@ import java.time.*
 import org.racedaydreams.domain.body.MassUnit
 
 @Composable fun WeeklyReviewScreen(s:CoachUiState,model:CoachViewModel,editRoutine:()->Unit = {})=CoachPage{
-    CoachHeading("Weekly coaching review")
+    ScreenHeader(Discipline.RUNNING, Glyph.CALENDAR, "Coaching", "Weekly coaching review")
     val r=s.weeklyReview
     if(r==null)Text("Create a programme to review its completed weeks.") else{
         SharedWeeklyReviewContent(

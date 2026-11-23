@@ -3,6 +3,7 @@ package org.racedaydreams.coach
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
 import org.racedaydreams.domain.health.HealthIntelligence
 import org.racedaydreams.domain.presentation.HealthContextSummary
 
@@ -10,15 +11,23 @@ import org.racedaydreams.domain.presentation.HealthContextSummary
 @Composable
 fun SharedHealthTrendCard(t: HealthIntelligence.Trend, formatValue: (Double) -> String) {
     val summary = HealthContextSummary.of(t)
-    GuidanceCard {
-        summary.title()?.let { Text(it, style = MaterialTheme.typography.titleMedium) }
+    Panel {
+        summary.title()?.let {
+            Text(it, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+        }
         if (t.metric() == HealthIntelligence.Metric.HRV_RMSSD)
             Text(
                 "The gaps between heartbeats vary. Look at patterns from the same source, rather than one reading."
             )
-        summary.value()?.let { Text(it, style = MaterialTheme.typography.headlineMedium) }
+        summary.value()?.let {
+            Text(it, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        }
         if (t.recent() != null)
-            Text("Recent daily average", style = MaterialTheme.typography.labelSmall)
+            Text(
+                "Recent daily average",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         summary.context()?.let { Text(it) }
         WhyDetails(
             "Recent: ${t.recent()?.let{formatValue(it)}?:"Unavailable"} · Reference: ${t.baseline()?.let{formatValue(it)}?:"Unavailable"}\n${t.recentDays()}/7 recent days · ${t.referenceDays()}/28 reference days\nSource: ${t.source()}\n${t.limitation()}" +

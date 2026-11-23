@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.TrainingPlan
@@ -28,22 +29,35 @@ fun SharedWeeklyReviewContent(
     formatNumber: (Double) -> String,
     workoutSummary: (PlannedWorkout) -> String,
 ) {
-    Text("Week of ${formatDate(requireNotNull(review.week()))}")
     val presentation = WeeklyReviewData.of(review)
     val attention = requireNotNull(presentation.attention())
     val positives = requireNotNull(presentation.positives())
     val recommendation = requireNotNull(review.recommendation())
-    GuidanceCard(if (presentation.noChange()) guidanceMint() else guidanceBlue()) {
+    SectionLabel(
+        "Your week",
+        Glyph.RUN,
+        ChartHue.BLUE,
+        "Week of ${formatDate(requireNotNull(review.week()))}",
+    )
+    Panel {
         Text(
             if (!presentation.noChange() || attention.isNotEmpty()) "Something may need adjusting"
             else if (review.completed() < 2) "Still learning your training"
             else "Training is on track",
             style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
         )
-        Text("${review.completed()} of ${review.planned()} planned runs completed")
+        // The week's distance is the headline figure; completion and the longest run support it.
         Text(
             "${formatNumber(review.kilometres())} km" +
-                (review.longestKm()?.let { " · longest ${formatNumber(it)} km" } ?: "")
+                (review.longestKm()?.let { " · longest ${formatNumber(it)} km" } ?: ""),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = chartAccent(ChartHue.BLUE).strong,
+        )
+        Text(
+            "${review.completed()} of ${review.planned()} planned runs completed",
+            style = MaterialTheme.typography.bodyLarge,
         )
         Text(
             if (attention.isNotEmpty()) attention.first()
@@ -67,11 +81,11 @@ fun SharedWeeklyReviewContent(
         },
         "Evidence channels",
     )
-    CoachHeading("Recommendation")
-    CoachCard {
+    ExpressiveSection("Recommendation", Glyph.SPARK, ChartHue.TEAL) {
         Text(
             if (presentation.noChange()) "No adjustment required" else "Review the next step",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
         )
         Text(
             if (presentation.noChange()) {

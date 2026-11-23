@@ -5,7 +5,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
 import org.racedaydreams.domain.time.Instant
@@ -27,8 +29,8 @@ fun SharedTrainingRecoveryContent(
     var scheduling by rememberSaveable { mutableStateOf(false) }
     CoachPage {
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
-        CoachHeading("Recovery & training balance")
-        Text("Useful options from your recorded training. You decide what feels appropriate.")
+        ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Recovery", "Recovery & training balance")
+        QuietNote("Useful options from your recorded training. You decide what feels appropriate.")
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
         state.error?.let {
             Text(
@@ -41,24 +43,46 @@ fun SharedTrainingRecoveryContent(
             Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
         }
         state.review?.let { review ->
-            SemanticCard(Tile.Strength) {
-                Text(requireNotNull(review.heading()), style = MaterialTheme.typography.titleLarge)
-                Text("Here's what to do", style = MaterialTheme.typography.titleMedium)
-                Text(requireNotNull(review.instruction()))
+            // The guidance leads as a strong headline with its one primary choice.
+            Panel(Modifier.testTag("recovery-guidance")) {
                 Text(
-                    "No targets or future weeks have changed.",
-                    style = MaterialTheme.typography.bodyMedium,
+                    requireNotNull(review.heading()),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.semantics { heading() },
                 )
+                Text(
+                    "Here's what to do",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Discipline.RECOVERY.accent(),
+                )
+                Text(
+                    requireNotNull(review.instruction()),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                QuietNote("No targets or future weeks have changed.")
                 if (state.canReviewLighterWeek)
-                    Button(onClick = onLighterWeek, enabled = !state.busy) {
+                    Button(
+                        onClick = onLighterWeek,
+                        enabled = !state.busy,
+                        colors =
+                            ButtonDefaults.buttonColors(
+                                containerColor = Discipline.RECOVERY.accent(),
+                                contentColor = Discipline.RECOVERY.onAccent(),
+                            ),
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                    ) {
                         Text("Preview a lighter week")
                     }
-                OutlinedButton(onClick = onKeep, enabled = !state.busy) {
+                OutlinedButton(
+                    onClick = onKeep,
+                    enabled = !state.busy,
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
+                ) {
                     Text("Keep my current programme")
                 }
             }
-            SemanticCard(Tile.Progress) {
-                Text("Why this guidance?", style = MaterialTheme.typography.titleMedium)
+            ExpressiveSection("Why this guidance?", Glyph.TREND, ChartHue.TEAL) {
                 Text(
                     if (review.lighterWeek())
                         "Several recorded strength workouts were very demanding across at least a week. A lighter week is an option, not a requirement."
@@ -82,15 +106,12 @@ fun SharedTrainingRecoveryContent(
                     review.evidence().forEach { row ->
                         Text(instantLabel(requireNotNull(row.at())) + " · " + row.explanation())
                     }
-                    review.limitations().forEach {
-                        Text(it, style = MaterialTheme.typography.bodyMedium)
-                    }
+                    review.limitations().forEach { QuietNote(it) }
                 }
             }
         }
         if (state.conflicts.isNotEmpty()) {
-            SemanticCard(Tile.Planned) {
-                Text("Running & gym schedule", style = MaterialTheme.typography.titleLarge)
+            ExpressiveSection("Running & gym schedule", Glyph.CALENDAR, ChartHue.BLUE) {
                 Text(
                     "Your lower-body gym work is close to a demanding planned run. Both sessions can stay; review the trade-off if you want."
                 )
@@ -109,7 +130,7 @@ fun SharedTrainingRecoveryContent(
                     state.conflicts
                         .groupBy { requireNotNull(it.workoutId()) }
                         .forEach { (id, conflicts) ->
-                            HorizontalDivider()
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             val workout = state.programme?.workouts()?.firstOrNull { it.id() == id }
                             Text(
                                 "${workout?.definition()?.title() ?: "Gym workout"} · ${dateLabel(requireNotNull(conflicts.first().gymDate()))}",
@@ -130,16 +151,20 @@ fun SharedTrainingRecoveryContent(
                                 }
                             }
                         }
-                Text(
+                QuietNote(
                     "Saving a preview does not move a session. Review and activate separately; your running plan stays unchanged."
                 )
             }
         }
         if (state.review?.lighterWeek() == true && state.programme == null)
-            Text(
+            QuietNote(
                 "This programme uses the earlier programme format. You can keep it or review a new programme through Gym programme; existing workouts and history remain available."
             )
-        OutlinedButton(onClick = onRefresh, enabled = !state.busy) {
+        OutlinedButton(
+            onClick = onRefresh,
+            enabled = !state.busy,
+            modifier = Modifier.heightIn(min = 48.dp),
+        ) {
             Text("Refresh local evidence")
         }
     }
