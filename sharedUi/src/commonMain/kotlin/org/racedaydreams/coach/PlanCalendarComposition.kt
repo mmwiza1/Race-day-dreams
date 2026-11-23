@@ -95,7 +95,7 @@ internal fun JourneyTrack(journey: PlanJourney, modifier: Modifier = Modifier) {
     val accent = Discipline.RUNNING.accent()
     val ring = Discipline.RUNNING.container()
     Row(
-        modifier.fillMaxWidth().clearAndSetSemantics {}.testTag("plan-journey-track"),
+        modifier.fillMaxWidth().testTag("plan-journey-track").clearAndSetSemantics {},
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -314,7 +314,7 @@ internal fun SessionMarkShape(entry: CalendarData.Entry, size: Dp, letter: Strin
 @Composable
 internal fun CalendarMarkKey() {
     FlowRow(
-        Modifier.fillMaxWidth().clearAndSetSemantics {}.testTag("calendar-mark-key"),
+        Modifier.fillMaxWidth().testTag("calendar-mark-key").clearAndSetSemantics {},
         horizontalArrangement = Arrangement.spacedBy(14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {

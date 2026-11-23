@@ -264,7 +264,7 @@ class SharedTrainingPlanScreenTest {
         compose
             .onNodeWithText("Programme ends · ${AndroidCoachCalendarDates.label(day.plusWeeks(2))}")
             .assertExists()
-        compose.onNodeWithText("Week beginning 2026-11-16").assertIsDisplayed()
+        compose.onNodeWithText("Week beginning 2026-11-16").performScrollTo().assertIsDisplayed()
         // The long run is the week's key session; its row and cool-down keep their routes.
         compose.onAllNodesWithText("Key session").assertCountEquals(1)
         compose.onNodeWithTag("plan-day-${day.plusDays(2)}").assertExists()
