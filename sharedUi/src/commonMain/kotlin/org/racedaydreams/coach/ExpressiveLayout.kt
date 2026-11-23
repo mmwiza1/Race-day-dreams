@@ -191,6 +191,49 @@ fun ScreenHero(
 }
 
 /**
+ * A compact tonal header for screens whose content, not an action, is the point (Progress): the
+ * same discipline colour, glyph and bold title as [ScreenHero] in about a third of the height.
+ */
+@Composable
+fun ScreenHeader(
+    discipline: Discipline,
+    glyph: Glyph,
+    eyebrow: String,
+    title: String,
+    trailing: (@Composable () -> Unit)? = null,
+) {
+    val onContainer = discipline.onContainer()
+    Surface(
+        color = discipline.container(),
+        shape = RoundedCornerShape(24.dp),
+        modifier = Modifier.fillMaxWidth().testTag("screen-header"),
+    ) {
+        Row(
+            Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            GlyphDisc(glyph, discipline.accent(), discipline.onAccent(), 44.dp)
+            Column(Modifier.weight(1f)) {
+                Text(
+                    eyebrow.uppercase(),
+                    style = MaterialTheme.typography.labelMedium.copy(letterSpacing = 1.2.sp),
+                    color = onContainer.copy(alpha = 0.85f),
+                )
+                Text(
+                    title,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = onContainer,
+                    modifier = Modifier.semantics { heading() },
+                )
+            }
+            trailing?.invoke()
+        }
+    }
+}
+
+/**
  * A section's label above its panel: a small glyph disc in the section's hue, a bold title (the
  * accessibility heading) and an optional one-line caption, with an optional trailing action.
  */

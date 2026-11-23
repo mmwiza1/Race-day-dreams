@@ -222,6 +222,26 @@ class SharedDashboardScreenTest {
     }
 
     @Test
+    fun volumeOpensOnTheLatestRecordedWeekAndReturnsToThisWeek() {
+        // Nothing recorded this week yet: the chart opens on last week, says so, and one tap
+        // returns to the (empty) current week.
+        strength(
+            CoachUiState(
+                loading = false,
+                strengthSessions = sessions.filter { it.id() in setOf("year-ago", "last-week") },
+            )
+        )
+        compose.onNodeWithTag("volume-chart").performScrollTo()
+        compose.onNodeWithTag("volume-selected-week").assert(hasText("Week of", substring = true))
+        compose.onNodeWithText("Latest week with workouts", substring = true).assertExists()
+        compose.onNodeWithTag("volume-this-week").performScrollTo().performClick()
+        compose.onNodeWithTag("volume-selected-week").assert(hasText("This week"))
+        compose.onNodeWithTag("volume-readout").assert(hasText("No workouts"))
+        compose.onNodeWithTag("volume-this-week").assertDoesNotExist()
+        compose.onNodeWithText("Latest week with workouts", substring = true).assertDoesNotExist()
+    }
+
+    @Test
     fun newStrengthUserSeesHonestEmptyStatesAtLargeText() {
         strength(CoachUiState(loading = false), fontScale = 2f)
         compose.onNodeWithTag("kpi-Working sets").assert(hasText("0"))

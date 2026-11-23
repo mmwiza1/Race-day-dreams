@@ -494,6 +494,8 @@ internal fun TrainingVolumeCard(
         val week = overview.weeks[selected]
         val current = selected == weeks.lastIndex
         val total = values.filterNotNull().sum()
+        // Opened on an earlier week because nothing is recorded this week yet: say so.
+        val openedEarlier = selectedWeek == null && !current
 
         Column(
             Modifier.semantics { liveRegion = LiveRegionMode.Polite },
@@ -503,7 +505,14 @@ internal fun TrainingVolumeCard(
                 if (current) "This week" else "Week of ${friendlyDate(weeks[selected])}",
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.testTag("volume-selected-week"),
             )
+            if (openedEarlier)
+                Text(
+                    "Latest week with workouts · nothing recorded this week yet",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             Text(
                 values[selected]?.let(volume)
                     ?: if (week.workouts() == 0) "No workouts" else "No load × reps sets",
@@ -518,6 +527,13 @@ internal fun TrainingVolumeCard(
         }
         WeeklyBars(values, overview.weeks, selected, volume, shortDate, select)
         Steppers("volume", selected, weeks.lastIndex, select)
+        if (!current)
+            FilledTonalButton(
+                onClick = { select(weeks.lastIndex) },
+                modifier = Modifier.heightIn(min = 48.dp).testTag("volume-this-week"),
+            ) {
+                Text("Go to this week")
+            }
         Text(
             "${data.period.label}: ${volume(total)}" +
                 (overview.previousVolume?.let { " · previous ${data.period.label}: ${volume(it)}" }
@@ -717,7 +733,7 @@ internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> Strin
                 ) {
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Text(g.group.label, modifier = Modifier.weight(1f))
-                        Text("${decimal(g.primarySets)} sets", fontWeight = FontWeight.SemiBold)
+                        Text(setCount(g.primarySets, decimal), fontWeight = FontWeight.SemiBold)
                     }
                     BoxWithConstraints(
                         Modifier.fillMaxWidth().height(12.dp).clearAndSetSemantics {}
@@ -744,7 +760,7 @@ internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> Strin
                     Text(
                         listOfNotNull(
                                 if (compared)
-                                    "previous ${data.period.label}: ${decimal(before ?: 0.0)}"
+                                    "previous ${data.period.label}: ${setCount(before ?: 0.0, decimal)}"
                                 else null,
                                 if (g.secondarySets > 0) "also secondary in ${g.secondarySets}"
                                 else null,
@@ -795,3 +811,13 @@ internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> Strin
         )
         Explainer("How sets are counted", StrengthVolume.attribution())
     }
+
+/**
+ * Working-set counts as people say them: "279 sets", "1 set", and one decimal only where a count is
+ * genuinely fractional (e.g. split secondary credit). Presentation only.
+ */
+internal fun setCount(value: Double, decimal: (Double) -> String): String {
+    val whole = value == kotlin.math.floor(value) && !value.isInfinite()
+    val number = if (whole) value.toLong().toString() else decimal(value)
+    return if (whole && value.toLong() == 1L) "$number set" else "$number sets"
+}

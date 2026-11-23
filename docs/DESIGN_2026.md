@@ -237,6 +237,11 @@ The information was strong; the composition was not.
 - **Colour:** theme roles and `ChartHue` only, so light, dark and Material You stay consistent.
 - **Also folded in:** the volume card opens on the latest week with workouts.
 
+**Owner-approved refinements (V3 final review, 23 November 2026):**
+- **Training volume:** it still opens on the latest week with workouts when this week is empty. The selected week is always labelled ("This week" or "Week of …"). When it opened on an earlier week, it says "Latest week with workouts · nothing recorded this week yet", and a 48 dp "Go to this week" button returns to the current week.
+- **Compact Progress header (`ScreenHeader`):** Progress has no primary action, so it uses a single-row tonal header with the same discipline colour, glyph disc, eyebrow and bold title at about a third of the hero's height. This moves the analytics up the screen. Strength keeps the full `ScreenHero` because it carries the workout actions.
+- **Muscle-group sets:** whole counts read "279 sets" and "1 set"; fractional counts keep one decimal (`setCount`). Presentation only; the counts themselves are unchanged.
+
 **Considered and set aside:**
 - A dark-first "athletic" theme, which is too disruptive for the whole app.
 - More coloured cards, which add clutter rather than composition.

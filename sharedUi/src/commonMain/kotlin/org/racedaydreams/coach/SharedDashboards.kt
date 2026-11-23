@@ -199,7 +199,8 @@ fun SharedProgressDashboard(
     var tabName by rememberSaveable(tabs) { mutableStateOf(tabs.firstOrNull()?.name) }
     val tab = tabName?.let { ProgressTab.valueOf(it) } ?: ProgressTab.RUNNING
     // Hero: Progress's identity, tinted by the discipline of the selected tab.
-    ScreenHero(
+    // Compact: Progress has no primary action, so the charts, not the header, lead the screen.
+    ScreenHeader(
         when (tab) {
             ProgressTab.STRENGTH -> Discipline.STRENGTH
             ProgressTab.OVERVIEW -> Discipline.RECOVERY
@@ -208,7 +209,6 @@ fun SharedProgressDashboard(
         if (tab == ProgressTab.STRENGTH) Glyph.DUMBBELL else Glyph.TREND,
         eyebrow = if (tabs.size > 1) tab.label else "Running",
         title = "Progress",
-        supporting = "From your recorded training",
     )
     if (tabs.size > 1) ProgressTabs(tabs, tab) { tabName = it.name }
     val moreLinks =
