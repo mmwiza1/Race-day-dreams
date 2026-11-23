@@ -4172,8 +4172,9 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("volume-chart").performScrollTo()
             alignHeading("Training volume")
             capture("strength-volume-1-year")
+            // The volume card opens on the latest week with workouts ("this" or "that" week).
             compose.onNodeWithTag("volume-week-workouts").performScrollTo()
-            alignHeadingOrPageEnd("Workouts this week")
+            compose.waitForIdle()
             capture("strength-volume-workouts")
             compose.onNodeWithTag("muscle-LEGS").performScrollTo().performClick()
             alignHeading("Muscle-group workload")

@@ -137,10 +137,9 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("period-FOUR_WEEKS").performClick()
 
         // Back squat has the most eligible sets; choose bench press instead.
-        compose.onNodeWithTag("exercise-selector").performScrollTo().assert(hasText("Back Squat ▾"))
-        compose.onNodeWithTag("exercise-selector").performClick()
-        // Recent workouts also say "Bench Press"; pick the menu entry.
-        compose.onNode(hasText("Bench Press") and hasAnyAncestor(isPopup())).performClick()
+        compose.onNodeWithTag("exercise-back-squat").performScrollTo().assertIsSelected()
+        // Exercises are chips: choose bench press directly.
+        compose.onNodeWithTag("exercise-bench-press").performScrollTo().performClick()
         // The readout keeps the actual heaviest set and the estimate apart, with its sample.
         compose
             .onNodeWithTag("selected-one-rep-max")
@@ -634,8 +633,8 @@ class SharedDashboardScreenTest {
         compose.onAllNodesWithText("Open workout").onFirst().assertExists()
 
         // Bench press has estimates in two weeks, so the trend line appears.
-        compose.onNodeWithTag("exercise-selector").performScrollTo().performClick()
-        compose.onAllNodes(hasText("Bench Press") and hasAnyAncestor(isPopup())).onFirst().performClick()
+        compose.onNodeWithTag("exercise-bench-press").performScrollTo().performClick()
+        compose.onNodeWithTag("exercise-bench-press").assertIsSelected()
         compose.onNodeWithTag("one-rep-max-chart").performScrollTo().assertIsDisplayed()
         compose.onNodeWithTag("one-rep-max-single-week").assertDoesNotExist()
         compose.onNodeWithTag("progression-earlier").performScrollTo().assertIsEnabled()

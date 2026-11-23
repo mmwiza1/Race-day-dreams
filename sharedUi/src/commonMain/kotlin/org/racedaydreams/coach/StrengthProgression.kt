@@ -7,7 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -42,6 +44,28 @@ import org.racedaydreams.domain.time.LocalDate
 
 private fun index(selected: String?, weeks: List<LocalDate>, fallback: Int): Int =
     weeks.indexOfFirst { it.toString() == selected }.takeIf { it >= 0 } ?: fallback
+
+/** The period's exercises with qualifying sets, as a scrollable row of chips (most sets first). */
+@Composable
+private fun ExerciseChips(
+    options: List<Pair<String, String>>,
+    selected: String,
+    select: (String) -> Unit,
+) {
+    Row(
+        Modifier.fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
+            .testTag("exercise-selector"),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        for ((id, name) in options) CoachFilterChip(
+            selected = id == selected,
+            onClick = { select(id) },
+            label = { Text(name) },
+            modifier = Modifier.testTag("exercise-$id"),
+        )
+    }
+}
 
 /** 48 dp previous/next controls shared by the strength charts. */
 @Composable
@@ -173,128 +197,136 @@ internal fun ExerciseProgressionCard(
     friendlyDate: (LocalDate) -> String,
     selectExercise: (String) -> Unit,
     openWorkout: (String) -> Unit,
-) = CoachCard {
-    val overview = data.overview
-    Text(
+) =
+    ExpressiveSection(
         "Exercise progression",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.semantics { heading() },
-    )
-    val exercise = overview.trendExercise
-    if (exercise == null) {
-        Text(
-            "Record weighted working sets of 2–10 repetitions in this period to see an estimate.",
-            modifier = Modifier.testTag("one-rep-max-empty"),
-        )
-        return@CoachCard
-    }
-    ExerciseSelector(overview.eligibleExercises.map { it.id() to it.name() }, exercise.id()) {
-        selectExercise(it)
-    }
-    val points = overview.oneRepMaxTrend
-    val heaviest =
-        overview.heaviestByWeek.takeIf { it.size == points.size } ?: List(points.size) { null }
-    val weeks = points.map { it.weekStart }
-    val withData = points.indices.filter { points[it].kilograms != null || heaviest[it] != null }
-    var selectedWeek by
-        rememberSaveable(exercise.id(), weeks.firstOrNull().toString()) {
-            mutableStateOf<String?>(null)
-        }
-    val selected = index(selectedWeek, weeks, withData.lastOrNull() ?: points.lastIndex)
-    val select: (Int) -> Unit = { selectedWeek = weeks[it.coerceIn(0, weeks.lastIndex)].toString() }
-    val point = points[selected]
-    val set = heaviest[selected]
-    val tones = chartAccent(ChartHue.PLUM)
-
-    // Readout: the selected week's actual heaviest set first, then the estimate, never merged.
-    Column(
-        Modifier.fillMaxWidth().testTag("selected-one-rep-max").semantics(mergeDescendants = true) {
-            liveRegion = LiveRegionMode.Polite
-        },
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        Glyph.TREND,
+        ChartHue.PLUM,
+        "Recorded lifts and estimated 1RM, week by week",
     ) {
-        Text(
-            "Week of ${friendlyDate(point.weekStart)}",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Mark(true, tones.strong)
+        val overview = data.overview
+        val exercise = overview.trendExercise
+        if (exercise == null) {
             Text(
-                set?.let { "${mass(it.kilograms)} × ${it.reps}" } ?: "No recorded set",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
+                "Record weighted working sets of 2–10 repetitions in this period to see an estimate.",
+                modifier = Modifier.testTag("one-rep-max-empty"),
             )
+            return@ExpressiveSection
         }
-        Text("Heaviest set · recorded", style = MaterialTheme.typography.bodyMedium)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Mark(false, tones.strong)
-            Text(
-                point.kilograms?.let { "${mass(it)} estimated" } ?: "No estimate",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
-        }
-        val setKilograms = point.setKilograms
-        val reps = point.reps
-        Text(
-            if (point.kilograms == null) "Estimated 1RM · no qualifying set this week"
-            else
-                "Estimated 1RM · from ${setKilograms?.let(mass) ?: "a set"}" +
-                    (reps?.let { " × $it" } ?: "") +
-                    " · ${plural(point.qualifyingSets, "qualifying set")}",
-            style = MaterialTheme.typography.bodyMedium,
+        ExerciseChips(
+            overview.eligibleExercises.map { it.id() to it.name() },
+            exercise.id(),
+            selectExercise,
         )
-    }
-
-    if (withData.size < 2) {
-        // One week cannot show a direction: no line, axis or range that suggests one.
-        Text(
-            "Only one week has data in this period. A trend appears once a second week is recorded.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.testTag("one-rep-max-single-week"),
-        )
-    } else {
-        ProgressionChart(points, heaviest, selected, tones, mass, shortDate, select)
-        Steppers("progression", selected, points.lastIndex, select)
-    }
-    // Open the workout behind each figure; one button when both come from the same workout.
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        val setSession = set?.sessionId
-        val estimateSession = point.sessionId
-        if (setSession != null && setSession == estimateSession)
-            TextButton(
-                onClick = { openWorkout(setSession) },
-                modifier = Modifier.heightIn(min = 48.dp),
-            ) {
-                Text("Open workout")
+        val points = overview.oneRepMaxTrend
+        val heaviest =
+            overview.heaviestByWeek.takeIf { it.size == points.size } ?: List(points.size) { null }
+        val weeks = points.map { it.weekStart }
+        val withData =
+            points.indices.filter { points[it].kilograms != null || heaviest[it] != null }
+        var selectedWeek by
+            rememberSaveable(exercise.id(), weeks.firstOrNull().toString()) {
+                mutableStateOf<String?>(null)
             }
-        else {
-            if (setSession != null)
+        val selected = index(selectedWeek, weeks, withData.lastOrNull() ?: points.lastIndex)
+        val select: (Int) -> Unit = {
+            selectedWeek = weeks[it.coerceIn(0, weeks.lastIndex)].toString()
+        }
+        val point = points[selected]
+        val set = heaviest[selected]
+        val tones = chartAccent(ChartHue.PLUM)
+
+        // Readout: the selected week's actual heaviest set first, then the estimate, never merged.
+        Column(
+            Modifier.fillMaxWidth().testTag("selected-one-rep-max").semantics(
+                mergeDescendants = true
+            ) {
+                liveRegion = LiveRegionMode.Polite
+            },
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                "Week of ${friendlyDate(point.weekStart)}",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Mark(true, tones.strong)
+                Text(
+                    set?.let { "${mass(it.kilograms)} × ${it.reps}" } ?: "No recorded set",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Text("Heaviest set · recorded", style = MaterialTheme.typography.bodyMedium)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Mark(false, tones.strong)
+                Text(
+                    point.kilograms?.let { "${mass(it)} estimated" } ?: "No estimate",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            val setKilograms = point.setKilograms
+            val reps = point.reps
+            Text(
+                if (point.kilograms == null) "Estimated 1RM · no qualifying set this week"
+                else
+                    "Estimated 1RM · from ${setKilograms?.let(mass) ?: "a set"}" +
+                        (reps?.let { " × $it" } ?: "") +
+                        " · ${plural(point.qualifyingSets, "qualifying set")}",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+
+        if (withData.size < 2) {
+            // One week cannot show a direction: no line, axis or range that suggests one.
+            Text(
+                "Only one week has data in this period. A trend appears once a second week is recorded.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.testTag("one-rep-max-single-week"),
+            )
+        } else {
+            ProgressionChart(points, heaviest, selected, tones, mass, shortDate, select)
+            Steppers("progression", selected, points.lastIndex, select)
+        }
+        // Open the workout behind each figure; one button when both come from the same workout.
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            val setSession = set?.sessionId
+            val estimateSession = point.sessionId
+            if (setSession != null && setSession == estimateSession)
                 TextButton(
                     onClick = { openWorkout(setSession) },
                     modifier = Modifier.heightIn(min = 48.dp),
                 ) {
-                    Text("Open heaviest-set workout")
+                    Text("Open workout")
                 }
-            if (estimateSession != null)
-                TextButton(
-                    onClick = { openWorkout(estimateSession) },
-                    modifier = Modifier.heightIn(min = 48.dp),
-                ) {
-                    Text("Open estimate workout")
-                }
+            else {
+                if (setSession != null)
+                    TextButton(
+                        onClick = { openWorkout(setSession) },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text("Open heaviest-set workout")
+                    }
+                if (estimateSession != null)
+                    TextButton(
+                        onClick = { openWorkout(estimateSession) },
+                        modifier = Modifier.heightIn(min = 48.dp),
+                    ) {
+                        Text("Open estimate workout")
+                    }
+            }
         }
+        Explainer("How the estimate works", StrengthRecords.estimateExplanation())
     }
-    Explainer("How the estimate works", StrengthRecords.estimateExplanation())
-}
 
 @Composable
 private fun ProgressionChart(
@@ -430,123 +462,127 @@ internal fun TrainingVolumeCard(
     shortDate: (LocalDate) -> String,
     friendlyDate: (LocalDate) -> String,
     openWorkout: ((String) -> Unit)?,
-) = CoachCard {
-    val overview = data.overview
-    Text(
+) =
+    ExpressiveSection(
         "Training volume",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.semantics { heading() },
-    )
-    Text(
-        "Accumulated load × repetitions of weighted working sets — not the heaviest weight lifted.",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-    val values = overview.volumeByWeek.takeIf { it.size == overview.weeks.size }
-    if (values == null || values.all { it == null }) {
-        Text(
-            if (overview.workouts == 0) "No strength workouts recorded in this period."
-            else
-                "No weighted load × repetition sets in this period, so there is no volume to show.",
-            modifier = Modifier.testTag("volume-empty"),
-        )
-        return@CoachCard
-    }
-    val weeks = overview.weeks.map { requireNotNull(it.monday()) }
-    var selectedWeek by rememberSaveable(weeks.first().toString()) { mutableStateOf<String?>(null) }
-    val selected = index(selectedWeek, weeks, weeks.lastIndex)
-    val select: (Int) -> Unit = { selectedWeek = weeks[it.coerceIn(0, weeks.lastIndex)].toString() }
-    val week = overview.weeks[selected]
-    val current = selected == weeks.lastIndex
-    val total = values.filterNotNull().sum()
-
-    Column(
-        Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+        Glyph.VOLUME,
+        ChartHue.PLUM,
+        "Load × repetitions of weighted sets — not the heaviest weight lifted",
     ) {
-        Text(
-            if (current) "This week" else "Week of ${friendlyDate(weeks[selected])}",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Text(
-            values[selected]?.let(volume)
-                ?: if (week.workouts() == 0) "No workouts" else "No load × reps sets",
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.testTag("volume-readout"),
-        )
-        Text(
-            "${plural(week.workouts(), "workout")} · ${plural(week.workingSets(), "working set")}",
-            style = MaterialTheme.typography.bodyLarge,
-        )
-    }
-    WeeklyBars(values, overview.weeks, selected, volume, shortDate, select)
-    Steppers("volume", selected, weeks.lastIndex, select)
-    Text(
-        "${data.period.label}: ${volume(total)}" +
-            (overview.previousVolume?.let { " · previous ${data.period.label}: ${volume(it)}" }
-                ?: " · no earlier ${data.period.label} to compare"),
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.testTag("volume-period"),
-    )
-
-    val workouts = overview.workoutsByWeek.getOrNull(selected).orEmpty()
-    SectionHeader(if (current) "Workouts this week" else "Workouts that week", null)
-    Column(Modifier.testTag("volume-week-workouts")) {
-        if (workouts.isEmpty())
+        val overview = data.overview
+        val values = overview.volumeByWeek.takeIf { it.size == overview.weeks.size }
+        if (values == null || values.all { it == null }) {
             Text(
-                "No workouts recorded in this week.",
+                if (overview.workouts == 0) "No strength workouts recorded in this period."
+                else
+                    "No weighted load × repetition sets in this period, so there is no volume to show.",
+                modifier = Modifier.testTag("volume-empty"),
+            )
+            return@ExpressiveSection
+        }
+        val weeks = overview.weeks.map { requireNotNull(it.monday()) }
+        var selectedWeek by
+            rememberSaveable(weeks.first().toString()) { mutableStateOf<String?>(null) }
+        // Open on the latest week with workouts, so an empty start to this week is not the
+        // headline.
+        val latest =
+            overview.weeks.indexOfLast { it.workouts() > 0 }.takeIf { it >= 0 } ?: weeks.lastIndex
+        val selected = index(selectedWeek, weeks, latest)
+        val select: (Int) -> Unit = {
+            selectedWeek = weeks[it.coerceIn(0, weeks.lastIndex)].toString()
+        }
+        val week = overview.weeks[selected]
+        val current = selected == weeks.lastIndex
+        val total = values.filterNotNull().sum()
+
+        Column(
+            Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            verticalArrangement = Arrangement.spacedBy(2.dp),
+        ) {
+            Text(
+                if (current) "This week" else "Week of ${friendlyDate(weeks[selected])}",
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-        for (workout in workouts) DashboardRow(
-            title =
-                workout.exerciseNames.take(3).joinToString(", ") +
-                    if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
-                    else "",
-            detail =
-                "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-            value = workout.loadVolumeKg?.let(volume) ?: "",
-            secondary = if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
-            onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
+            Text(
+                values[selected]?.let(volume)
+                    ?: if (week.workouts() == 0) "No workouts" else "No load × reps sets",
+                style = MaterialTheme.typography.displaySmall,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.testTag("volume-readout"),
+            )
+            Text(
+                "${plural(week.workouts(), "workout")} · ${plural(week.workingSets(), "working set")}",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+        WeeklyBars(values, overview.weeks, selected, volume, shortDate, select)
+        Steppers("volume", selected, weeks.lastIndex, select)
+        Text(
+            "${data.period.label}: ${volume(total)}" +
+                (overview.previousVolume?.let { " · previous ${data.period.label}: ${volume(it)}" }
+                    ?: " · no earlier ${data.period.label} to compare"),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.testTag("volume-period"),
         )
-    }
 
-    val byExercise = overview.volumeByExercise.take(5)
-    if (byExercise.isNotEmpty()) {
-        SectionHeader("By exercise · ${data.period.label}", null)
-        val largest = byExercise.first().loadVolumeKg.coerceAtLeast(1.0)
-        val tones = chartAccent(ChartHue.PLUM)
-        Column(
-            Modifier.testTag("volume-by-exercise"),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            for (item in byExercise) Column(
-                Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Row(Modifier.fillMaxWidth()) {
-                    Text(item.name, modifier = Modifier.weight(1f))
-                    Text(volume(item.loadVolumeKg), fontWeight = FontWeight.SemiBold)
-                }
-                Box(
-                    Modifier.fillMaxWidth(
-                            (item.loadVolumeKg / largest).toFloat().coerceIn(0.02f, 1f)
-                        )
-                        .height(8.dp)
-                        .clip(CircleShape)
-                        .background(tones.soft)
-                        .clearAndSetSemantics {}
-                )
+        val workouts = overview.workoutsByWeek.getOrNull(selected).orEmpty()
+        SectionHeader(if (current) "Workouts this week" else "Workouts that week", null)
+        Column(Modifier.testTag("volume-week-workouts")) {
+            if (workouts.isEmpty())
                 Text(
-                    plural(item.workingSets, "working set"),
-                    style = MaterialTheme.typography.bodySmall,
+                    "No workouts recorded in this week.",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+            for (workout in workouts) DashboardRow(
+                title =
+                    workout.exerciseNames.take(3).joinToString(", ") +
+                        if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
+                        else "",
+                detail =
+                    "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
+                value = workout.loadVolumeKg?.let(volume) ?: "",
+                secondary =
+                    if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
+                onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
+            )
+        }
+
+        val byExercise = overview.volumeByExercise.take(5)
+        if (byExercise.isNotEmpty()) {
+            SectionHeader("By exercise · ${data.period.label}", null)
+            val largest = byExercise.first().loadVolumeKg.coerceAtLeast(1.0)
+            val tones = chartAccent(ChartHue.PLUM)
+            Column(
+                Modifier.testTag("volume-by-exercise"),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                for (item in byExercise) Column(
+                    Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Row(Modifier.fillMaxWidth()) {
+                        Text(item.name, modifier = Modifier.weight(1f))
+                        Text(volume(item.loadVolumeKg), fontWeight = FontWeight.SemiBold)
+                    }
+                    Box(
+                        Modifier.fillMaxWidth(
+                                (item.loadVolumeKg / largest).toFloat().coerceIn(0.02f, 1f)
+                            )
+                            .height(8.dp)
+                            .clip(CircleShape)
+                            .background(tones.soft)
+                            .clearAndSetSemantics {}
+                    )
+                    Text(
+                        plural(item.workingSets, "working set"),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
             }
         }
     }
-}
 
 @Composable
 private fun WeeklyBars(
@@ -639,118 +675,123 @@ private fun WeeklyBars(
  * growth or recovery.
  */
 @Composable
-internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> String) = CoachCard {
-    val overview = data.overview
-    Text(
+internal fun MuscleWorkloadCard(data: StrengthPeriod, decimal: (Double) -> String) =
+    ExpressiveSection(
         "Muscle-group workload",
-        style = MaterialTheme.typography.titleLarge,
-        modifier = Modifier.semantics { heading() },
-    )
-    Text(
+        Glyph.BODY,
+        ChartHue.PLUM,
         "Recorded working sets · ${data.period.label}",
-        style = MaterialTheme.typography.bodyMedium,
-    )
-    if (overview.workingSets == 0) {
-        Text("Record working sets to see how your training is spread.")
-        return@CoachCard
-    }
-    val tones = chartAccent(ChartHue.PLUM)
-    val outline = MaterialTheme.colorScheme.onSurfaceVariant
-    val previous = overview.previousGroupSets
-    val compared = previous.isNotEmpty()
-    val groups = overview.muscleGroups.filter { it.primarySets > 0.0 }
-    val largest =
-        (groups.map { it.primarySets } + groups.mapNotNull { previous[it.group] })
-            .maxOrNull()
-            ?.coerceAtLeast(1.0) ?: 1.0
-    var open by rememberSaveable { mutableStateOf<String?>(null) }
-    Column(Modifier.testTag("muscle-workload"), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        for (g in groups) {
-            val before = previous[g.group]
-            val expanded = open == g.group.name
-            Column(
-                Modifier.fillMaxWidth()
-                    .clickable { open = if (expanded) null else g.group.name }
-                    .heightIn(min = 48.dp)
-                    .testTag("muscle-${g.group.name}")
-                    .semantics(mergeDescendants = true) {
-                        stateDescription =
-                            if (expanded) "Exercises shown" else "Tap to show exercises"
-                    },
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    Text(g.group.label, modifier = Modifier.weight(1f))
-                    Text("${decimal(g.primarySets)} sets", fontWeight = FontWeight.SemiBold)
-                }
-                BoxWithConstraints(Modifier.fillMaxWidth().height(12.dp).clearAndSetSemantics {}) {
-                    val w = maxWidth
-                    Box(
-                        Modifier.fillMaxWidth(
-                                (g.primarySets / largest).toFloat().coerceIn(0.02f, 1f)
-                            )
-                            .fillMaxHeight()
-                            .clip(CircleShape)
-                            .background(tones.soft)
-                    )
-                    if (before != null)
-                        Box(
-                            Modifier.offset(
-                                    x = w * (before / largest).toFloat().coerceIn(0f, 1f) - 1.dp
-                                )
-                                .width(2.dp)
-                                .fillMaxHeight()
-                                .background(outline)
-                        )
-                }
-                Text(
-                    listOfNotNull(
-                            if (compared) "previous ${data.period.label}: ${decimal(before ?: 0.0)}"
-                            else null,
-                            if (g.secondarySets > 0) "also secondary in ${g.secondarySets}"
-                            else null,
-                        )
-                        .joinToString(" · ")
-                        .ifEmpty { "Primary working sets" },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                if (expanded)
-                    Text(
-                        overview.groupExercises[g.group].orEmpty().joinToString(", ").ifEmpty {
-                            "—"
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.testTag("muscle-${g.group.name}-exercises"),
-                    )
-            }
+    ) {
+        val overview = data.overview
+        if (overview.workingSets == 0) {
+            Text("Record working sets to see how your training is spread.")
+            return@ExpressiveSection
         }
-        val secondaryOnly =
-            overview.muscleGroups.filter { it.primarySets == 0.0 && it.secondarySets > 0 }
-        if (secondaryOnly.isNotEmpty())
-            Text(
-                "Secondary only: " +
-                    secondaryOnly.joinToString(", ") { "${it.group.label} (${it.secondarySets})" },
-                style = MaterialTheme.typography.bodySmall,
-            )
-        if (overview.unclassifiedSets > 0)
-            Text(
-                "${plural(overview.unclassifiedSets, "working set")} from custom or changed exercises are not assigned to a group.",
-                style = MaterialTheme.typography.bodySmall,
-            )
-    }
-    if (compared)
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.clearAndSetSemantics {},
+        val tones = chartAccent(ChartHue.PLUM)
+        val outline = MaterialTheme.colorScheme.onSurfaceVariant
+        val previous = overview.previousGroupSets
+        val compared = previous.isNotEmpty()
+        val groups = overview.muscleGroups.filter { it.primarySets > 0.0 }
+        val largest =
+            (groups.map { it.primarySets } + groups.mapNotNull { previous[it.group] })
+                .maxOrNull()
+                ?.coerceAtLeast(1.0) ?: 1.0
+        var open by rememberSaveable { mutableStateOf<String?>(null) }
+        Column(
+            Modifier.testTag("muscle-workload"),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(Modifier.width(2.dp).height(12.dp).background(outline))
-            Spacer(Modifier.width(6.dp))
-            Text("Previous ${data.period.label}", style = MaterialTheme.typography.labelSmall)
+            for (g in groups) {
+                val before = previous[g.group]
+                val expanded = open == g.group.name
+                Column(
+                    Modifier.fillMaxWidth()
+                        .clickable { open = if (expanded) null else g.group.name }
+                        .heightIn(min = 48.dp)
+                        .testTag("muscle-${g.group.name}")
+                        .semantics(mergeDescendants = true) {
+                            stateDescription =
+                                if (expanded) "Exercises shown" else "Tap to show exercises"
+                        },
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        Text(g.group.label, modifier = Modifier.weight(1f))
+                        Text("${decimal(g.primarySets)} sets", fontWeight = FontWeight.SemiBold)
+                    }
+                    BoxWithConstraints(
+                        Modifier.fillMaxWidth().height(12.dp).clearAndSetSemantics {}
+                    ) {
+                        val w = maxWidth
+                        Box(
+                            Modifier.fillMaxWidth(
+                                    (g.primarySets / largest).toFloat().coerceIn(0.02f, 1f)
+                                )
+                                .fillMaxHeight()
+                                .clip(CircleShape)
+                                .background(tones.soft)
+                        )
+                        if (before != null)
+                            Box(
+                                Modifier.offset(
+                                        x = w * (before / largest).toFloat().coerceIn(0f, 1f) - 1.dp
+                                    )
+                                    .width(2.dp)
+                                    .fillMaxHeight()
+                                    .background(outline)
+                            )
+                    }
+                    Text(
+                        listOfNotNull(
+                                if (compared)
+                                    "previous ${data.period.label}: ${decimal(before ?: 0.0)}"
+                                else null,
+                                if (g.secondarySets > 0) "also secondary in ${g.secondarySets}"
+                                else null,
+                            )
+                            .joinToString(" · ")
+                            .ifEmpty { "Primary working sets" },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    if (expanded)
+                        Text(
+                            overview.groupExercises[g.group].orEmpty().joinToString(", ").ifEmpty {
+                                "—"
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.testTag("muscle-${g.group.name}-exercises"),
+                        )
+                }
+            }
+            val secondaryOnly =
+                overview.muscleGroups.filter { it.primarySets == 0.0 && it.secondarySets > 0 }
+            if (secondaryOnly.isNotEmpty())
+                Text(
+                    "Secondary only: " +
+                        secondaryOnly.joinToString(", ") {
+                            "${it.group.label} (${it.secondarySets})"
+                        },
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            if (overview.unclassifiedSets > 0)
+                Text(
+                    "${plural(overview.unclassifiedSets, "working set")} from custom or changed exercises are not assigned to a group.",
+                    style = MaterialTheme.typography.bodySmall,
+                )
         }
-    Text(
-        "Recorded workload only — not a measure of muscle growth or recovery. More is not necessarily better.",
-        style = MaterialTheme.typography.bodySmall,
-    )
-    Explainer("How sets are counted", StrengthVolume.attribution())
-}
+        if (compared)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clearAndSetSemantics {},
+            ) {
+                Box(Modifier.width(2.dp).height(12.dp).background(outline))
+                Spacer(Modifier.width(6.dp))
+                Text("Previous ${data.period.label}", style = MaterialTheme.typography.labelSmall)
+            }
+        Text(
+            "Recorded workload only — not a measure of muscle growth or recovery. More is not necessarily better.",
+            style = MaterialTheme.typography.bodySmall,
+        )
+        Explainer("How sets are counted", StrengthVolume.attribution())
+    }

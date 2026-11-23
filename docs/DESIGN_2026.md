@@ -213,6 +213,40 @@ Quick actions (Gym now, log, programme) stay at the top of Strength. Hybrid Prog
   - Strength logging (C2) and the exercise library (C4) are unchanged.
 - **Before images:** `docs/design-2026/v3-before/`.
 
+## 3f. Expressive tab composition (owner clarification: modernise the screens, not the analytics)
+
+**Why the tabs looked dated:**
+- Every section was the same tinted rectangle with its title inside, so headings, charts and lists all had equal weight.
+- The page header was a plain text line over three similar pill buttons.
+- The background was a flat colour, with no glyphs or other cues that tell sections apart at a glance.
+
+The information was strong; the composition was not.
+
+**Direction implemented (on Strength and Progress → Strength training in V3, PR #38):** the analytics and charts are unchanged.
+- **Hero header (`ScreenHero`):**
+  - A full-width tonal surface (32 dp corners) in the tab's discipline container colour.
+  - A glyph disc and letter-spaced eyebrow, a display-size title, and one line of context from existing data ("Last workout …").
+  - The primary action as a full-width accent button with a play glyph; secondary actions as quiet translucent surfaces with chevrons.
+  - Progress's hero takes the colour of the selected tab: strength tertiary, running primary, overview secondary.
+- **Section labels outside panels (`SectionLabel`):**
+  - A glyph disc in the section's chart hue (plum for strength), a bold title that is also the accessibility heading, and a short caption.
+  - Sections are separated by labels and space rather than nested borders.
+- **Borderless panels (`Panel`):** surface-container-low, 28 dp corners and 20 dp padding, holding the V3 charts as they are.
+- **Exercise selection:** a scrollable row of 48 dp chips (most qualifying sets first) instead of a dropdown, so the choices are visible.
+- **Glyphs:** a few path-drawn glyphs (dumbbell, trend, volume, body, list, play, chevron), decorative and hidden from screen readers. No new dependency.
+- **Colour:** theme roles and `ChartHue` only, so light, dark and Material You stay consistent.
+- **Also folded in:** the volume card opens on the latest week with workouts.
+
+**Considered and set aside:**
+- A dark-first "athletic" theme, which is too disruptive for the whole app.
+- More coloured cards, which add clutter rather than composition.
+
+**Recommended rollout (each a separate, owner-approved PR):**
+- **Home:** a `ScreenHero` built around today's session. It would take the discipline's colour, show today's workout as the title, carry "Start with Live Coach" or "Gym now" as the primary action, and use the existing countdown as context. Below it, "Your next 7 days" and Coming up as labelled sections.
+- **Plan:** a hero showing the block or phase and a progress bar for the existing plan dates. Weeks become labelled sections with session rows, and milestones become glyph-marked entries. Pairs with C1.
+- **Calendar:** a compact hero with the month and the shared mark legend. The grid and lists go in borderless panels, with discipline glyph discs on rows. Pairs with C1.
+- **Shared rule:** one hero per tab, labels outside panels, no nested borders, hues by measure or discipline only.
+
 ## 4. Representative journeys (synthetic data; checked against Phase B)
 
 | Person | Onboarding → training → history → progress | Phase B effect | Still to address (later phases) |

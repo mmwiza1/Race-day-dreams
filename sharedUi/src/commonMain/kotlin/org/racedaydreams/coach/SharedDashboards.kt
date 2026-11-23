@@ -185,7 +185,6 @@ fun SharedProgressDashboard(
         listOf(ProgressLink.MILESTONES, ProgressLink.BODY_WEIGHT, ProgressLink.BODY_GUIDANCE)
     val strengthLinks = listOf(ProgressLink.STRENGTH_ANALYTICS)
 
-    CoachHeading("Progress")
     // Tabs per discipline (Strava/Garmin-style). The person's focus opens first; every analytic
     // stays one tab away. Without strength data (no asOf), Progress is running-only, as before.
     val tabs =
@@ -199,6 +198,18 @@ fun SharedProgressDashboard(
         }
     var tabName by rememberSaveable(tabs) { mutableStateOf(tabs.firstOrNull()?.name) }
     val tab = tabName?.let { ProgressTab.valueOf(it) } ?: ProgressTab.RUNNING
+    // Hero: Progress's identity, tinted by the discipline of the selected tab.
+    ScreenHero(
+        when (tab) {
+            ProgressTab.STRENGTH -> Discipline.STRENGTH
+            ProgressTab.OVERVIEW -> Discipline.RECOVERY
+            ProgressTab.RUNNING -> Discipline.RUNNING
+        },
+        if (tab == ProgressTab.STRENGTH) Glyph.DUMBBELL else Glyph.TREND,
+        eyebrow = if (tabs.size > 1) tab.label else "Running",
+        title = "Progress",
+        supporting = "From your recorded training",
+    )
     if (tabs.size > 1) ProgressTabs(tabs, tab) { tabName = it.name }
     val moreLinks =
         when (tab) {
@@ -241,6 +252,7 @@ fun SharedProgressDashboard(
                 openWorkout,
             )
             MuscleWorkloadCard(strength, presentation.decimal)
+            SectionLabel("At a glance", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
             RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
         }
@@ -483,25 +495,31 @@ internal fun RecentWorkoutsCard(
     volume: (Double) -> String,
     seeAll: (() -> Unit)?,
     openWorkout: ((String) -> Unit)?,
-) = CoachCard {
-    SectionHeader("Recent workouts", seeAll)
-    if (data.overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
-    for (workout in data.overview.recentWorkouts) {
-        DashboardRow(
-            title =
-                workout.exerciseNames.take(3).joinToString(", ") +
-                    if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
-                    else "",
-            detail =
-                "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-            // Accumulated load × repetitions, labelled so it is never read as a weight lifted,
-            // a personal best or an estimated one-rep maximum.
-            value = workout.loadVolumeKg?.let(volume) ?: "",
-            secondary = if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
-            onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
-        )
+) =
+    ExpressiveSection(
+        "Recent workouts",
+        Glyph.LIST,
+        ChartHue.PLUM,
+        trailing = seeAll?.let { { TextButton(onClick = it) { Text("See all") } } },
+    ) {
+        if (data.overview.recentWorkouts.isEmpty()) Text("No strength workouts recorded yet.")
+        for (workout in data.overview.recentWorkouts) {
+            DashboardRow(
+                title =
+                    workout.exerciseNames.take(3).joinToString(", ") +
+                        if (workout.exerciseNames.size > 3) " +${workout.exerciseNames.size - 3}"
+                        else "",
+                detail =
+                    "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
+                // Accumulated load × repetitions, labelled so it is never read as a weight lifted,
+                // a personal best or an estimated one-rep maximum.
+                value = workout.loadVolumeKg?.let(volume) ?: "",
+                secondary =
+                    if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
+                onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
+            )
+        }
     }
-}
 
 @Composable
 fun SharedStrengthDashboard(
@@ -528,19 +546,25 @@ fun SharedStrengthDashboard(
         "${decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
     fun volume(kilograms: Double) =
         "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
-    CoachHeading("Strength")
-    if (StrengthLink.GYM_NOW in links)
-        Button(
-            onClick = { open(StrengthLink.GYM_NOW) },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-        ) {
-            Text(StrengthLink.GYM_NOW.title)
-        }
-    // The two other frequent jobs sit directly under Gym now as secondary actions.
-    QuickStartRow(
-        listOf(StrengthLink.LOG, StrengthLink.PROGRAMME)
-            .filter { it in links }
-            .map { link -> link.title to { open(link) } }
+    // Hero: the tab's identity, one line of context from recorded workouts, Gym now as the
+    // primary action and the two other frequent jobs as quieter secondary actions.
+    ScreenHero(
+        Discipline.STRENGTH,
+        Glyph.DUMBBELL,
+        eyebrow = "Strength training",
+        title = "Strength",
+        supporting =
+            data.overview.recentWorkouts.firstOrNull()?.let {
+                "Last workout ${friendlyDate(it.date)}"
+            } ?: "Start a workout or log one you've done.",
+        primary =
+            if (StrengthLink.GYM_NOW in links)
+                StrengthLink.GYM_NOW.title to { open(StrengthLink.GYM_NOW) }
+            else null,
+        secondary =
+            listOf(StrengthLink.LOG, StrengthLink.PROGRAMME)
+                .filter { it in links }
+                .map { link -> link.title to { open(link) } },
     )
 
     PeriodSelector(period) { periodName = it.name }
@@ -549,6 +573,7 @@ fun SharedStrengthDashboard(
     ExerciseProgressionCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
     TrainingVolumeCard(data, ::volume, shortDate, friendlyDate, openWorkout)
     MuscleWorkloadCard(data, decimal)
+    SectionLabel("At a glance", Glyph.DUMBBELL, ChartHue.PLUM, "${data.period.label} · recorded")
     StrengthKpis(data, if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null)
 
     // Bouldering stays separate from lifting metrics; shown only to people who climb.

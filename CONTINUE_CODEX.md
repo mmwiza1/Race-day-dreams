@@ -136,6 +136,12 @@ installations that cannot support them (all existing debug-signed installs).
   - It moves the Training trends screen onto the shared explorer (§3d), adds heart rate as a fourth measure, and adds long-range month labels, steppers and a missing-data key.
   - Do not merge or release without explicit owner approval.
   - Do not start V2, V3, V4 or C1–C8.
+- **V1 merged:** PR #37 was squash-merged as `main` `dbdfac0a`.
+  - The post-merge run 45083875183 passed. API 35 needed one rerun after an onboarding "5K" visibility timing flake.
+  - It republished 0.15.4-test1 / 27 with APK SHA-256 `44f59e31…3f2d` (matching its `.sha256` and the alias), certificate `e7af758a…929d`, manifest commit `dbdfac0a`, and .ipa SHA-256 `ca123db2…d3ee`.
+- **Expressive tab composition:** see `docs/DESIGN_2026.md` §3f.
+  - Applied to Strength and Progress → Strength training in PR #38.
+  - Do not extend it to Home, Plan or Calendar until the owner approves.
 - **Outstanding issue to retest (owner-reported):** the running-goal selection buttons were unresponsive on the owner's physical Galaxy S24.
   - Retest it on that device after the UI modernisation.
   - Do not mark it resolved on emulator evidence alone.
