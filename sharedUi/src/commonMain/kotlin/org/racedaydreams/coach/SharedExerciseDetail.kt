@@ -93,9 +93,13 @@ fun SharedExerciseDetail(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                     )
-                    Text(
-                        "Equipment:${ExerciseCatalog.definition(e.id())?.equipment()?:customMetadata?.let{org.racedaydreams.coach.strength.customEquipmentDescription(it)}?:"User defined"}"
-                    )
+                    val equipment =
+                        ExerciseCatalog.definition(e.id())?.equipment()
+                            ?: customMetadata?.let {
+                                org.racedaydreams.coach.strength.customEquipmentDescription(it)
+                            }
+                            ?: "User defined"
+                    Text("Equipment: $equipment")
                     Text(org.racedaydreams.domain.presentation.AthleteLanguage.measurement(e))
                     WhyDetails(
                         org.racedaydreams.domain.presentation.AthleteLanguage.GYM_TERMS,
