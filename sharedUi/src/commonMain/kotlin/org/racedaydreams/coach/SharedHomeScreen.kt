@@ -31,6 +31,18 @@ class HomePresentation(
 )
 
 /**
+ * The eyebrow above the race name on Home's countdown card (audit B-03). Before the race it is
+ * preparation, on the day it is the race itself, and afterwards it invites the result instead of
+ * counting down.
+ */
+internal fun homeRaceCountdownLabel(days: Long): String =
+    when {
+        days > 0 -> "Race preparation"
+        days == 0L -> "Race day"
+        else -> "Race complete · add your result"
+    }
+
+/**
  * Actual existing Home hierarchy, routes and evidence; platform effects stay required callbacks.
  */
 @Composable
@@ -288,15 +300,16 @@ private fun RunningTodayScreen(
     // 3. The race the plan builds towards: a milestone, high enough to motivate.
     state.profile?.raceGoal()?.let { goal ->
         val raceDate = goal.raceDate()
-        if (raceDate != null)
+        if (raceDate != null) {
+            val days = raceDate.toEpochDay() - currentDate.toEpochDay()
             CountdownCard(
-                raceDate.toEpochDay() - currentDate.toEpochDay(),
-                "Race preparation",
+                days,
+                homeRaceCountdownLabel(days),
                 goal.raceName().ifBlank { goal.distance().label() },
                 presentation.friendlyDate(raceDate),
                 race,
             )
-        else
+        } else
             Panel {
                 Text("Current goal", style = MaterialTheme.typography.labelLarge)
                 Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)
