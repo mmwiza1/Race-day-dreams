@@ -101,6 +101,7 @@ class CaptureValidationTest(unittest.TestCase):
     def test_ux_review_requires_scrolled_home_focus_progress_settings_and_onboarding_modes(self):
         expected = {'today-scrolled.png', 'today-more.png', 'today-strength-scrolled.png',
                     'progress-strength-focus.png', 'settings-training-open.png', 'progress-hybrid-focus.png',
+                    'home-hybrid.png', 'home-hybrid-dark.png', 'home-hybrid-large-font.png',
                     'progress-trend-time.png', 'progress-trend-pace.png',
                     'progress-trend-selected-week.png', 'progress-trend-selected-week-runs.png',
                     'progress-strength-single-week.png', 'progress-controls-large-font.png',
@@ -124,7 +125,7 @@ class CaptureValidationTest(unittest.TestCase):
         # Every earlier capture, including the before images of redesigned screens, stays required.
         self.assertTrue({'home.png', 'onboarding.png', 'progress.png', 'strength.png',
                          'strength-home.png', 'settings.png'}.issubset(captures.REQUIRED))
-        self.assertEqual(518, len(captures.REQUIRED))
+        self.assertEqual(521, len(captures.REQUIRED))
 
     def test_bouldering_requires_real_empty_data_session_dark_and_large_font_captures(self):
         expected = {'bouldering-empty.png', 'bouldering-home.png', 'bouldering-home-analytics.png',

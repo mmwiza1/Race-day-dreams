@@ -203,7 +203,8 @@ fun HeroSecondaryActions(actions: List<Pair<String, () -> Unit>>) {
             }
         }
     }
-    if (large || actions.size != 2)
+    // Side by side only when both labels are short enough not to wrap in half the width.
+    if (large || actions.size != 2 || actions.any { it.first.length > 14 })
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             actions.forEach { content(it, Modifier.fillMaxWidth()) }
         }

@@ -1578,6 +1578,9 @@ class CoachingScreenshotTest {
                 shell("cmd uimode night $night")
                 scenario = ActivityScenario.launch(CoachActivity::class.java)
                 awaitHomeReady(false)
+                // Hybrid Home: today's run and any strength session in one hero.
+                compose.onNodeWithTag("today-hero").assertExists()
+                capture("home-hybrid$suffix")
                 compose
                     .onNode(
                         (hasText("Progress") or hasContentDescription("Progress")) and

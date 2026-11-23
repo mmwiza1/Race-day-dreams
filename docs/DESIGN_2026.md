@@ -313,6 +313,9 @@ The direction Home now takes:
 - **Secondary navigation:** "Your training" and "Log and adjust" are glyph-labelled, borderless groups.
 - **Strength-focus Home:** the same composition. A strength hero with "Start planned workout" as the accent action and logging and details as quiet rows, then the next 7 days, unplanned-training tiles, "Your week so far" and More.
 
+- **Hero secondary actions:** they sit side by side only when both labels are short (14 characters or fewer). Longer pairs, such as Strength Home's "Log today's workout" and "View workout details", stack full width so labels never wrap inside a half-width row.
+- **Hybrid evidence:** `home-hybrid`, `home-hybrid-dark` and `home-hybrid-large-font` are now canonical captures of the existing hybrid fixture. They show the "after" state only; no hybrid Home capture existed before this workstream.
+
 **Functional changes:** none. Every existing action, route and text remains. The changes are order (today before the strip, the countdown earlier) and presentation.
 
 **Compromises:**
