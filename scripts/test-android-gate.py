@@ -60,6 +60,9 @@ if Path(sys.argv[0]).name == 'adb':
         event('platform-settings')
         (state / 'foreground').write_text('com.android.settings')
         sys.exit(int(os.environ.get('RDD_GATE_TEST_PLATFORM_START_EXIT', '0')))
+    elif args == ['shell', 'am', 'force-stop', 'com.android.launcher3']:
+        event('launcher-stop')
+        (state / 'launcher-stopped').touch()
     elif args == ['shell', 'input', 'keyevent', 'KEYCODE_HOME']:
         event('platform-home')
         (state / 'foreground').write_text('com.android.launcher3')
@@ -69,8 +72,11 @@ if Path(sys.argv[0]).name == 'adb':
     elif args == ['shell', 'dumpsys', 'window']:
         event('window-focus')
         foreground = state / 'foreground'
+        launcher_anr = os.environ.get('RDD_GATE_TEST_LAUNCHER_ANR')
         if os.environ.get('RDD_GATE_TEST_PLATFORM_ANR') == '1':
             print('mCurrentFocus=Window{1 u0 Application Not Responding: com.android.systemui}')
+        elif launcher_anr == 'persist' or (launcher_anr == '1' and not (state / 'launcher-stopped').exists()):
+            print('mCurrentFocus=Window{1 u0 Application Not Responding: com.android.launcher3}')
         elif foreground.exists():
             package = foreground.read_text()
             if os.environ.get('RDD_GATE_TEST_FOCUS_DELAY') == '1' and not (state / 'focus-polled').exists():
@@ -305,6 +311,34 @@ class AndroidGateTest(unittest.TestCase):
         self.assertNotIn('platform-home', self.events())
         self.assertNotIn('gradle-guard', self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_boot_launcher_anr_is_recovered_once_and_focus_is_proven_again(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_LAUNCHER_ANR='1')
+        self.assertEqual(0, code, stderr)
+        self.assertIn('PLATFORM_LAUNCHER_ANR_RECOVERY', stdout)
+        events = self.events()
+        self.assertEqual(1, events.count('launcher-stop'))
+        stop = events.index('launcher-stop')
+        # Settings and launcher focus are both proven again after the recovery, before tests.
+        self.assertEqual(2, events.count('platform-settings'))
+        self.assertIn('platform-home', events[stop:])
+        self.assertLess(stop, events.index('gradle-guard'))
+        self.assertIn('PLATFORM_FOCUS_READY com.android.settings', stdout)
+        self.assertIn('PLATFORM_FOCUS_READY com.android.launcher3', stdout)
+        self.assert_reader_stopped()
+
+    def test_persistent_launcher_anr_still_fails_before_tests(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_LAUNCHER_ANR='persist')
+        self.assertEqual(3, code, stderr)
+        self.assertEqual(1, self.events().count('launcher-stop'))
+        self.assertNotIn('PLATFORM_FOCUS_READY', stdout)
+        self.assertNotIn('gradle-guard', self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_systemui_anr_is_never_recovered(self):
+        code, _, stderr = self.run_gate(RDD_GATE_TEST_PLATFORM_ANR='1')
+        self.assertEqual(1, code, stderr)
+        self.assertNotIn('launcher-stop', self.events())
 
     def test_focused_app_is_not_accepted_until_its_actual_window_has_focus(self):
         code, stdout, stderr = self.run_gate(RDD_GATE_TEST_FOCUS_DELAY='1')
