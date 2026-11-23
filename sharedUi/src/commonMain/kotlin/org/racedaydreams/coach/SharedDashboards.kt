@@ -703,53 +703,33 @@ internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) =
  */
 @Composable
 internal fun PeriodSelector(selected: Period, discipline: Discipline?, select: (Period) -> Unit) {
+    val reporting = Modifier.semantics { contentDescription = "Reporting period" }
+    if (discipline != null) {
+        // One row at normal text on phones; wraps at 150%+ text or on narrow screens.
+        TonalPills(
+            Period.values().map { it to it.label },
+            selected,
+            select,
+            selectedContainer = discipline.container(),
+            selectedContent = discipline.onContainer(),
+            unselectedContainer = MaterialTheme.colorScheme.surfaceContainerLow,
+            unselectedContent = MaterialTheme.colorScheme.onSurfaceVariant,
+            tag = { "period-${it.name}" },
+            modifier = reporting,
+        )
+        return
+    }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = Modifier.semantics { contentDescription = "Reporting period" },
+        modifier = reporting,
     ) {
-        for (period in Period.values()) {
-            val isSelected = period == selected
-            if (discipline == null)
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { select(period) },
-                    label = { Text(period.label) },
-                    modifier = Modifier.heightIn(min = 48.dp).testTag("period-${period.name}"),
-                )
-            else
-                FilterChip(
-                    selected = isSelected,
-                    onClick = { select(period) },
-                    label = {
-                        Text(
-                            period.label,
-                            fontWeight = if (isSelected) FontWeight.SemiBold else null,
-                        )
-                    },
-                    leadingIcon =
-                        if (isSelected) {
-                            { Text("✓", modifier = Modifier.clearAndSetSemantics {}) }
-                        } else null,
-                    shape = CircleShape,
-                    colors =
-                        FilterChipDefaults.filterChipColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            selectedContainerColor = discipline.container(),
-                            selectedLabelColor = discipline.onContainer(),
-                            selectedLeadingIconColor = discipline.onContainer(),
-                        ),
-                    border =
-                        FilterChipDefaults.filterChipBorder(
-                            enabled = true,
-                            selected = isSelected,
-                            borderColor = Color.Transparent,
-                            selectedBorderColor = Color.Transparent,
-                        ),
-                    modifier = Modifier.heightIn(min = 48.dp).testTag("period-${period.name}"),
-                )
-        }
+        for (period in Period.values()) FilterChip(
+            selected = period == selected,
+            onClick = { select(period) },
+            label = { Text(period.label) },
+            modifier = Modifier.heightIn(min = 48.dp).testTag("period-${period.name}"),
+        )
     }
 }
 

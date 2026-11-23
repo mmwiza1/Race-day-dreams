@@ -278,8 +278,9 @@ private fun MetricSwitch(
             RunningTrendMetric.PACE to "Pace",
         ) + if (heartRate) listOf(RunningTrendMetric.HEART_RATE to "Heart rate") else emptyList()
     // The segmented row is used only when every label, with the selected checkmark and padding,
-    // fits its share of the width. At 150% text and above, or on a narrow screen, the same choices
-    // wrap as full-size chips, so no label is squeezed and each target stays at least 48 dp.
+    // fits its share of the width. Otherwise the same choices become tonal pills (one row when
+    // they fit, wrapped at 150%+ text or on a narrow screen), so no label is squeezed and each
+    // target stays at least 48 dp.
     val measurer = rememberTextMeasurer()
     val style = MaterialTheme.typography.labelLarge
     val density = LocalDensity.current
@@ -298,25 +299,25 @@ private fun MetricOptions(
     choose: (RunningTrendMetric) -> Unit,
     wrap: Boolean,
 ) {
-    if (wrap) {
-        FlowRow(
-            Modifier.fillMaxWidth().testTag("trend-metric-chips"),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            options.forEach { (metric, label) ->
-                CoachFilterChip(
-                    selected = metric == selected,
-                    onClick = { choose(metric) },
-                    label = { Text(label) },
-                    modifier = Modifier.testTag("trend-metric-${metric.name}"),
-                )
-            }
-        }
-        return
-    }
     // A borderless, tonal connected group: the selected measure fills with its own chart hue
     // (the surface colour reads on the strong tone in light and dark themes), the others recede.
     val tones = chartAccent(selected.hue)
+    if (wrap) {
+        // Tonal pills in the same colours: one row when they fit at normal text (e.g. four
+        // measures on Training trends), wrapped at 150%+ text or on narrow screens.
+        TonalPills(
+            options,
+            selected,
+            choose,
+            selectedContainer = tones.strong,
+            selectedContent = MaterialTheme.colorScheme.surface,
+            unselectedContainer = MaterialTheme.colorScheme.surfaceContainerHighest,
+            unselectedContent = MaterialTheme.colorScheme.onSurface,
+            tag = { "trend-metric-${it.name}" },
+            modifier = Modifier.testTag("trend-metric-chips"),
+        )
+        return
+    }
     val colors =
         SegmentedButtonDefaults.colors(
             activeContainerColor = tones.strong,
