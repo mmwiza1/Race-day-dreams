@@ -2,6 +2,7 @@ package org.racedaydreams.coach.strength
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,14 +34,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import org.racedaydreams.coach.CoachHeading
+import org.racedaydreams.coach.ChartHue
 import org.racedaydreams.coach.CoachPage
+import org.racedaydreams.coach.Discipline
+import org.racedaydreams.coach.ExpressiveSection
+import org.racedaydreams.coach.Glyph
+import org.racedaydreams.coach.Panel
+import org.racedaydreams.coach.ScreenHeader
+import org.racedaydreams.coach.SectionLabel
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
+import org.racedaydreams.coach.accent
 import org.racedaydreams.domain.strength.ExerciseSearch
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
@@ -66,8 +75,17 @@ fun SharedGymWorkoutBuilderScreen(
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
             Text("Back to Gym Now")
         }
-        CoachHeading("Build a workout")
-        Text("Choose the exercises and targets you want. Actual sets are entered when you train.")
+        // Compact strength header; the screen's one filled action stays "Start this workout".
+        ScreenHeader(
+            discipline = Discipline.STRENGTH,
+            glyph = Glyph.DUMBBELL,
+            eyebrow = "Your own workout",
+            title = "Build a workout",
+        )
+        Text(
+            "Choose the exercises and targets you want. Actual sets are entered when you train.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         if (state.loading) CircularProgressIndicator()
         state.error?.let { error -> SemanticCard(Tile.Warning) { Text(error) } }
         state.notice?.let { notice -> SemanticCard(Tile.Insight) { Text(notice) } }
@@ -89,17 +107,22 @@ fun SharedGymWorkoutBuilderScreen(
         } else {
             val prescribedSets = draft.slots.mapNotNull { it.target()?.sets() }.sum()
             val openCount = draft.slots.count { it.target() == null }
-            Text(
-                "${draft.slots.size} exercises · $prescribedSets prescribed sets" +
-                    if (openCount > 0) " · $openCount open" else "",
-                style = MaterialTheme.typography.titleMedium,
+            SectionLabel(
+                title =
+                    "${draft.slots.size} exercises · $prescribedSets prescribed sets" +
+                        if (openCount > 0) " · $openCount open" else "",
+                glyph = Glyph.LIST,
+                hue = ChartHue.PLUM,
             )
             draft.slots.forEachIndexed { index, slot ->
                 key(slot.id()) {
-                    SemanticCard(Tile.Strength) {
+                    // Borderless exercise panel; the order number and name lead in strength colour.
+                    Panel(contentPadding = PaddingValues(16.dp)) {
                         Text(
                             "${index + 1}. ${slot.exercise().name()}",
                             style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Discipline.STRENGTH.accent(),
                         )
                         Text(
                             formatExercise(slot.exercise()),
@@ -219,8 +242,7 @@ fun SharedGymWorkoutBuilderScreen(
         ) {
             Text("Add exercise")
         }
-        SemanticCard(Tile.Neutral) {
-            Text("Your workout preview", style = MaterialTheme.typography.titleMedium)
+        ExpressiveSection(title = "Your workout preview", glyph = Glyph.PLAY, hue = ChartHue.PLUM) {
             Text(
                 if (draft.slots.isEmpty()) "Add at least one exercise to preview and save."
                 else
@@ -229,7 +251,9 @@ fun SharedGymWorkoutBuilderScreen(
                     }
             )
             Text(
-                "A reference load is optional guidance. It never becomes an actual logged set automatically."
+                "A reference load is optional guidance. It never becomes an actual logged set automatically.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Button(

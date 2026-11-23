@@ -9,6 +9,8 @@ import org.racedaydreams.domain.strength.TechniqueGuide
 
 /**
  * Actual technique content; platform code supplies the reviewed image and original window policy.
+ * Presentation follows the expressive language: the steps carry a section label outside a
+ * borderless panel, while the cue/mistake notes keep their meaning-bearing tints.
  */
 @Composable
 fun SharedTechniqueContent(
@@ -19,7 +21,8 @@ fun SharedTechniqueContent(
 ) {
     if (guide == null) {
         Text(
-            "A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching."
+            "A visual guide for this exercise is not available yet. Choose a familiar movement or seek qualified coaching.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         return
     }
@@ -30,22 +33,18 @@ fun SharedTechniqueContent(
                 Text(
                     "${i+1}. $label",
                     style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),
                 )
             }
         }
-        GuidanceCard {
-            Text("How to do it", style = MaterialTheme.typography.titleMedium)
-            Text("1. ${guide.setup()}", style = MaterialTheme.typography.bodyMedium)
-            Text("2. ${guide.movement()}", style = MaterialTheme.typography.bodyMedium)
-        }
+        TechniqueSteps(listOf("1. ${guide.setup()}", "2. ${guide.movement()}"))
     } else {
-        Text("Illustrated guidance is not available for this movement yet.")
-        GuidanceCard {
-            Text("How to do it", style = MaterialTheme.typography.titleMedium)
-            Text(requireNotNull(guide.setup()))
-            Text(requireNotNull(guide.movement()))
-        }
+        Text(
+            "Illustrated guidance is not available for this movement yet.",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        TechniqueSteps(listOf(requireNotNull(guide.setup()), requireNotNull(guide.movement())))
     }
     val cues = requireNotNull(guide.cues()).joinToString("\n") { "✓ $it" }
     val mistakes = requireNotNull(guide.mistakes()).joinToString("\n") { "• $it" }
@@ -63,10 +62,26 @@ fun SharedTechniqueContent(
         GuidanceNote("Key cues", cues)
         GuidanceNote("Common mistakes", mistakes, caution = true)
     }
-    Text("Primary muscles: ${guide.muscles()}")
-    Text("Alternatives: ${requireNotNull(guide.alternatives()).joinToString()}")
+    Panel(contentPadding = PaddingValues(16.dp)) {
+        Text("Primary muscles: ${guide.muscles()}", style = MaterialTheme.typography.bodyMedium)
+        Text(
+            "Alternatives: ${requireNotNull(guide.alternatives()).joinToString()}",
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
     WhyDetails(
         "General technique guidance. Start conservatively and seek qualified in-person coaching if you are unsure about a movement. Illustrations are general guidance, not individual form assessment or an exact joint-angle prescription.",
         "About this guidance",
     )
+}
+
+/** "How to do it" label outside a borderless panel of the guide's own setup/movement steps. */
+@Composable
+private fun TechniqueSteps(steps: List<String>) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        SectionLabel("How to do it", Glyph.LIST, ChartHue.PLUM)
+        Panel(contentPadding = PaddingValues(16.dp)) {
+            steps.forEach { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        }
+    }
 }
