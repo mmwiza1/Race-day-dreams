@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -80,14 +81,19 @@ fun SharedAchievementsScreen(
                         Glyph.CALENDAR to Discipline.RECOVERY
                 }
             Panel {
+                // The badge is decorative; the title and its "Recognised …" line are read together,
+                // so assistive technology still states that the milestone was recognised.
                 Row(
+                    Modifier.testTag("milestone-${award.kind().name}").semantics(
+                        mergeDescendants = true
+                    ) {},
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
                 ) {
                     DisciplineBadge(glyph, discipline)
                     Column(Modifier.weight(1f)) {
                         Text(
-                            "✓ ${award.kind().title()}",
+                            requireNotNull(award.kind().title()),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                         )

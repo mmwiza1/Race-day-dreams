@@ -1297,7 +1297,7 @@ class CoachingScreenshotTest {
                 capture("strength-records-history$suffix")
                 back()
                 compose.onNodeWithText("Recorded milestones").performScrollTo().performClick()
-                await("✓ First recorded strength workout")
+                await("First recorded strength workout")
                 alignHeading("Recorded milestones")
                 capture("training-milestones$suffix")
                 compose

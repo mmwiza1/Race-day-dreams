@@ -62,3 +62,14 @@ or persistence logic changed. Every string and test tag that existing tests rely
 - **Captures:** no screenshots were regenerated locally (there is no emulator here). The coordinator's
   screenshot cycle produces the after-state for `race-day`, `training-recovery*`, `training-milestones*`,
   `bouldering-*`, `body-*`, `health-*`, `weekly-review` and `mobility*`.
+
+## Owner review fixes
+
+- **Bouldering Back:** on Android the bouldering screens no longer show an in-content "Back" under the app
+  bar's Back. The shared screens take `appBarBack` (default `false`), and the Android host passes `true`.
+  iOS keeps the in-content Back. The removed button only popped the back stack, so nothing else is lost.
+  "Change problems", "Cancel corrections" and "Discard session" stay.
+- **Race day:** on the race date the hero reads "Race day" (eyebrow) and then "Today", not "Race day"
+  twice. The countdown is grammatical for 1 day before and after the race.
+- **Milestones:** titles no longer start with "✓". The discipline badge stays decorative, and each title is
+  merged with its "Recognised …" line, so screen readers still state that the milestone was recognised.

@@ -20,6 +20,7 @@ fun NavGraphBuilder.boulderingGraph(
             LocalDate.now(),
             ::friendlyDate,
             onBack = { nav.popBackStack() },
+            appBarBack = true,
             openSession = { nav.navigate("bouldering/session") },
             openDetail = { nav.navigate("bouldering/detail/${Uri.encode(it)}") },
             openHistory = { nav.navigate("bouldering/history") },
@@ -31,6 +32,7 @@ fun NavGraphBuilder.boulderingGraph(
             Instant::now,
             ::friendlyDate,
             onBack = { nav.popBackStack() },
+            appBarBack = true,
             openReview = { nav.navigate("bouldering/review") },
         )
     }
@@ -40,6 +42,7 @@ fun NavGraphBuilder.boulderingGraph(
             Instant::now,
             ::friendlyDate,
             onBack = { nav.popBackStack() },
+            appBarBack = true,
             onSaved = { id ->
                 nav.navigate("bouldering/detail/${Uri.encode(id)}") {
                     popUpTo("bouldering") { inclusive = false }
@@ -53,6 +56,7 @@ fun NavGraphBuilder.boulderingGraph(
             entry.arguments?.getString("id").orEmpty(),
             ::friendlyDate,
             onBack = { nav.popBackStack() },
+            appBarBack = true,
             openCorrection = { nav.navigate("bouldering/session") },
         )
     }
@@ -61,6 +65,7 @@ fun NavGraphBuilder.boulderingGraph(
             model(),
             ::friendlyDate,
             onBack = { nav.popBackStack() },
+            appBarBack = true,
             openDetail = { nav.navigate("bouldering/detail/${Uri.encode(it)}") },
         )
     }

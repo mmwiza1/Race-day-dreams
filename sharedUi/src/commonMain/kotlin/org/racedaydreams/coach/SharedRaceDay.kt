@@ -17,6 +17,19 @@ import org.racedaydreams.domain.race.RaceStrategyEngine
 import org.racedaydreams.domain.time.Durations
 import org.racedaydreams.domain.time.LocalDate
 
+/**
+ * The hero's countdown line. The hero's eyebrow already says "Race day", so the day itself reads
+ * "Today" rather than repeating it.
+ */
+internal fun raceCountdown(days: Long): String =
+    when {
+        days > 1 -> "$days days to race day"
+        days == 1L -> "1 day to race day"
+        days == 0L -> "Today"
+        days == -1L -> "Race date was 1 day ago"
+        else -> "Race date was ${-days} days ago"
+    }
+
 @Composable
 fun SharedRaceDay(
     state: CoachUiState,
@@ -58,8 +71,7 @@ fun SharedRaceDay(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             HeroTitle(goal.raceName().ifBlank { goal.distance().label() })
             Text(
-                if (days > 0) "$days days to race day"
-                else if (days == 0L) "Race day" else "Race date was ${-days} days ago",
+                raceCountdown(days),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )

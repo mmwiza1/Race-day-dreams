@@ -35,6 +35,13 @@ class SharedMilestoneContentTest {
             }
         }
     }
+    @Test fun milestoneTitleIsReadWithItsRecognitionWithoutATickGlyph() {
+        show(true)
+        val title=requireNotNull(award.kind().title())
+        compose.onNodeWithText("✓ $title").assertDoesNotExist()
+        compose.onNodeWithTag("milestone-${award.kind().name}").assertIsDisplayed()
+            .assert(hasText(title)).assert(hasText("Recognised 15 Nov 2026"))
+    }
     @Test fun disclosureKeepsOriginalSourceIdentityAndNeverAutomaticallyOpensOrRefreshes() {
         show(true)
         compose.onNodeWithText("View milestone evidence").assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription,"Collapsed"))

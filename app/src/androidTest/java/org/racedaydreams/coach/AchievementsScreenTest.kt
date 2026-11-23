@@ -87,7 +87,7 @@ class AchievementsScreenTest {
         Assert.assertEquals(2, model.state.value.awards.size)
         Assert.assertFalse(model.state.value.celebrations)
         compose
-            .onNodeWithText("✓ Five recorded strength workouts")
+            .onNodeWithText("Five recorded strength workouts")
             .performScrollTo()
             .assertIsDisplayed()
         compose.onAllNodesWithText("View milestone evidence")[0].performScrollTo().performClick()

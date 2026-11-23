@@ -70,6 +70,8 @@ fun SharedBoulderingHome(
     openSession: () -> Unit,
     openDetail: (String) -> Unit,
     openHistory: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     LaunchedEffect(model) { model.refresh() }
@@ -79,7 +81,7 @@ fun SharedBoulderingHome(
         remember(state.sessions, today, period, state.gradeSystem) {
             ClimbingAnalytics.summary(state.sessions, today, period, state.gradeSystem)
         }
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     val draft = state.draft
     // Same composition as the Strength tab: one hero carries starting or resuming a session.
     ScreenHero(
@@ -353,10 +355,12 @@ fun SharedBoulderingSession(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openReview: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     val target = state.target()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     if (target == null) {
         CoachHeading("Bouldering session")
         Text("There is no session in progress.")
@@ -646,10 +650,12 @@ fun SharedBoulderingReview(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     onSaved: (String) -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     val target = state.target()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     CoachHeading("Review session")
     if (target == null) {
         Text("There is no session to review.")
@@ -745,10 +751,12 @@ fun SharedBoulderingDetail(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openCorrection: () -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
     LaunchedEffect(model) { if (state.loading) model.refresh() }
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     val session = state.sessions.firstOrNull { it.id == sessionId }
     if (session == null) {
         CoachHeading("Bouldering session")
@@ -829,9 +837,11 @@ fun SharedBoulderingHistory(
     friendlyDate: (LocalDate) -> String,
     onBack: () -> Unit,
     openDetail: (String) -> Unit,
+    /** Android shows Back in its app bar; iOS has none, so the page shows its own. */
+    appBarBack: Boolean = false,
 ) = CoachPage {
     val state by model.state.collectAsState()
-    BackRow(onBack)
+    if (!appBarBack) BackRow(onBack)
     CoachHeading("Bouldering history")
     if (state.sessions.isEmpty()) Text("No bouldering sessions recorded yet.")
     else
