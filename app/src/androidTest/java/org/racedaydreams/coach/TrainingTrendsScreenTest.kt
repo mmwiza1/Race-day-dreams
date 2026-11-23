@@ -113,6 +113,12 @@ class TrainingTrendsScreenTest {
     fun periodsShowTheirCalendarWeeksAndLongRangesGetMonthLabels() {
         // A run every week for a year.
         show((0L until 52L).map { run("w$it", today.minusWeeks(it)) })
+        // Compact running header and a labelled chart section, as on Progress → Running.
+        compose
+            .onNode(hasText("Training trends") and isHeading() and hasAnyAncestor(hasTestTag("screen-header")))
+            .assertIsDisplayed()
+        compose.onNode(hasText("Weekly trend") and isHeading()).assertIsDisplayed()
+        compose.onNodeWithTag("period-TWELVE_WEEKS").assertIsSelected()
         assertEquals(12, weekNodes())
         compose.onNodeWithTag("trend-month-labels").assertDoesNotExist()
         compose.onNodeWithTag("period-FOUR_WEEKS").performClick()

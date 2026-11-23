@@ -472,6 +472,83 @@ class SharedDashboardScreenTest {
     }
 
     @Test
+    fun overviewComposesOneHybridPanelLabelledSectionsAndGroupedDrillDowns() {
+        val workouts = CopyOnWriteArrayList<String>()
+        val links = CopyOnWriteArrayList<ProgressLink>()
+        focusedProgress(org.racedaydreams.domain.settings.PrimaryFocus.HYBRID, workouts, links)
+        // Running and strength share one panel, side by side at default text.
+        compose.onNodeWithTag("progress-hybrid-summary").assertIsDisplayed()
+        compose
+            .onNode(hasTestTag("progress-running-summary") and hasAnyAncestor(hasTestTag("progress-hybrid-summary")))
+            .assertExists()
+        compose
+            .onNode(hasTestTag("progress-strength-hero") and hasAnyAncestor(hasTestTag("progress-hybrid-summary")))
+            .assertExists()
+        val running = compose.onNodeWithTag("progress-running-summary").fetchSemanticsNode().boundsInRoot
+        val strength = compose.onNodeWithTag("progress-strength-hero").fetchSemanticsNode().boundsInRoot
+        assertTrue("Running and strength sit side by side", running.right <= strength.left + 1f)
+        // Both figure sets are labelled sections at the same depth, below the running chart.
+        for (title in listOf("Weekly trend", "Runs this week", "Running", "Strength"))
+            compose
+                .onNode(hasText(title) and isHeading())
+                .performScrollTo()
+                .assertIsDisplayed()
+        // Drill-downs are glyph-labelled groups of the existing destinations, not one card.
+        for (group in listOf("Running detail", "Milestones & body", "Strength detail"))
+            compose
+                .onNode(
+                    hasText(group) and isHeading() and hasAnyAncestor(hasTestTag("progress-drill-downs"))
+                )
+                .performScrollTo()
+                .assertIsDisplayed()
+        compose.onNodeWithText("More detail").assertDoesNotExist()
+        compose.onNodeWithText("Body weight").performScrollTo().performClick()
+        assertEquals(ProgressLink.BODY_WEIGHT, links.last())
+        compose.onNodeWithText("Distance, pace and time trends").performScrollTo().performClick()
+        assertEquals(ProgressLink.TRENDS, links.last())
+    }
+
+    @Test
+    fun overviewHybridSummaryStacksAt200PercentText() {
+        val today = LocalDate.now()
+        val state =
+            CoachUiState(
+                loading = false,
+                primaryFocus = org.racedaydreams.domain.settings.PrimaryFocus.HYBRID,
+                activities = listOf(run("easy", today.minusDays(1), 5_000.0, 1_500)),
+                strengthSessions = listOf(gym("lift", today.minusDays(2), bench to listOf(5 to 80.0))),
+            )
+        compose.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                MaterialTheme {
+                    SharedProgressDashboard(
+                        state,
+                        androidHomePresentation(state),
+                        { it.atZone(ZoneId.systemDefault()).toLocalDate() },
+                        ProgressLink.entries.toList(),
+                        {},
+                        Instant.now(),
+                        {},
+                    ) {}
+                }
+            }
+        }
+        val running = compose.onNodeWithTag("progress-running-summary").fetchSemanticsNode().boundsInRoot
+        val strength = compose.onNodeWithTag("progress-strength-hero").fetchSemanticsNode().boundsInRoot
+        assertTrue("Strength is stacked below running at 200%", strength.top >= running.bottom - 1f)
+        compose.onNodeWithTag("progress-strength-hero").performScrollTo().assertIsDisplayed()
+        for (period in listOf("FOUR_WEEKS", "TWELVE_WEEKS", "SIX_MONTHS", "ONE_YEAR"))
+            compose
+                .onNodeWithTag("period-$period")
+                .performScrollTo()
+                .assertIsDisplayed()
+                .assertHeightIsAtLeast(48.dp)
+        compose.onNodeWithTag("period-TWELVE_WEEKS").performClick()
+        compose.onNodeWithTag("period-TWELVE_WEEKS").assertIsSelected()
+    }
+
+    @Test
     fun chartFirstRunningExplorerSwitchesMeasureAndSelectsWeeksWithoutNewFigures() {
         val today = LocalDate.now()
         val state =
