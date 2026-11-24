@@ -27,6 +27,8 @@ import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.activity.SplitAnalysis
 import org.racedaydreams.domain.activity.SplitCalculator
+import org.racedaydreams.domain.coaching.RunFeedback
+import org.racedaydreams.domain.coaching.RunScoreEngine
 import org.racedaydreams.domain.time.*
 import org.racedaydreams.reminders.KotlinxReminderCalendar
 import platform.UIKit.UIViewController
@@ -276,6 +278,9 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                     SharedRunNotes(current, state.busy) { notes, effort ->
                         session.services.runningEvidence.saveNotes(id, notes, effort)
                     }
+                    // D-4: the shared comparison and read-only feedback cards, in Android's order
+                    // and with the same inputs. Proposals and manual plan linking stay elsewhere.
+                    AppleRunComparisonAndFeedback(state, run, imperial)
                     (state.error ?: state.message)?.let { Text(it) }
                     TextButton(onClick = { showRoute = !showRoute }) {
                         Text(if (showRoute) "Hide route" else "View recorded route")
@@ -353,6 +358,62 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                 }
         }
     }
+}
+
+/**
+ * iOS adapter for the shared run comparison and Run Score feedback, mirroring Android's
+ * `RunComparisonSection` and the read-only part of `RunFeedbackSection`.
+ */
+@Composable
+private fun AppleRunComparisonAndFeedback(
+    state: CoachUiState,
+    run: ActivityRecord,
+    imperial: Boolean,
+) {
+    val prescriptions =
+        remember(state.planVersions) {
+            state.planVersions.flatMap { it.plan().workouts() }.distinctBy { it.id() }
+        }
+    SharedRunComparisonSection(
+        run,
+        state.activities,
+        prescriptions,
+        imperial,
+        { dateLabel(it.start(), it.startOffset()) },
+        { distanceLabel(it, imperial) },
+        ::paceLabel,
+        ::oneDecimal,
+    )
+    val response = state.runResponses.firstOrNull { it.activityId() == run.id() }
+    val planned =
+        state.planVersions
+            .firstOrNull { it.id() == response?.planVersionId() }
+            ?.plan()
+            ?.workouts()
+            ?.firstOrNull { it.id() == response?.plannedWorkoutId() }
+    val feedback by
+        produceState<RunFeedback?>(null, run, planned, response) {
+            value =
+                withContext(applicationIoDispatcher()) {
+                    runCatching { RunScoreEngine.analyse(planned, run, response) }.getOrNull()
+                }
+        }
+    SectionLabel(
+        if (planned == null) "Run Analysis" else "Run Score and feedback",
+        Glyph.SPARK,
+        ChartHue.VIOLET,
+    )
+    feedback?.let { SharedRunFeedbackCard(it) }
+}
+
+private fun paceLabel(seconds: Double): String {
+    val rounded = kotlin.math.round(seconds).toLong()
+    return "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
+}
+
+private fun oneDecimal(value: Double): String {
+    val tenths = (value * 10).roundToLong()
+    return (tenths / 10).toString() + "." + kotlin.math.abs(tenths % 10)
 }
 
 private fun dateLabel(instant: Instant, offset: ZoneOffset?): String {
