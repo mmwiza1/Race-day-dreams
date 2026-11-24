@@ -33,6 +33,7 @@ import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -92,8 +93,21 @@ class PrimaryFocusOnboardingTest {
         compose.onNodeWithText("Focus on strength").performScrollTo().performClick()
         awaitFocus(PrimaryFocus.STRENGTH)
         await("Create a gym programme")
+        // C-05: the first run lands on Home in the tabbed shell, with no misleading app-bar Back.
+        assertTrue(compose.onAllNodesWithText("Calendar").fetchSemanticsNodes().isNotEmpty())
+        assertTrue(compose.onAllNodesWithText("Back").fetchSemanticsNodes().isEmpty())
         assertFalse(SqliteUserPreferencesRepository(context).load().isPresent)
         assertNull(CoachingStore(context).current())
+        compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
+        // Home's hero opens the gym programme above Home; its own button starts the setup.
+        awaitCondition("gym programme above Home") {
+            compose
+                .onAllNodesWithText("I manage my own strength training")
+                .fetchSemanticsNodes()
+                .isNotEmpty() &&
+                compose.onAllNodesWithText("Create a gym programme").fetchSemanticsNodes().size == 1
+        }
+        assertTrue(compose.onAllNodesWithText("Back").fetchSemanticsNodes().isNotEmpty())
         compose.onNodeWithText("Create a gym programme").performScrollTo().performClick()
         compose.onNodeWithText("Mon").performScrollTo().performClick()
         compose.onNodeWithText("Thu").performScrollTo().performClick()

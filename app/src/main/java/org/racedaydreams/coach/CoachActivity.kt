@@ -195,24 +195,17 @@ private fun CoachApp(
         }
     }
 
+    val backDispatcher =
+        androidx.activity.compose.LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     val useRail = configuration.screenWidthDp >= 840 && configuration.screenHeightDp >= 480
     CoachShell(
         route = route,
         useRail = useRail,
         snackbars = snackbars,
-        selectTab = { destination ->
-            nav.navigate(destination) {
-                popUpTo("home")
-                launchSingleTop = true
-            }
-        },
-        onBack = {
-            if (route == "gym-workout") {
-                model.refresh()
-                if (!nav.popBackStack("gym-now", false)) nav.navigate("gym-now")
-            } else if (!nav.popBackStack()) nav.navigate("home")
-        },
+        selectTab = { destination -> nav.selectTab(destination) },
+        // Same as the system Back (C-03): screens step out of their sub-sections first.
+        onBack = { appBarBack(backDispatcher, nav) },
         onSettings = { nav.navigate("settings") },
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
