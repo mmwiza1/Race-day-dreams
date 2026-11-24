@@ -101,6 +101,19 @@ on each push; keep pushes to a minimum and trigger nothing manually.
 - **No tonnage headline.** The training-volume card (weekly load × repetitions chart, e.g. "1,722 kg")
   is no longer shown on the Strength tab or on Progress → Strength. Recent workouts no longer show a
   per-workout tonnage figure.
+- **Owner clarification: no tonnage anywhere on the default dashboards.** Removed:
+  - the four-week comparison (e.g. "4 weeks: 1,722 kg");
+  - the per-workout totals;
+  - the "Training volume (load × reps)" labels;
+  - "By exercise" (Back Squat 930 kg, and so on) and its comparison bars.
+
+  The volume card and its weekly-bar helper are deleted from the UI. The load × reps data and
+  calculations stay in `DashboardAnalytics` (`loadVolumeKg`, volume by week and by exercise) for
+  possible advanced analytics. The only remaining tonnage display is the separate Strength analytics
+  screen (More → Records & trends), which is not part of the default dashboard.
+- **Recent workouts** now show each workout's heaviest actual working set: "Top set: Back Squat ·
+  100 kg × 5", in the user's mass unit. This uses the new `DashboardAnalytics.RecentWorkout.topSet`,
+  with warm-ups excluded.
 - **New order** on both screens, each answering a simple question:
   1. Exercise progression (am I improving?): heaviest set and estimated 1RM per exercise.
   2. At a glance (what did I accomplish?): Workouts, Working sets, New records (opens personal

@@ -247,7 +247,7 @@ fun SharedProgressDashboard(
             // Piece 2: accomplishments and progress first; no tonnage headline or volume chart.
             SectionLabel("At a glance", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
-            RecentWorkoutsCard(strength, presentation.friendlyDate, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
             MuscleWorkloadCard(strength, presentation.decimal)
         }
         // Hybrid: one split summary, then the running chart, then both sets of figures.
@@ -262,7 +262,7 @@ fun SharedProgressDashboard(
             runningKpis()
             SectionLabel("Strength", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
-            RecentWorkoutsCard(strength, presentation.friendlyDate, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
         }
         // Running: chart first, with the week's runs as its drill-down, then the figures.
         ProgressTab.RUNNING -> {
@@ -524,6 +524,7 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
 internal fun RecentWorkoutsCard(
     data: StrengthPeriod,
     friendlyDate: (LocalDate) -> String,
+    mass: (Double) -> String,
     seeAll: (() -> Unit)?,
     openWorkout: ((String) -> Unit)?,
 ) =
@@ -542,9 +543,12 @@ internal fun RecentWorkoutsCard(
                         else "",
                 detail =
                     "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-                // Piece 2: no load × repetitions tonnage here; it reads like a weight lifted.
+                // Piece 2: an actual set lifted (weight × reps), never a load × repetitions total.
                 value = "",
-                secondary = null,
+                secondary =
+                    workout.topSet?.let {
+                        "Top set: ${it.exerciseName} · ${mass(it.kilograms)} × ${it.reps}"
+                    },
                 onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
             )
         }
@@ -605,6 +609,7 @@ fun SharedStrengthDashboard(
     RecentWorkoutsCard(
         data,
         friendlyDate,
+        ::mass,
         if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
         openWorkout,
     )
@@ -655,13 +660,6 @@ fun SharedStrengthDashboard(
         { it.summary },
         open,
     )
-}
-
-/** A whole number with thousands separators, e.g. 2100.0 → "2,100". */
-internal fun groupedWhole(value: Double): String {
-    val digits = kotlin.math.abs(kotlin.math.round(value)).toLong().toString()
-    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
-    return if (value < -0.5) "−$grouped" else grouped
 }
 
 internal fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"

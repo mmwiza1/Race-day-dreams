@@ -230,6 +230,11 @@ class SharedDashboardScreenTest {
         org.junit.Assert.assertTrue(records < recent && recent < muscles)
         compose.onNodeWithTag("volume-chart").assertDoesNotExist()
         compose.onAllNodesWithText("load × rep", substring = true).assertCountEquals(0)
+        compose.onAllNodesWithText("By exercise", substring = true).assertCountEquals(0)
+        // Recent workouts show an actual set lifted instead of a tonnage total.
+        assertTrue(
+            compose.onAllNodesWithText("Top set:", substring = true).fetchSemanticsNodes().isNotEmpty()
+        )
     }
 
     @Test

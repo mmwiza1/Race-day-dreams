@@ -358,9 +358,17 @@ object DashboardAnalytics {
         val date: LocalDate,
         val exerciseNames: List<String>,
         val workingSets: Int,
-        /** Sum of load × repetitions for weighted load/rep working sets; null when none apply. */
+        /**
+         * Sum of load × repetitions for weighted load/rep working sets; null when none apply. Kept
+         * for optional advanced analytics; not shown on the default dashboards (Piece 2).
+         */
         val loadVolumeKg: Double?,
+        /** The heaviest weighted working set actually lifted; null when none applies. */
+        val topSet: TopSet? = null,
     )
+
+    /** One actual recorded set: the exercise, its load and its repetitions. */
+    data class TopSet(val exerciseName: String, val kilograms: Double, val reps: Int)
 
     data class Strength(
         val period: Period,
@@ -665,6 +673,7 @@ object DashboardAnalytics {
         var working = 0
         var volume = 0.0
         var hasVolume = false
+        var top: TopSet? = null
         for (block in session.exercises()) {
             val counts = loadReps(block.exercise())
             for (set in block.sets()) {
@@ -673,6 +682,15 @@ object DashboardAnalytics {
                 if (counts) {
                     hasVolume = true
                     volume += set.kilograms() * set.reps()
+                    // Heaviest load first; at equal load, more repetitions; first set wins ties.
+                    val current = top
+                    if (
+                        set.kilograms() > 0 &&
+                            (current == null ||
+                                set.kilograms() > current.kilograms ||
+                                set.kilograms() == current.kilograms && set.reps() > current.reps)
+                    )
+                        top = TopSet(block.exercise().name(), set.kilograms(), set.reps())
                 }
             }
         }
@@ -682,6 +700,7 @@ object DashboardAnalytics {
             session.exercises().map { it.exercise().name() }.distinct(),
             working,
             if (hasVolume) volume else null,
+            top,
         )
     }
 }
