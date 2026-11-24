@@ -177,6 +177,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         XCTAssertTrue(measuredDistance.waitForExistence(timeout: 20))
         tap("Finish & save", in: app)
         tap("Save recorded run", in: app)
+        // D-4: the shared run analysis card is on the iOS run detail (an unplanned run).
+        XCTAssertTrue(reveal("Run Analysis", in: app))
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
         tap("Export recorded route (GPX)", in: app)
