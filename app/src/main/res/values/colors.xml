@@ -5,4 +5,8 @@
     <color name="text_primary">#191C24</color>
     <color name="text_secondary">#44474F</color>
     <color name="accent">#005AC2</color>
+    <!-- Selected onboarding choice cards: gold border and check, tinted container (C-02). -->
+    <color name="selection_gold">#8C6A00</color>
+    <color name="selection_gold_container">#FFF0C2</color>
+    <color name="on_selection_gold">#FFFFFF</color>
 </resources>

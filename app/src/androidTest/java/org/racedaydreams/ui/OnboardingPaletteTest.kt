@@ -4,7 +4,6 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.RadioButton
 import androidx.compose.ui.graphics.toArgb
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -57,7 +56,7 @@ class OnboardingPaletteTest {
                     c.error.toArgb(),
                 )
                 val performance =
-                    descendants(view).filterIsInstance<RadioButton>().single {
+                    descendants(view).filterIsInstance<OnboardingView.ChoiceCard>().single {
                         it.text.toString() == TrainingStrategy.PERFORMANCE.label()
                     }
                 assertFalse(performance.isEnabled)
@@ -69,7 +68,8 @@ class OnboardingPaletteTest {
                         0,
                     ),
                 )
-                assertTrue(requireNotNull(performance.buttonTintList).isStateful)
+                assertTrue(requireNotNull(performance.checkMarkDrawable).isStateful)
+                assertTrue(performance.background is android.graphics.drawable.RippleDrawable)
                 view.setSaving(true)
                 val buttons = descendants(view).filterIsInstance<Button>()
                 assertTrue(buttons.isNotEmpty())
@@ -84,7 +84,7 @@ class OnboardingPaletteTest {
                 view.setSaving(false)
                 assertFalse(
                     descendants(view)
-                        .filterIsInstance<RadioButton>()
+                        .filterIsInstance<OnboardingView.ChoiceCard>()
                         .single { it.text.toString() == TrainingStrategy.PERFORMANCE.label() }
                         .isEnabled
                 )

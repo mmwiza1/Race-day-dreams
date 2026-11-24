@@ -60,12 +60,16 @@ class TrainingRecoveryScreenTest {
             }
         }
         compose.onNodeWithText(requireNotNull(evidence.explanation())).assertDoesNotExist()
+        // C-04: the Android shell's app bar has the only Back for this route.
+        compose.onAllNodesWithText("Back").assertCountEquals(0)
         compose.onNodeWithTag("screen-header").assertExists()
         compose
             .onNodeWithTag("recovery-guidance")
             .assert(hasAnyDescendant(hasText("Here's what to do")))
+        // C-R05: the ▾/▴ glyph is visual only; the state description carries its meaning.
+        compose.onAllNodesWithText("▾", substring = true).assertCountEquals(0)
         compose
-            .onNodeWithText("Supporting evidence ▾")
+            .onNodeWithText("Supporting evidence")
             .performScrollTo()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed"))
             .performClick()
@@ -74,7 +78,7 @@ class TrainingRecoveryScreenTest {
             .performScrollTo()
             .assertIsDisplayed()
         compose
-            .onNodeWithText("Supporting evidence ▴")
+            .onNodeWithText("Supporting evidence")
             .performScrollTo()
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
             .performClick()

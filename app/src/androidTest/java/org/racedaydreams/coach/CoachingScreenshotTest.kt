@@ -1792,7 +1792,7 @@ class CoachingScreenshotTest {
                 await("An optional lighter week is available for review")
                 alignHeading("Recovery & training balance")
                 capture("training-recovery$suffix")
-                compose.onNodeWithText("Supporting evidence ▾").performScrollTo().performClick()
+                compose.onNodeWithText("Supporting evidence").performScrollTo().performClick()
                 alignHeading("Why this guidance?")
                 capture("training-recovery-evidence$suffix")
                 compose.onNodeWithText("Keep my current programme").performScrollTo().performClick()

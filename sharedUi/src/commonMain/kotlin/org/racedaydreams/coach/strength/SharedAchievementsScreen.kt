@@ -33,9 +33,13 @@ fun SharedAchievementsScreen(
     onBack: () -> Unit,
     onDismiss: () -> Unit,
     onRefresh: (Boolean?) -> Unit,
+    appBarBack: Boolean = false,
 ) {
     CoachPage {
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
+        // Android hosts pass appBarBack = true: the shell's app bar already has Back for this
+        // route (audit C-04). iOS has no app bar Back, so it keeps this in-content control.
+        if (!appBarBack)
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
         ScreenHeader(Discipline.RECOVERY, Glyph.SPARK, "Training history", "Recorded milestones")
         QuietNote(
             "Recognise your training without streaks, penalties or pressure to train through a break."

@@ -34,12 +34,12 @@ fun NavGraphBuilder.runningGraph(
             model,
             customSnapshot = runSnapshot(),
             startWhenPermitted = true,
-            onSaved = { nav.navigate("activity/${Uri.encode(it)}") },
+            onSaved = { nav.openSavedActivity("spontaneous-run", it) },
         )
     }
 
     composable("record-run") {
-        RecordingScreen(model, onSaved = { nav.navigate("activity/${Uri.encode(it)}") })
+        RecordingScreen(model, onSaved = { nav.openSavedActivity("record-run", it) })
     }
 
     composable("execute/{version}/{workout}") { d ->
@@ -47,7 +47,7 @@ fun NavGraphBuilder.runningGraph(
             model,
             d.arguments?.getString("version"),
             d.arguments?.getString("workout"),
-            onSaved = { nav.navigate("activity/${Uri.encode(it)}") },
+            onSaved = { nav.openSavedActivity("execute/{version}/{workout}", it) },
         )
     }
 
@@ -66,7 +66,7 @@ fun NavGraphBuilder.runningGraph(
             d.arguments?.getString("version"),
             d.arguments?.getString("workout"),
             d.arguments?.getString("hilly") == "true",
-            onSaved = { nav.navigate("activity/${Uri.encode(it)}") },
+            onSaved = { nav.openSavedActivity("race-run/{version}/{workout}/{hilly}", it) },
         )
     }
 

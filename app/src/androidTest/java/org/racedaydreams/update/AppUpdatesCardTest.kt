@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -99,10 +100,30 @@ class AppUpdatesCardTest {
             } }
         }
         compose.onNodeWithTag("app-updates-status").assert(hasText("interrupted", substring = true))
+        // C-07: the title is a heading and every status change is announced politely.
+        compose.onNodeWithTag("app-updates").assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Heading))
+        val polite =
+            SemanticsMatcher.expectValue(
+                SemanticsProperties.LiveRegion,
+                androidx.compose.ui.semantics.LiveRegionMode.Polite,
+            )
+        compose.onNodeWithTag("app-updates-status").assert(polite)
         compose.onNodeWithText("Try again").performClick()
         state = state.copy(status = UpdateStatus.Failed(UpdateFailure.Offline.message, null, UpdateStatus.Retry.CHECK))
         compose.onNodeWithText("Try again").performClick()
         assertEquals(listOf("download", "check"), calls)
+        // Download progress is spoken once, not at every byte count; the bar carries the percent.
+        state = state.copy(status = UpdateStatus.Downloading(update, 1_000_000, 4_000_000))
+        compose
+            .onNodeWithTag("app-updates-status")
+            .assert(polite)
+            .assert(hasContentDescription("Downloading ${update.versionName}", substring = true))
+            .assert(hasText("1.0 MB of 4.0 MB", substring = true))
+        state = state.copy(status = UpdateStatus.Downloading(update, 2_000_000, 4_000_000))
+        compose
+            .onNodeWithTag("app-updates-status")
+            .assert(hasContentDescription("Downloading ${update.versionName}", substring = true))
+        compose.onNodeWithContentDescription("Download 50 percent").assertExists()
 
         state = state.copy(status = UpdateStatus.Incompatible(update, AppUpdates.Incompatibility.SIGNING))
         compose.onNodeWithTag("app-updates-status").assert(hasText("can't install it as an update", substring = true))

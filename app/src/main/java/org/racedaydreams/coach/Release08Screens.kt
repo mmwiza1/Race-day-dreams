@@ -53,7 +53,8 @@ fun SpontaneousAssociation(state: CoachUiState, model: CoachViewModel, activity:
 @Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=SharedStartingPath(
     {model.settings.startingPath("record"){choose("home")}},
     {model.settings.startingPath("race"){choose("baseline")}},
-    {model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("gym")}},
+    // Strength focus lands on Home in the tabbed shell (C-05); its hero opens the gym programme.
+    {model.settings.primaryFocus(PrimaryFocus.STRENGTH){choose("home")}},
     {model.settings.startingPath("hybrid"){choose("baseline")}},
 )
 

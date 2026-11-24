@@ -85,6 +85,8 @@ class AchievementsScreenTest {
         compose.waitUntil(20_000) { !model.state.value.loading }
         Assert.assertNull(model.state.value.error)
         Assert.assertEquals(2, model.state.value.awards.size)
+        // C-04: the Android shell's app bar has the only Back for this route.
+        compose.onAllNodesWithText("Back").assertCountEquals(0)
         Assert.assertFalse(model.state.value.celebrations)
         compose
             .onNodeWithText("Five recorded strength workouts")
