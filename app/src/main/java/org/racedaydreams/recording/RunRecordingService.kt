@@ -171,7 +171,7 @@ class RunRecordingService : Service() {
                             flush()
                             publish()
                         }
-                        FINISH -> finishRecording()
+                        FINISH -> requestFinish()
                         NOTIFICATION_DISMISSED -> {
                             notificationGate.invalidate()
                             publish()
@@ -180,6 +180,9 @@ class RunRecordingService : Service() {
                 } catch (_: Exception) {
                     message.value =
                         "Recording operation could not complete. Saved staging is retained for recovery."
+                    // A start that failed before any GPS point leaves nothing to recover; drop its
+                    // empty staging so the next Start is not blocked (audit A-R6).
+                    if (intent.action == START) discardEmptyUnfinished()
                     if (engine == null || intent.action == FINISH || intent.action == START) {
                         recording = null
                         status.value = null
@@ -287,11 +290,23 @@ class RunRecordingService : Service() {
                         getSharedPreferences("run-sensors", MODE_PRIVATE)
                             .getBoolean("auto-pause", false)
                 ) {
+                    // Transitions apply from when they happened, not when they were confirmed:
+                    // the start of the still window, or the first moving fix (audit A-B3).
                     when (autoPause.observe(fix)) {
                         AutoPausePolicy.Decision.PAUSE ->
-                            currentEngine.pause(receivedMillis, receivedWall, true)
+                            currentEngine.pause(
+                                receivedMillis,
+                                receivedWall,
+                                true,
+                                autoPause.transitionMillis(),
+                            )
                         AutoPausePolicy.Decision.RESUME ->
-                            currentEngine.resume(receivedMillis, receivedWall, true)
+                            currentEngine.resume(
+                                receivedMillis,
+                                receivedWall,
+                                true,
+                                autoPause.transitionMillis(),
+                            )
                         else -> Unit
                     }
                 }
@@ -299,6 +314,43 @@ class RunRecordingService : Service() {
                 publish()
             } catch (_: Exception) {
                 message.value = "GPS observation rejected."
+            }
+        }
+    }
+
+    /**
+     * Finish never stops the service before the save precondition holds (audit A-B1). Without a GPS
+     * lock recording continues with an explanation; a second Finish within the confirmation window
+     * discards the empty run, so an indoor or no-signal start can still be ended cleanly.
+     */
+    private suspend fun requestFinish() {
+        val active = recording ?: return finishRecording()
+        when (active.requestFinish(SystemClock.elapsedRealtime())) {
+            SharedRecordingSessionCoordinator.FinishRequest.SAVE -> finishRecording()
+            SharedRecordingSessionCoordinator.FinishRequest.NEEDS_GPS -> {
+                message.value = SharedRecordingSessionCoordinator.NEEDS_GPS_MESSAGE
+                publish()
+            }
+            SharedRecordingSessionCoordinator.FinishRequest.DISCARD_EMPTY -> {
+                sensors.stop()
+                location.stop()
+                ticker?.cancel()
+                withContext(io) { store.discardUnfinished(active.session.id) }
+                message.value = SharedRecordingSessionCoordinator.DISCARDED_EMPTY_MESSAGE
+                recording = null
+                status.value = null
+                stopForeground(STOP_FOREGROUND_REMOVE)
+                stopSelf()
+            }
+        }
+    }
+
+    private suspend fun discardEmptyUnfinished() {
+        runCatching {
+            withContext(io) {
+                store.unfinished()?.let {
+                    if (store.points(it.id).isEmpty()) store.discardUnfinished(it.id)
+                }
             }
         }
     }

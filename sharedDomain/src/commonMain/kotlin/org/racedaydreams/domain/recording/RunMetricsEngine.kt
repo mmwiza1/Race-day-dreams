@@ -160,6 +160,7 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
     private var minimumFixTime = 0L
     private var lastTime = monotonicMillis
     private var pausedSince = -1L
+    private var lastResume = -1L
     private var pausedTotal = 0L
     private var segment = 0
     private var lastDelivery = -1L
@@ -177,6 +178,10 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
     private var cadenceTime = -1L
     private val pointRows = mutableListOf<Point>()
     private val eventRows = mutableListOf<Event>()
+    /** Usable fixes observed while paused; an automatic resume replays those after it began. */
+    private val pausedFixes = ArrayDeque<Fix>()
+    /** Still time before automatic pauses, counted as moving live but not when saved (A-B3). */
+    private var stillCredit = 0L
 
     init {
         eventRows.add(Event("START", monotonicMillis, wall))
@@ -198,33 +203,60 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
 
     fun pause(time: Long, wall: Instant?) = pause(time, wall, false)
 
-    fun pause(time: Long, wall: Instant?, auto: Boolean) {
+    fun pause(time: Long, wall: Instant?, auto: Boolean) = pause(time, wall, auto, time)
+
+    /**
+     * [effectiveFrom] is when the runner actually stopped (the start of an automatic pause's still
+     * window). Live moving time must never move backwards (structured workouts require it), so the
+     * live clock pauses at [time]; the event is dated [effectiveFrom] and the difference is removed
+     * from the saved moving time, exactly as recovery computes it from the events (audit A-B3).
+     */
+    fun pause(time: Long, wall: Instant?, auto: Boolean, effectiveFrom: Long) {
         tick(time)
         if (pausedSince < 0) {
+            val from = minOf(time, maxOf(effectiveFrom, started, lastResume))
             minimumFixTime = time
             pausedSince = time
+            stillCredit += time - from
             anchor = null
             distanceAnchor = null
             gap = true
-            eventRows.add(Event(if (auto) "AUTO_PAUSE" else "PAUSE", time, wall))
+            pausedFixes.clear()
+            eventRows.add(Event(if (auto) "AUTO_PAUSE" else "PAUSE", from, wall))
         }
     }
 
     fun resume(time: Long, wall: Instant?) = resume(time, wall, false)
 
-    fun resume(time: Long, wall: Instant?, auto: Boolean) {
+    fun resume(time: Long, wall: Instant?, auto: Boolean) = resume(time, wall, auto, time)
+
+    /**
+     * [effectiveFrom] is when the runner actually started moving again (the first moving fix of an
+     * automatic resume). Time from then counts as moving and the usable fixes received since then
+     * are replayed, so the distance covered while the resume was being confirmed, including its
+     * first fix, is kept (audit A-B2, A-B3). A manual resume passes [time] and replays nothing.
+     */
+    fun resume(time: Long, wall: Instant?, auto: Boolean, effectiveFrom: Long) {
         tick(time)
         if (pausedSince >= 0) {
-            minimumFixTime = time
-            pausedTotal += time - pausedSince
+            val from = minOf(time, maxOf(effectiveFrom, pausedSince))
+            minimumFixTime = from
+            pausedTotal += from - pausedSince
             pausedSince = -1
+            lastResume = from
             segment++
             anchor = null
             distanceAnchor = null
             gap = true
-            eventRows.add(Event(if (auto) "AUTO_RESUME" else "RESUME", time, wall))
+            eventRows.add(Event(if (auto) "AUTO_RESUME" else "RESUME", from, wall))
+            val replay = pausedFixes.filter { it.monotonicMillis() >= from }
+            pausedFixes.clear()
+            for (f in replay) accept(f)
         }
     }
+
+    /** Moving time to save: live moving time less the still time before automatic pauses. */
+    fun recordedMovingMillis(time: Long): Long = max(0L, status(time).movingMillis() - stillCredit)
 
     fun sensorEvent(type: String?, value: Double, time: Long, wall: Instant?) {
         tick(time)
@@ -312,6 +344,8 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
         lastUsableFix = max(lastUsableFix, f.monotonicMillis())
         if (pausedSince >= 0) {
             gps = "GPS ready · paused"
+            pausedFixes.addLast(f)
+            if (pausedFixes.size > PAUSED_FIX_LIMIT) pausedFixes.removeFirst()
             return false
         }
         val previous = anchor
@@ -468,6 +502,9 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
         }
 
     companion object {
+        /** About two minutes of 1 Hz fixes: covers any resume confirmation window. */
+        private const val PAUSED_FIX_LIMIT = 120
+
         @JvmStatic
         fun metres(a: Fix, b: Fix): Double {
             val lat = (b.latitude() - a.latitude()) * .017453292519943295
