@@ -29,12 +29,16 @@ version over it and keep your data.
 - Navigation: Back in the app bar and the system Back go to the same place, and screens no longer
   show a second Back button inside the content on Android. After choosing Strength focus, the bottom
   tabs appear straight away.
-- Onboarding: tapping a goal keeps your place on the screen and gives visible touch feedback.
+- Onboarding: goal and plan choices are full-width cards with a gold highlight when selected.
+  Tapping one keeps your place on the screen and gives visible touch feedback.
 - Accessibility: with very large text the bottom bar keeps its labels and the app title stays
   readable. App update status changes are announced to TalkBack, and "App updates" is a heading.
   The period selector on Strength and Bouldering shows the selection by more than colour.
 - Units: if you choose miles or pounds, Home, the weekly review, race pacing, gym logging and
-  warm-ups use them too. Stored values are unchanged.
+  warm-ups use them too, as do race prediction and strength analytics. Warm-up loads round to
+  2.5 kg or 5 lb plate steps. Stored values are unchanged.
+- Race day shows the closing pace that finishes on your target time.
+- iPhone run details now show run comparison and run feedback, as on Android.
 
 ## Fixes
 
@@ -50,6 +54,10 @@ version over it and keep your data.
 - The Home race countdown no longer shows negative days after your race.
 - Progress plan completion shows how many workouts you skipped.
 - Back after saving a run no longer returns to the recorder.
+- A bouldering timer left running for more than 24 hours stops at 24 hours and asks for the real
+  time.
+- iPhone: the recording clock keeps counting while a locked phone sleeps. This still needs a
+  locked-screen check on a real iPhone.
 - Release integrity: the downloadable Android build is no longer debuggable, so a computer connected
   over USB cannot read the app's private data with debugging tools. It has its own version number,
   so the in-app updater offers it, and CI now refuses to publish different app contents under a
@@ -65,9 +73,12 @@ version over it and keep your data.
   emulator with throwaway test keys, not yet on a phone updating from 0.15.4-test1.
 - This is the first non-debuggable build. Behaviour should be identical, but report anything that
   works differently from 0.15.4-test1.
-- iPhone does not yet have every Android screen. Run feedback, run comparison, Health trends, Run
-  now, unplanned runs, structured run execution and personal-best history are Android-only unless a
-  later note says otherwise.
+- iPhone does not yet have every Android screen. Health trends, strength personal-best records and
+  history, the long-run durability card and plan adjustment proposals are Android-only. Run now,
+  unplanned runs and structured runs are only partly available. See PLATFORM_PARITY.md.
+- Reference-load editors opened from the programme builder, programme generation and exercise swap
+  still take kilograms; their field label says so.
+- Run splits still leave out a kilometre that contains a pause.
 - iPhone has no in-app updater; download new builds from the release page.
 
 ## Data, privacy and licensing
