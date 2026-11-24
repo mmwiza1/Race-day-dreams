@@ -98,7 +98,7 @@ class QualityWorkoutEngineTest {
             assertTrue(specific in categories, "${distance.name} $categories")
             val firstSpecific = q.first { it.category() == specific }
             assertEquals(WorkoutCategory.TEMPO_THRESHOLD_RUN, q.first().category())
-            assertTrue(firstSpecific.date().isAfter(q.first().date()))
+            assertTrue(firstSpecific.date().toEpochDay() > q.first().date().toEpochDay())
             for (w in q) {
                 val kinds = w.segments().map { it.kind() }
                 assertEquals(WorkoutSegment.Kind.WARM_UP, kinds.first(), w.note())
@@ -380,6 +380,6 @@ class QualityWorkoutEngineTest {
         )
         // The same runner without the break gets a session sooner.
         val steady = quality(plan(RaceDistance.TEN_K, 16, baseline(30.0, 10.0)))
-        assertTrue(steady.first().date().isBefore(q.first().date()))
+        assertTrue(steady.first().date().toEpochDay() < q.first().date().toEpochDay())
     }
 }
