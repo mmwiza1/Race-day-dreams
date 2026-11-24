@@ -125,7 +125,7 @@ fun SharedBoulderingHome(
     val otherSystem = GradeSystem.values().first { it != state.gradeSystem }
     val otherHighest = summary.highestSend[otherSystem]
     SectionLabel("Your climbing", Glyph.VOLUME, ChartHue.PLUM, period.label)
-    PeriodSelector(period) { periodName = it.name }
+    PeriodSelector(period, Discipline.STRENGTH) { periodName = it.name }
     Panel {
         KpiGrid(
             listOf(

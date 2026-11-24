@@ -135,6 +135,17 @@ class SharedDashboardScreenTest {
         compose.onNodeWithTag("kpi-Working sets").assert(hasText("9"))
         compose.onNodeWithTag("kpi-Workouts").assert(hasText("4"))
         compose.onNodeWithTag("period-FOUR_WEEKS").performClick()
+        // C-09: Strength uses Progress's tonal period pills (selected with a checkmark and radio
+        // semantics), not the plain chip fallback whose selection was shown by colour only.
+        compose
+            .onNodeWithTag("period-FOUR_WEEKS")
+            .assertIsSelected()
+            .assert(
+                androidx.compose.ui.test.SemanticsMatcher.expectValue(
+                    androidx.compose.ui.semantics.SemanticsProperties.Role,
+                    androidx.compose.ui.semantics.Role.RadioButton,
+                )
+            )
 
         // Back squat has the most eligible sets; choose bench press instead.
         compose.onNodeWithTag("exercise-back-squat").performScrollTo().assertIsSelected()
