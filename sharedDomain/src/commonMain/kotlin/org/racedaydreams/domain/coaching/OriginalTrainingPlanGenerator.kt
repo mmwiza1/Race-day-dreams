@@ -59,12 +59,32 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 )
                 .eligible()
         val consistent = baseline.consistentWeeks()
-        val qualitySupported =
-            established &&
-                consistent != null &&
-                consistent >= 6 &&
-                weeklyEvidence!! >= 20 &&
-                prefs.runsPerWeek() >= 3
+        // Piece 4: graded readiness for intensity from current evidence, replacing the single
+        // 20 km/week switch. It is reassessed whenever a plan is generated or rebuilt from the
+        // latest actual evidence; planned future runs are never treated as proof of fitness.
+        val aerobicOnly =
+            prefs.strategy() == TrainingStrategy.ZONE_2 ||
+                goal.distance() == RaceDistance.GENERAL_FITNESS
+        val readiness =
+            when {
+                !established || aerobicOnly || consistent == null || consistent < 3 ->
+                    QualityWorkouts.Readiness.NONE
+                weeklyEvidence!! >= 15 && consistent >= 6 && prefs.runsPerWeek() >= 3 ->
+                    if (prefs.strategy() == TrainingStrategy.PERFORMANCE && performance)
+                        QualityWorkouts.Readiness.PERFORMANCE
+                    else QualityWorkouts.Readiness.CONTROLLED
+                else -> QualityWorkouts.Readiness.STRIDES
+            }
+        // Returning from a break of two weeks or more in the last six: easy running first.
+        val returning =
+            baseline.gaps().any {
+                it.daysWithoutRecordedRun() >= 14 &&
+                    !it.before()
+                        .isBefore(Instants.ofEpochSecond(start.minusDays(42).toEpochDay() * 86400))
+            }
+        val paces = QualityWorkouts.paces(baseline)
+        var lastTemplate: QualityWorkouts.Template? = null
+        var qualitySessions = 0
         var frequency = if (established) prefs.runsPerWeek() else min(3, prefs.runsPerWeek())
         if (request.distribution() == "FEWER_LONGER" && frequency > 2) frequency--
         var base = if (established) weeklyEvidence!! else 0.0
@@ -165,13 +185,15 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             // Taper is decided from the week's own distance to race day, by race distance
             // (Piece 3), not by whether any day of the week touches the taper window.
             val taper = race != null && days(from, race) < taperDays
+            val raceWeekNow = race != null && days(from, race) < 7
+            // In the taper (not race week), only a shorter version of a familiar session.
+            val sharpen = taper && !raceWeekNow && qualitySessions > 0
+            val returningWeek = returning && index < 3
             val wantsQuality =
-                qualitySupported &&
-                    !taper &&
+                readiness >= QualityWorkouts.Readiness.CONTROLLED &&
+                    !returningWeek &&
+                    (!taper || sharpen) &&
                     (race == null || days(from, race) <= 140) &&
-                    prefs.strategy() != TrainingStrategy.ZONE_2 &&
-                    goal.distance() != RaceDistance.GENERAL_FITNESS &&
-                    (prefs.strategy() != TrainingStrategy.PERFORMANCE || performance) &&
                     (prefs.strategy() != TrainingStrategy.DISTANCE_FIRST ||
                         phase == TrainingPhase.Kind.RACE_SPECIFIC ||
                         phase == TrainingPhase.Kind.PEAK)
@@ -329,31 +351,63 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 else if (longDemoted)
                     "No day this week leaves enough recovery after the previous demanding run, so there is no long run and the week's distance is shared across the other runs. "
                 else ""
+            // Strides: once a week on an easy run when there is no quality session, and in race
+            // week at least two days before the race; never on the long run.
+            val stridesDay =
+                if (
+                    readiness >= QualityWorkouts.Readiness.STRIDES &&
+                        effectiveQuality == null &&
+                        !(returning && index < 1)
+                )
+                    ordered.firstOrNull {
+                        it != effectiveLong &&
+                            (plannedKm[it] ?: 0.0) >= 3 &&
+                            (race == null || days(it, race) >= 2)
+                    }
+                else null
             for (day in selectedDays) {
                 var isLong = day == effectiveLong
                 var isQuality = day == effectiveQuality
+                val km: Double? = if (established) plannedKm[day] else null
+                // Piece 4: a distance- and phase-specific session, smaller after hard legs or in
+                // the taper; if it does not fit the day's distance, the day stays easy.
+                val afterHardLegs = day in heavy || day.minusDays(1) in heavy
+                val planned =
+                    if (afterHardLegs) QualityWorkouts.Template.THRESHOLD
+                    else if (sharpen && lastTemplate != null) lastTemplate!!
+                    else QualityWorkouts.template(goal.distance(), phase, index)
+                val reduced = sharpen || afterHardLegs
+                // If the race-specific session does not fit the day, a threshold session is used
+                // before the day is left easy.
+                val session =
+                    if (isQuality && km != null)
+                        QualityWorkouts.build(planned, km, readiness, paces, reduced)
+                            ?: QualityWorkouts.build(
+                                QualityWorkouts.Template.THRESHOLD,
+                                km,
+                                readiness,
+                                paces,
+                                reduced,
+                            )
+                    else null
+                if (session == null) isQuality = false
+                // A quality day too short for a session keeps a few strides instead.
+                val strides =
+                    !isQuality &&
+                        (day == stridesDay ||
+                            day == effectiveQuality &&
+                                km != null &&
+                                km >= 3 &&
+                                (race == null || days(day, race) >= 2))
                 var category =
                     if (isLong) WorkoutCategory.LONG_RUN
-                    else if (isQuality) {
-                        if (
-                            phase == TrainingPhase.Kind.RACE_SPECIFIC ||
-                                phase == TrainingPhase.Kind.PEAK
-                        )
-                            WorkoutCategory.RACE_PACE_RUN
-                        else WorkoutCategory.TEMPO_THRESHOLD_RUN
-                    } else if (
+                    else if (session != null) session.category
+                    else if (
                         prefs.strategy() == TrainingStrategy.ZONE_2 ||
                             goal.distance() == RaceDistance.GENERAL_FITNESS
                     )
                         WorkoutCategory.ZONE_2_RUN
                     else WorkoutCategory.EASY_RUN
-                val km: Double? = if (established) plannedKm[day] else null
-                if (km != null) {
-                    if (isQuality && km < 4) {
-                        isQuality = false
-                        category = WorkoutCategory.EASY_RUN
-                    }
-                }
                 val maximumMinutes = request.maximumMinutes()
                 // Run/walk without distance evidence: everyday sessions stay short (up to 30
                 // minutes or the usual budget). Piece 3: the weekly longer session grows gently
@@ -393,11 +447,6 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                                 .toLong()
                         )
                 val segments = mutableListOf<WorkoutSegment>()
-                val rpe =
-                    if (isQuality) {
-                        if (prefs.strategy() == TrainingStrategy.PERFORMANCE && performance) 7.0
-                        else 6.0
-                    } else 3.0
                 if (!established) {
                     segments.add(
                         segment(
@@ -424,48 +473,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                             "Comfortable walk.",
                         )
                     )
-                } else if (isQuality && km != null && km >= 4) {
-                    segments.add(
-                        WorkoutSegment(
-                            WorkoutSegment.Kind.WARM_UP,
-                            1.0,
-                            null,
-                            null,
-                            null,
-                            null,
-                            3.0,
-                            "Easy conversational warm-up.",
-                        )
-                    )
-                    val target = goal.targetTime()
-                    val pace =
-                        if (category == WorkoutCategory.RACE_PACE_RUN && target != null)
-                            target.toMillis() / 1000.0 / distance
-                        else null
-                    segments.add(
-                        WorkoutSegment(
-                            WorkoutSegment.Kind.RUN,
-                            km - 2,
-                            null,
-                            pace?.times(.98),
-                            pace?.times(1.04),
-                            null,
-                            rpe,
-                            "Controlled sustained work; effort takes precedence over target pace. Slow down or shorten if this becomes a maximal effort.",
-                        )
-                    )
-                    segments.add(
-                        WorkoutSegment(
-                            WorkoutSegment.Kind.COOL_DOWN,
-                            1.0,
-                            null,
-                            null,
-                            null,
-                            null,
-                            2.0,
-                            "Easy cool-down.",
-                        )
-                    )
+                } else if (session != null) {
+                    segments += session.segments
+                } else if (strides && km != null) {
+                    segments += QualityWorkouts.strides(km)
                 } else
                     segments.add(
                         WorkoutSegment(
@@ -482,8 +493,14 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 var reason =
                     (if (isLong)
                         "Develop endurance for ${goal.distance().label()}. Long runs build gradually from your recent longest run (${rounded(longBase)} km): at most about 10% beyond the longest of the last 30 days, and about ${(longShare * 100).toInt()}% of the week for $frequency running days. "
-                    else if (isQuality)
-                        "Develop controlled race-specific endurance alongside easy training; recent volume and consistency support one quality session this week. "
+                    else if (session != null)
+                        session.explanation +
+                            " Your recent running supports one structured session a week; every other run stays easy. "
+                    else if (strides)
+                        "Build aerobic endurance with easy running, finishing with a few relaxed strides for leg speed without making the run hard. " +
+                            (if (readiness == QualityWorkouts.Readiness.STRIDES)
+                                "A weekly structured session is added when your recent running reaches about 15 km a week over 6 consistent weeks on 3 or more days; rebuild your plan then. "
+                            else "")
                     else
                         "Build aerobic endurance while keeping effort controlled to leave room for recovery. ") +
                         (if (established)
@@ -518,6 +535,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     PlannedWorkout("$id:$day", day, category, km, duration, segments, reason)
                 )
                 if (isLong || isQuality) previousDemanding = day
+                if (session != null) {
+                    qualitySessions++
+                    if (!sharpen && !afterHardLegs) lastTemplate = session.template
+                }
                 if (isLong && km != null) {
                     plannedLongs += day to km
                     if (!cutback && !taper) lastFullLong = km

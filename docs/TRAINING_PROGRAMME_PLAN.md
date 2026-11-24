@@ -18,8 +18,8 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 | --- | --- | --- | --- |
 | 1 | Training safety, correctness and transparency | Medium | **Approved at `067bf228`** |
 | 2 | Strength dashboard usability | Small–medium | **Approved at `f9318590`** (one known UI-test failure deferred, see below) |
-| 3 | Running progression engine | Major | **Implemented (draft PR #51); awaiting owner approval** |
-| 4 | Race-specific workout engine | Major | Not started |
+| 3 | Running progression engine | Major | **Approved at `f723eeec`** |
+| 4 | Race-specific workout engine | Major | **Implemented (draft PR #51); awaiting owner approval** |
 | 5 | Adaptive coaching and comprehensive validation | Major | Not started |
 
 ## Testing policy (Pieces 1–4)
@@ -223,6 +223,67 @@ rebuilt; saved plan versions and training history are untouched.
   - 92 shared-domain tests pass, including the new `aCredibleExistingLongRunIsNotCutByTheShareGuide`
     and `generalFitnessMaintainsUnlessDistanceFirstWasChosen`.
 
+## Piece 4 — what changed
+
+New `QualityWorkouts` (shared domain) builds structured sessions from the existing segment model:
+warm-up, work repetitions separated by `RECOVERY` segments (time only), and cool-down. The generator
+chooses and doses them; the Piece 1 scheduling and Piece 3 volume rules are unchanged, and every
+session fits inside the day's planned distance, so weekly totals are identical to Piece 3.
+
+- **Sessions by distance and phase.** Base and endurance phases use threshold first. Race-specific and
+  peak phases use the distance's own session two weeks in three, with threshold in the third:
+
+  | Session | Shape (smallest–usual–Performance) | Used for |
+  | --- | --- | --- |
+  | Threshold | 2–3–5 × 1.6 km, 2 min jog | All distances |
+  | 5K intervals | 4–5–7 × 800 m at 5K effort, 2 min jog | 5K |
+  | 10K intervals | 4–5–7 × 1 km at 10K effort, 90 s jog | 10K |
+  | Half-marathon pace | 2–3–4 × 2 km, 2 min jog | Half marathon |
+  | Marathon pace | 5–8–14 km steady block inside an easy run | Marathon only |
+
+  5K and 10K plans never get a continuous near-race-effort block: hard pieces are at most 1 km at race
+  effort or 1.6 km at threshold. If a distance-specific session does not fit the day, threshold is
+  tried; if neither fits, the day stays easy with strides.
+- **Intensity from evidence, not goals.** Pace guides come from the closest recent 5K, 10K or half
+  result (Riegel estimate, threshold ≈ one-hour pace), shown as a range with "effort comes first".
+  Without a result, sessions are prescribed by effort and say so; a goal time is never used for paces.
+- **Graded readiness, reassessed at every generation or rebuild** (replaces the single 20 km/week
+  switch), from actual recorded or entered evidence only. Planned future runs never count:
+  - none — no usable history, Zone 2 or general fitness;
+  - strides — established but light or short-lived running; the reason explains when sessions unlock
+    (about 15 km a week over 6 consistent weeks on 3+ days) and to rebuild the plan then;
+  - controlled — one session a week, usual doses;
+  - Performance — more repetitions, only where the existing Performance gate supports it.
+- **Returning runners** (a recorded gap of 14+ days ending in the last six weeks): easy running only
+  for three weeks, and no strides in the first week.
+- **Recovery and strength.** At most one session a week, on the Piece 1 quality day (never next to the
+  long run). A session on or the day after a hard lower-body strength day becomes the smallest
+  threshold version.
+- **Taper.** Outside race week, a shorter version of the last familiar session; race week has strides
+  only, at least two days before the race.
+- **Explanations** name the session and its purpose in plain words, and state that every other run
+  stays easy.
+
+### Piece 4 checks
+
+- New `QualityWorkoutEngineTest` (8 tests): sessions and recoveries by distance; no continuous
+  near-race blocks for 5K/10K (Balanced and Performance); paces from results, never from a goal time;
+  graded readiness including the strides fallback; returning runners; one session a week away from
+  the long run with hard running under 12% of plan distance; taper and race week; session dosing and
+  fit.
+- Focused shared-domain set: 100 tests, 0 failures. `:domain:domainTest` passes.
+- Compile: `:sharedUi`, `:app` and Android test sources. Format check passes.
+- **Production snapshots reviewed plan by plan.** 8 changed; beginner, returning (low volume),
+  short-horizon and run/walk are unchanged. Weekly and total distances are identical in every
+  fixture. Intended changes:
+  - 4–6 km "tempo" days with one continuous 2–4 km block now stay easy, often with strides, until the
+    day can hold 2 × 1.6 km with a recovery;
+  - sessions use repetitions with recoveries; hard running fell (for example `sub2-half` 64 → 40 km
+    over 18 weeks, `marathon` 127 → 96 km);
+  - `six-days` gains 10K intervals; `sub2-half` gains half-marathon pace;
+  - `heavy-lower-body` (30 km over 6 days of 3.6–4 km runs): strides only;
+  - the taper keeps a shorter familiar session; race week has strides only.
+
 ## Known failing tests (tracked separately from new regressions)
 
 | Test | First seen | Status |
@@ -236,6 +297,9 @@ rebuilt; saved plan versions and training history are untouched.
 - An instrumented test and screenshots of `PlanFeasibilityCard`. Existing Plan-screen tests use a
   general-fitness plan, which shows no card.
 - Before/after programme comparisons across distances.
+- Piece 4: compile and run `QualityWorkoutEngineTest` on iOS; review generated plans on device;
+  consider whether runners with many short days should get a longer quality day (today they get
+  strides only); recovery-jog distance is an estimate (0.18 km a minute).
 - Fix the known failing dashboard test above, and the optional wording change "Top set" → "Heaviest set".
 
 ## Known limitations after Piece 1

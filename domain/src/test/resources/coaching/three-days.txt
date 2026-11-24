@@ -9,13 +9,15 @@ PHASE RACE 2027-01-17..2027-01-17
 2026-11-01|LONG_RUN|10.0 km|null
   RUN|10.0 km|null|RPE 3.0|pace null..null
 2026-11-03|EASY_RUN|3.0 km|null
-  RUN|3.0 km|null|RPE 3.0|pace null..null
+  RUN|2.6 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-11-05|EASY_RUN|3.0 km|null
   RUN|3.0 km|null|RPE 3.0|pace null..null
 2026-11-08|LONG_RUN|10.0 km|null
   RUN|10.0 km|null|RPE 3.0|pace null..null
 2026-11-10|EASY_RUN|3.6 km|null
-  RUN|3.6 km|null|RPE 3.0|pace null..null
+  RUN|3.2 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-11-12|EASY_RUN|3.6 km|null
   RUN|3.6 km|null|RPE 3.0|pace null..null
 2026-11-15|LONG_RUN|10.0 km|null
@@ -26,62 +28,67 @@ PHASE RACE 2027-01-17..2027-01-17
   RUN|2.9 km|null|RPE 3.0|pace null..null
 2026-11-22|LONG_RUN|8.0 km|null
   RUN|8.0 km|null|RPE 3.0|pace null..null
-2026-11-24|TEMPO_THRESHOLD_RUN|4.2 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|2.2 km|null|RPE 6.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-11-24|EASY_RUN|4.2 km|null
+  RUN|3.8 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-11-26|EASY_RUN|4.2 km|null
   RUN|4.2 km|null|RPE 3.0|pace null..null
 2026-11-29|LONG_RUN|10.0 km|null
   RUN|10.0 km|null|RPE 3.0|pace null..null
-2026-12-01|TEMPO_THRESHOLD_RUN|4.8 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|2.8 km|null|RPE 6.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-12-01|EASY_RUN|4.8 km|null
+  RUN|4.4 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-12-03|EASY_RUN|4.8 km|null
   RUN|4.8 km|null|RPE 3.0|pace null..null
 2026-12-06|LONG_RUN|10.0 km|null
   RUN|10.0 km|null|RPE 3.0|pace null..null
-2026-12-08|TEMPO_THRESHOLD_RUN|5.3 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|3.3 km|null|RPE 6.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-12-08|EASY_RUN|5.3 km|null
+  RUN|4.9 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-12-10|EASY_RUN|5.3 km|null
   RUN|5.3 km|null|RPE 3.0|pace null..null
 2026-12-13|LONG_RUN|10.5 km|null
   RUN|10.5 km|null|RPE 3.0|pace null..null
-2026-12-15|TEMPO_THRESHOLD_RUN|4.2 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|2.2 km|null|RPE 6.0|pace null..null
-  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
+2026-12-15|EASY_RUN|4.2 km|null
+  RUN|3.8 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2026-12-17|EASY_RUN|4.2 km|null
   RUN|4.2 km|null|RPE 3.0|pace null..null
 2026-12-20|LONG_RUN|8.4 km|null
   RUN|8.4 km|null|RPE 3.0|pace null..null
-2026-12-22|RACE_PACE_RUN|5.6 km|null
+2026-12-22|TEMPO_THRESHOLD_RUN|5.6 km|null
   WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|3.5999999999999996 km|null|RPE 6.0|pace 334.4007583836947..354.8742742031046
+  RUN|1.6 km|null|RPE 6.0|pace null..null
+  RECOVERY|null km|PT2M|RPE 2.0|pace null..null
+  RUN|1.6 km|null|RPE 6.0|pace null..null
   COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
 2026-12-24|EASY_RUN|5.6 km|null
   RUN|5.6 km|null|RPE 3.0|pace null..null
 2026-12-27|LONG_RUN|11.3 km|null
   RUN|11.3 km|null|RPE 3.0|pace null..null
-2026-12-29|RACE_PACE_RUN|6.0 km|null
-  WARM_UP|1.0 km|null|RPE 3.0|pace null..null
-  RUN|4.0 km|null|RPE 6.0|pace 334.4007583836947..354.8742742031046
+2026-12-29|TEMPO_THRESHOLD_RUN|6.0 km|null
+  WARM_UP|1.4 km|null|RPE 3.0|pace null..null
+  RUN|1.6 km|null|RPE 6.0|pace null..null
+  RECOVERY|null km|PT2M|RPE 2.0|pace null..null
+  RUN|1.6 km|null|RPE 6.0|pace null..null
   COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
 2026-12-31|EASY_RUN|6.0 km|null
   RUN|6.0 km|null|RPE 3.0|pace null..null
 2027-01-03|LONG_RUN|12.0 km|null
   RUN|12.0 km|null|RPE 3.0|pace null..null
-2027-01-05|EASY_RUN|6.0 km|null
-  RUN|6.0 km|null|RPE 3.0|pace null..null
+2027-01-05|TEMPO_THRESHOLD_RUN|6.0 km|null
+  WARM_UP|1.4 km|null|RPE 3.0|pace null..null
+  RUN|1.6 km|null|RPE 6.0|pace null..null
+  RECOVERY|null km|PT2M|RPE 2.0|pace null..null
+  RUN|1.6 km|null|RPE 6.0|pace null..null
+  COOL_DOWN|1.0 km|null|RPE 2.0|pace null..null
 2027-01-07|EASY_RUN|6.0 km|null
   RUN|6.0 km|null|RPE 3.0|pace null..null
 2027-01-10|EASY_RUN|6.0 km|null
   RUN|6.0 km|null|RPE 3.0|pace null..null
 2027-01-12|EASY_RUN|4.0 km|null
-  RUN|4.0 km|null|RPE 3.0|pace null..null
+  RUN|3.6 km|null|RPE 3.0|pace null..null
+  RUN|0.4 km|null|RPE 5.0|pace null..null
 2027-01-14|EASY_RUN|4.0 km|null
   RUN|4.0 km|null|RPE 3.0|pace null..null
 2027-01-17|RACE|21.0975 km|null
