@@ -219,15 +219,20 @@ class SharedDashboardScreenTest {
         // Piece 2: progression, then the figures (workouts first), recent workouts and sets by
         // muscle group. No volume chart, and no tonnage anywhere on the dashboard.
         strength(CoachUiState(loading = false, strengthSessions = sessions))
+        // The page is one scrolling column, so every card is laid out even when off screen.
+        // Positions are read in one pass without scrolling: scrolling to each node before reading
+        // it would measure each at a different scroll offset, and the order would be meaningless.
         fun y(node: androidx.compose.ui.test.SemanticsNodeInteraction) =
-            node.performScrollTo().fetchSemanticsNode().positionInRoot.y
+            node.fetchSemanticsNode().positionInRoot.y
         val progression = y(compose.onNodeWithText("Exercise progression"))
         val workouts = y(compose.onNodeWithTag("kpi-Workouts"))
         val records = y(compose.onNodeWithTag("kpi-New records"))
         val recent = y(compose.onNodeWithText("Recent workouts"))
         val muscles = y(compose.onNodeWithText("Muscle-group workload"))
-        org.junit.Assert.assertTrue(progression < workouts && workouts <= records)
-        org.junit.Assert.assertTrue(records < recent && recent < muscles)
+        val order = "progression=$progression workouts=$workouts records=$records " +
+            "recent=$recent muscles=$muscles"
+        org.junit.Assert.assertTrue(order, progression < workouts && workouts <= records)
+        org.junit.Assert.assertTrue(order, records < recent && recent < muscles)
         compose.onNodeWithTag("volume-chart").assertDoesNotExist()
         compose.onAllNodesWithText("load × rep", substring = true).assertCountEquals(0)
         compose.onAllNodesWithText("By exercise", substring = true).assertCountEquals(0)
