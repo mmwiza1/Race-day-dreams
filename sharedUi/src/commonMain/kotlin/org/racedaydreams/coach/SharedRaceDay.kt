@@ -101,16 +101,24 @@ fun SharedRaceDay(
         return@CoachPage
     }
     val metres = goal.distance().kilometres() * 1000
+    val predictionImperial = DisplayUnits.imperial(state)
     val prediction by
         produceState<RacePredictionEngine.Prediction?>(
             null,
             goal,
             state.results,
             state.activities,
+            predictionImperial,
         ) {
             value =
                 withContext(Dispatchers.Default) {
-                    RacePredictionEngine.predict(metres, state.results, state.activities, today)
+                    RacePredictionEngine.predict(
+                        metres,
+                        state.results,
+                        state.activities,
+                        today,
+                        predictionImperial,
+                    )
                 }
         }
     var hilly by rememberSaveable { mutableStateOf(false) }

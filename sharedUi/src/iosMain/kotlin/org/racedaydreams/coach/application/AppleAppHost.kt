@@ -446,6 +446,7 @@ private fun AppleAppContent(
                         { it.toString().removeSuffix(".0") },
                         StrengthMeasurementPolicy::duration,
                         AthleteLanguage.WORKING_SETS,
+                        state.massUnit,
                     )
                 ApplePage.PROGRESS -> {
                     val zone = TimeZone.currentSystemDefault().id

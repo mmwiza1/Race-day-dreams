@@ -129,7 +129,11 @@ fun NavGraphBuilder.strengthGraph(
     composable("strength/log") { StrengthScreen(readState(), model) }
 
     composable("strength/analytics") {
-        StrengthAnalyticsScreen(readState().strengthSessions, onBack = { nav.popBackStack() })
+        StrengthAnalyticsScreen(
+            readState().strengthSessions,
+            onBack = { nav.popBackStack() },
+            massUnit = readState().massUnit,
+        )
     }
 
     composable("strength/pbs") {

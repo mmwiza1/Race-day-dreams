@@ -171,6 +171,19 @@ class WeeklyReviewEvidenceTest {
         }
 
     @Test
+    fun racePredictionReasonsFollowTheImperialSetting() =
+        ActivityDates.withZone(utc) {
+            val runs = reviewed.flatMap { recordedTwice(it) }
+            val reasons =
+                RacePredictionEngine.predict(21097.5, emptyList(), runs, today, true).reasons()!!
+            // 7.5 km a week is 4.7 mi (one decimal); no kilometre figure may remain in the evidence
+            // line.
+            val line = reasons.single { it.startsWith("Recent weekly average") }
+            assertTrue(line.startsWith("Recent weekly average 4.7 mi"), line)
+            assertTrue(!line.contains(" km"), line)
+        }
+
+    @Test
     fun aMovedRunCompletedLateTodayWestOfUtcIsNotTreatedAsMissed() =
         ActivityDates.withZone(LocalZone.fixed(Offsets.ofTotalSeconds(-8 * 3600))) {
             // Monday 16 November; three tempo workouts from last week were all run this evening,
