@@ -72,6 +72,18 @@ class OnboardingGoalCardsTest {
         return true
     }
 
+    /** A 360 × 400 dp viewport: the goal form is always taller, whatever the device density. */
+    private fun layOutPhone(view: View, context: android.content.Context) {
+        val density = context.resources.displayMetrics.density
+        layOut(view, (360 * density).toInt(), (400 * density).toInt())
+    }
+
+    /**
+     * The role an accessibility service is given. `onInitializeAccessibilityNodeInfo` only fills
+     * the class name for a view attached to a window, so the source of that value is checked.
+     */
+    private fun role(view: View): String = view.accessibilityClassName.toString()
+
     private fun layOut(view: View, widthPx: Int, heightPx: Int) {
         view.measure(
             View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),
@@ -86,23 +98,23 @@ class OnboardingGoalCardsTest {
             val context = context()
             val calls = Calls()
             val view = OnboardingView(context, null, null, false, calls)
-            layOut(view, 1080, 900)
+            layOutPhone(view, context)
             val form = view.getChildAt(0)
             val marathon = card(view, RaceDistance.MARATHON.label())
             val fiveK = card(view, RaceDistance.FIVE_K.label())
-            assertTrue(fiveK.isChecked)
-            view.scrollTo(0, 300)
+            assertTrue("5K is the default goal", fiveK.isChecked)
+            view.scrollTo(0, (120 * context.resources.displayMetrics.density).toInt())
             val scroll = view.scrollY
-            assertTrue(scroll > 0)
+            assertTrue("form ${form.height}px in a ${view.height}px viewport did not scroll", scroll > 0)
 
-            assertTrue(marathon.performClick())
+            assertTrue("the card handles the tap", marathon.performClick())
 
             // One tap selects; the same form and the same card remain, at the same position.
             assertSame(form, view.getChildAt(0))
             assertSame(marathon, card(view, RaceDistance.MARATHON.label()))
             assertEquals(scroll, view.scrollY)
-            assertTrue(marathon.isChecked && marathon.isSelected)
-            assertFalse(fiveK.isChecked || fiveK.isSelected)
+            assertTrue("Marathon checked and selected", marathon.isChecked && marathon.isSelected)
+            assertFalse("5K cleared", fiveK.isChecked || fiveK.isSelected)
             assertEquals(1, calls.drafts.size)
             assertEquals("MARATHON", JSONObject(view.draftJson()).getString("distance"))
             // A repeat tap on the selected card changes nothing.
@@ -113,14 +125,14 @@ class OnboardingGoalCardsTest {
             // Meaning is exposed as state, not colour: a checked, selected radio button.
             val info = AccessibilityNodeInfo.obtain()
             marathon.onInitializeAccessibilityNodeInfo(info)
-            assertEquals(RadioButton::class.java.name, info.className)
-            assertTrue(info.isCheckable && info.isChecked && info.isSelected)
+            assertEquals(RadioButton::class.java.name, role(marathon))
+            assertTrue("Marathon node checkable, checked, selected", info.isCheckable && info.isChecked && info.isSelected)
             fiveK.onInitializeAccessibilityNodeInfo(info)
-            assertFalse(info.isChecked || info.isSelected)
+            assertFalse("5K node not checked or selected", info.isChecked || info.isSelected)
             // Touch feedback and a visible check indicator for the selected state.
-            assertTrue(marathon.background is RippleDrawable)
-            assertTrue(marathon.background.isStateful)
-            assertTrue(requireNotNull(marathon.checkMarkDrawable).isStateful)
+            assertTrue("ripple touch feedback", marathon.background is RippleDrawable)
+            assertTrue("stateful card background", marathon.background.isStateful)
+            assertTrue("stateful check mark", requireNotNull(marathon.checkMarkDrawable).isStateful)
         }
     }
 
@@ -130,7 +142,7 @@ class OnboardingGoalCardsTest {
             val context = context()
             val calls = Calls()
             val view = OnboardingView(context, null, null, false, calls)
-            layOut(view, 1080, 900)
+            layOutPhone(view, context)
             val form = view.getChildAt(0)
             val event = card(view, context.getString(R.string.onboarding_event))
             val raceName =
@@ -139,8 +151,9 @@ class OnboardingGoalCardsTest {
                 }
             assertFalse(event.isChecked)
             assertFalse(shown(raceName))
-            view.scrollTo(0, 250)
+            view.scrollTo(0, (100 * context.resources.displayMetrics.density).toInt())
             val scroll = view.scrollY
+            assertTrue("form ${form.height}px in a ${view.height}px viewport did not scroll", scroll > 0)
 
             assertTrue(event.performClick())
 
@@ -151,8 +164,8 @@ class OnboardingGoalCardsTest {
             assertTrue(JSONObject(view.draftJson()).getBoolean("event"))
             val info = AccessibilityNodeInfo.obtain()
             event.onInitializeAccessibilityNodeInfo(info)
-            assertEquals(CheckBox::class.java.name, info.className)
-            assertTrue(info.isCheckable && info.isChecked)
+            assertEquals(CheckBox::class.java.name, role(event))
+            assertTrue("race card node checkable and checked", info.isCheckable && info.isChecked)
             // Typed race details are kept while the card stays on.
             raceName.setText("Hackney Half")
             assertEquals("Hackney Half", JSONObject(view.draftJson()).getString("raceName"))
