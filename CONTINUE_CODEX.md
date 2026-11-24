@@ -43,11 +43,15 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   API 28 stopped at a process crash without a stack in the existing Gym Now
   capture; that test and three preceding captures passed in a focused API 28
   reproduction. Only the failed API 28 job was retried on that head.
-- Apple shared compilation, simulator startup and four existing XCTest cases
-  passed. The new timed-recovery XCTest failed at input selection, before
-  recording. Its visible Compose label was present, while the native TextField
-  query did not match. The follow-up focuses the visible label and retains the
-  actual timed-workout assertions. Recheck the exact latest head on GitHub.
+- [Android on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117903)
+  passed 857 tests and 524 valid captures on each API 28/35/36. Canonical screenshots
+  have source fingerprint `e200244d13df7e525375a78dc4dc3680c17af4b9500e3057fc844dcf7baaba0f`.
+- [Apple on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117924)
+  passed shared Native, simulator startup, unsigned device and four existing
+  UI cases. The new case failed before recording. Focusing the Compose label
+  opened the native keypad, as shown in the failed test's accessibility tree,
+  while XCTest's `typeText` could not find native text-field focus. The next
+  candidate taps digits on the actual keypad and retains all playback assertions.
 - Extra API 28 probes passed actual foreground interval execution with a timed
   pause and retained run linkage, and a real old weekly review was actionable
   after upgrade. The rebuild proposal survived complete export and restore.

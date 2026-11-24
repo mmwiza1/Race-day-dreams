@@ -373,3 +373,14 @@ JVM tests compile against `java.time` and will not catch other calls; only the i
   simulated GPS, resumed, completed both repetitions and saved step evidence
   against the exact plan, all of which passed. Separate upgrade and backup probes
   passed a legacy review decision and retained a rebuild preview.
+
+### Second full-gate findings (head `6340e671`)
+
+- [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117903)
+  passed 857 tests and 524 capture integrity checks on each API 28, 35 and 36.
+- [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117924)
+  passed shared Native, startup, unsigned device and the four existing UI cases.
+  The recovery test opened the native decimal keypad (digits were visible in
+  the failed test's accessibility tree), but `typeText` required a native
+  keyboard-focus property that the Compose editor did not expose. Use the
+  real digit keys and retain all timed playback and interruption assertions.

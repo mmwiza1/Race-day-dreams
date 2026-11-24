@@ -162,10 +162,17 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Save step", in: app)
         tap("Add step to group", in: app)
         tap("Recovery", in: app)
-        // Compose exposes the outlined input's visible label in this accessibility tree.
-        // Tap that label inside the input and send keys to the focused Compose editor.
+        // Compose opens the decimal keypad but does not expose native text-field focus to XCTest.
         tap("Time (seconds)", in: app)
-        app.typeText("30")
+        let keypad = app.keyboards.firstMatch
+        let three = keypad.keys["3"]
+        let zero = keypad.keys["0"]
+        guard three.waitForExistence(timeout: 15), zero.exists else {
+            XCTFail("The recovery time field did not open the numeric keypad.")
+            return
+        }
+        three.tap()
+        zero.tap()
         tap("Save step", in: app)
         tap("Add step to group", in: app)
         tap("Save step", in: app)
