@@ -117,8 +117,13 @@ fun SharedTrainingPlanScreen(
                     ?: "Programme ends · ${dates.label(plan.endDate())}",
             )
             val feasibility =
-                remember(plan, goal) {
-                    PlanFeasibility.assess(plan, goal, version.goalSnapshot().preferences())
+                remember(plan, goal, state.baseline) {
+                    PlanFeasibility.assess(
+                        plan,
+                        goal,
+                        version.goalSnapshot().preferences(),
+                        state.baseline,
+                    )
                 }
             feasibility?.let { PlanFeasibilityCard(it, editGoal) }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

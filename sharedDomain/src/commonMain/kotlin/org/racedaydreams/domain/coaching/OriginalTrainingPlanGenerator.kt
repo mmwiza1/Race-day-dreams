@@ -205,16 +205,7 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             }
             var longMoved = false
             if (longDemoted) {
-                fun spaced(a: LocalDate?, b: LocalDate) =
-                    a == null || kotlin.math.abs(days(a, b)) >= 2
-                effectiveLong =
-                    ordered
-                        .filter {
-                            it != effectiveQuality &&
-                                spaced(demandingBefore, it) &&
-                                spaced(effectiveQuality, it)
-                        }
-                        .maxByOrNull { it.toEpochDay() }
+                effectiveLong = relocatedLongDay(ordered, effectiveQuality, demandingBefore, heavy)
                 longMoved = effectiveLong != null
             }
             val hasLong = effectiveLong != null
@@ -467,6 +458,31 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
     }
 
     companion object {
+        /**
+         * Where a demoted long run can move within its week (Piece 1): only the week's scheduled,
+         * available run days; at least two days from the previous demanding run and from the week's
+         * quality session; and, using the scheduler's own soft recovery costs, away from hard
+         * lower-body strength days and the day after them. Among equally suitable days the latest
+         * is chosen. Returns null when no day leaves enough recovery.
+         */
+        internal fun relocatedLongDay(
+            days: List<LocalDate>,
+            quality: LocalDate?,
+            previousDemanding: LocalDate?,
+            hardLowerBody: Set<LocalDate>,
+        ): LocalDate? {
+            fun spaced(a: LocalDate?, b: LocalDate) = a == null || kotlin.math.abs(days(a, b)) >= 2
+            return days
+                .filter { it != quality && spaced(previousDemanding, it) && spaced(quality, it) }
+                .minWithOrNull(
+                    compareBy<LocalDate> {
+                            (if (it in hardLowerBody) 90 else 0) +
+                                (if (it.minusDays(1) in hardLowerBody) 120 else 0)
+                        }
+                        .thenByDescending { it.toEpochDay() }
+                )
+        }
+
         private fun days(from: LocalDate, to: LocalDate): Long = to.toEpochDay() - from.toEpochDay()
 
         private fun before(a: LocalDate, b: LocalDate): Boolean = a.toEpochDay() < b.toEpochDay()

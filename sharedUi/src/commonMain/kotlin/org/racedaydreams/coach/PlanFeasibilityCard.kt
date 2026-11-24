@@ -76,10 +76,7 @@ internal fun PlanFeasibilityCard(
                         Text("• $it", style = MaterialTheme.typography.bodyMedium)
                     }
                 }
-                Text(
-                    "Your plan is unchanged and will not speed up to catch up. These are general guides, not medical advice.",
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                Text(assessment.caveat(), style = MaterialTheme.typography.bodySmall)
                 TextButton(onClick = editGoal, modifier = Modifier.heightIn(min = 48.dp)) {
                     Text("Review goal and routine")
                 }

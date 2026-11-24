@@ -17,10 +17,11 @@ class TrainingPlanSafetyTest {
         longest: Double,
         runs: Double = 3.0,
         easyPace: Double? = null,
+        recentHalf: Duration? = null,
     ) =
         BaselineEngine.applyManualOverlay(
             empty,
-            ManualBaselineInput(weekly, runs, longest, null, null, null, easyPace, 8),
+            ManualBaselineInput(weekly, runs, longest, null, null, recentHalf, easyPace, 8),
             at,
         )
 
@@ -105,11 +106,48 @@ class TrainingPlanSafetyTest {
         for (i in 1 until demanding.size) assertTrue(
             demanding[i].date().toEpochDay() - demanding[i - 1].date().toEpochDay() >= 2
         )
-        // Week totals no longer collapse after week 1: no build week falls below 85% of week 1
+        // Week totals no longer collapse after week 1: no build week falls below 95% of week 1
         // except planned cutback weeks (every 4th).
-        val totals = buildWeeks.toSortedMap().mapValues { (_, w) -> w.sumOf { it.distanceKm()!! } }
-        for ((week, total) in totals) if (week % 4 != 3L)
-            assertTrue(total >= totals[0]!! * .95, "week ${week + 1}: $total")
+        val totals = buildWeeks.mapValues { entry -> entry.value.sumOf { it.distanceKm()!! } }
+        val first = totals.getValue(0L)
+        for (entry in totals) if (entry.key % 4 != 3L)
+            assertTrue(entry.value >= first * .95, "week ${entry.key + 1}: ${entry.value}")
+    }
+
+    @Test
+    fun aMovedLongRunStaysOnAvailableDaysAndAvoidsHardLegDays() {
+        // End to end: the moved long run stays on the runner's available days.
+        val plan =
+            generate(
+                profile(RaceDistance.HALF_MARATHON, 16, monTueSun, DayOfWeek.MONDAY),
+                baseline(30.0, 12.0),
+            )
+        val moved = plan.workouts().filter { it.note()!!.contains("moved within this week") }
+        assertTrue(moved.isNotEmpty())
+        assertTrue(moved.all { it.date().getDayOfWeek() in monTueSun })
+        // The choice itself: available days only, two days from demanding runs, away from hard
+        // leg days and the day after them, otherwise the latest suitable day.
+        val sunday = start.minusDays(1)
+        val mon = start
+        val tue = start.plusDays(1)
+        val wed = start.plusDays(2)
+        val fri = start.plusDays(4)
+        val week = listOf(mon, tue, wed, fri)
+        val choose = { heavy: Set<LocalDate> ->
+            OriginalTrainingPlanGenerator.relocatedLongDay(week, fri, sunday, heavy)
+        }
+        // Monday follows Sunday's demanding run; Friday is the quality day; Thursday is not
+        // available.
+        assertEquals(wed, choose(emptySet()))
+        // A hard squat session on Wednesday: Tuesday carries no recovery cost, so it is preferred.
+        assertEquals(tue, choose(setOf(wed)))
+        // A hard session on Tuesday: Wednesday would be the day after it, Tuesday the same day;
+        // the same-day cost is lower, so Tuesday is kept rather than dropping the long run.
+        assertEquals(tue, choose(setOf(tue)))
+        // No suitable day at all: no long run this week (the budget is then shared).
+        assertNull(
+            OriginalTrainingPlanGenerator.relocatedLongDay(listOf(mon), null, sunday, emptySet())
+        )
     }
 
     @Test
@@ -153,12 +191,15 @@ class TrainingPlanSafetyTest {
         val result = PlanFeasibility.assess(plan, profile.raceGoal(), profile.preferences())!!
         assertEquals(PlanFeasibility.Level.NOT_SUPPORTED, result.level())
         assertEquals(
-            "This plan can't prepare you to run a Marathon by race day.",
+            "Your plan can't prepare you to run a Marathon by race day.",
             result.headline(),
         )
         assertTrue(result.reasons().first().contains("run/walk of up to 30 minutes"))
         assertTrue(result.alternatives().any { it.startsWith("Add your recent running") })
         assertTrue(result.alternatives().any { it.contains("Half Marathon first") })
+        assertTrue(
+            result.reasons().first().contains("doesn't yet show you can run the whole Marathon")
+        )
         assertTrue(result.alternatives().any { it.contains("qualified coach") })
         // The plan itself is not made more aggressive to satisfy the date.
         assertTrue(
@@ -166,21 +207,24 @@ class TrainingPlanSafetyTest {
         )
     }
 
+    private fun assess(
+        d: RaceDistance,
+        weeks: Long,
+        b: RunnerBaseline,
+        runs: Int = 3,
+        mode: GoalMode = GoalMode.FINISH,
+        days: Set<DayOfWeek> = monThuFri + DayOfWeek.SATURDAY,
+    ): PlanFeasibility.Assessment? {
+        val p = profile(d, weeks, days, DayOfWeek.MONDAY, runs, mode)
+        return PlanFeasibility.assess(generate(p, b), p.raceGoal(), p.preferences(), b)
+    }
+
     @Test
     fun feasibilityExplainsEachDistanceWithoutChangingThePlan() {
-        fun level(
-            d: RaceDistance,
-            weeks: Long,
-            b: RunnerBaseline,
-            runs: Int = 3,
-            mode: GoalMode = GoalMode.FINISH,
-        ): PlanFeasibility.Assessment? {
-            val p = profile(d, weeks, monThuFri + DayOfWeek.SATURDAY, DayOfWeek.MONDAY, runs, mode)
-            return PlanFeasibility.assess(generate(p, b), p.raceGoal(), p.preferences())
-        }
-        // The reported half marathon: 14.7 km peak is below the usual 16–19 km range.
+        // The reported half marathon: 14.7 km peak is below the usual 16–19 km range, and with no
+        // recent race time the 2-hour target cannot be judged.
         val reported =
-            level(
+            assess(
                 RaceDistance.HALF_MARATHON,
                 25,
                 baseline(19.6, 9.0),
@@ -188,36 +232,155 @@ class TrainingPlanSafetyTest {
             )!!
         assertEquals(PlanFeasibility.Level.LIMITED, reported.level())
         assertTrue(reported.reasons().first().contains("14.7 km"))
-        assertTrue(reported.reasons().any { it.contains("target time") })
+        assertTrue(reported.reasons().any { it.contains("no recent race time") })
         assertTrue(reported.alternatives().any { it.contains("completion goal") })
-        // An established half-marathon runner reaches the usual range.
+        // An established half-marathon runner with time and four running days follows the usual
+        // build-up; even then the rating carries the not-a-guarantee caveat.
+        val established = assess(RaceDistance.HALF_MARATHON, 20, baseline(30.0, 12.0), 4)!!
         assertEquals(
             PlanFeasibility.Level.SUPPORTED,
-            level(RaceDistance.HALF_MARATHON, 20, baseline(30.0, 12.0), 4)!!.level(),
+            established.level(),
+            established.reasons().toString(),
         )
-        assertTrue(
-            level(RaceDistance.HALF_MARATHON, 20, baseline(30.0, 12.0), 4)!!
-                .alternatives()
-                .isEmpty()
-        )
-        // A beginner 5K with run/walk is supported; a beginner 10K is limited, not refused.
-        assertEquals(
-            PlanFeasibility.Level.SUPPORTED,
-            level(RaceDistance.FIVE_K, 9, empty)!!.level(),
-        )
-        assertEquals(PlanFeasibility.Level.LIMITED, level(RaceDistance.TEN_K, 10, empty)!!.level())
-        // A short build is explained.
-        val short = level(RaceDistance.MARATHON, 8, baseline(30.0, 12.0), 4)!!
+        assertTrue(established.reasons().isEmpty() && established.alternatives().isEmpty())
+        assertTrue(established.caveat().contains("not a guarantee"))
+        // General fitness has no race to assess.
+        assertNull(assess(RaceDistance.GENERAL_FITNESS, 12, baseline(20.0, 8.0)))
+    }
+
+    @Test
+    fun shortBuildsAndFewRunningDaysLowerTheRatingNotJustTheText() {
+        // Same experienced runner and a long-enough longest run, but only 8 weeks to a half.
+        val short =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                8,
+                baseline(50.0, 20.0, 5.0),
+                5,
+                days = monThuFri + DayOfWeek.SATURDAY + DayOfWeek.TUESDAY,
+            )!!
+        assertEquals(PlanFeasibility.Level.LIMITED, short.level(), short.reasons().toString())
         assertTrue(
             short.reasons().any {
-                it.contains("8 weeks until race day") && it.contains("at least 16 weeks")
+                it.contains("8 weeks until race day") && it.contains("at least 12 weeks")
             }
         )
-        // Two running days for a half are explained.
-        val two = level(RaceDistance.HALF_MARATHON, 12, baseline(15.0, 6.0, 2.0), 2)!!
-        assertTrue(two.reasons().any { it.startsWith("2 running days") })
-        // General fitness has no race to assess.
-        assertNull(level(RaceDistance.GENERAL_FITNESS, 12, baseline(20.0, 8.0)))
+        // Twenty weeks to a half, but only two running days.
+        val two =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                20,
+                baseline(30.0, 12.0, 2.0),
+                2,
+                days = setOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY),
+            )!!
+        assertNotEquals(PlanFeasibility.Level.SUPPORTED, two.level())
+        assertTrue(two.reasons().any { it.startsWith("Running 2 days a week") })
+    }
+
+    @Test
+    fun runWalkTimeIsNotTreatedAsContinuousRunning() {
+        // Beginners: run/walk never rates Supported, even for a 5K, and the reason says why.
+        val fiveK = assess(RaceDistance.FIVE_K, 9, empty)!!
+        assertEquals(PlanFeasibility.Level.LIMITED, fiveK.level())
+        assertTrue(fiveK.reasons().first().contains("doesn't yet show you can run the whole 5K"))
+        assertTrue(fiveK.alternatives().any { it.startsWith("Run/walk the race") })
+        assertEquals(PlanFeasibility.Level.LIMITED, assess(RaceDistance.TEN_K, 10, empty)!!.level())
+        // A hand-built plan with long run/walk sessions is still not Supported for a half.
+        val race = start.plusWeeks(16).minusDays(1)
+        val walks =
+            (0 until 16).map { w ->
+                PlannedWorkout(
+                    "w$w",
+                    start.plusWeeks(w.toLong()),
+                    WorkoutCategory.EASY_RUN,
+                    null,
+                    Durations.ofMinutes(150),
+                    emptyList(),
+                    "run/walk",
+                )
+            }
+        val plan = TrainingPlan("walks", start, race, emptyList(), walks)
+        val goal = RaceGoal(RaceDistance.HALF_MARATHON, "Race", race, GoalMode.FINISH, null)
+        assertEquals(
+            PlanFeasibility.Level.LIMITED,
+            PlanFeasibility.assess(plan, goal, null)!!.level(),
+        )
+    }
+
+    @Test
+    fun oneLongRunIsNotEnoughEvidence() {
+        // Plenty of weekly running, but the half-marathon-length run happens only once.
+        val race = start.plusWeeks(16).minusDays(1)
+        val workouts =
+            (0 until 15).flatMap { w ->
+                val monday = start.plusWeeks(w.toLong())
+                listOf(
+                    PlannedWorkout(
+                        "l$w",
+                        monday,
+                        WorkoutCategory.LONG_RUN,
+                        if (w == 12) 18.0 else 11.0,
+                        null,
+                        emptyList(),
+                        "long",
+                    ),
+                    PlannedWorkout(
+                        "a$w",
+                        monday.plusDays(2),
+                        WorkoutCategory.EASY_RUN,
+                        10.0,
+                        null,
+                        emptyList(),
+                        "easy",
+                    ),
+                    PlannedWorkout(
+                        "b$w",
+                        monday.plusDays(4),
+                        WorkoutCategory.EASY_RUN,
+                        10.0,
+                        null,
+                        emptyList(),
+                        "easy",
+                    ),
+                )
+            }
+        val plan = TrainingPlan("once", start, race, emptyList(), workouts)
+        val goal = RaceGoal(RaceDistance.HALF_MARATHON, "Race", race, GoalMode.FINISH, null)
+        val result = PlanFeasibility.assess(plan, goal, null)!!
+        assertEquals(PlanFeasibility.Level.LIMITED, result.level())
+        assertTrue(result.reasons().single().contains("only once"))
+    }
+
+    @Test
+    fun aTargetTimeNeedsARecentResultThatSupportsIt() {
+        // 1:55 recent half supports a 2-hour target; 2:10 does not.
+        val fast =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                20,
+                baseline(30.0, 12.0, recentHalf = Durations.ofMinutes(115)),
+                4,
+                GoalMode.TARGET_TIME,
+            )!!
+        assertEquals(PlanFeasibility.Level.SUPPORTED, fast.level(), fast.reasons().toString())
+        val slow =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                20,
+                baseline(30.0, 12.0, recentHalf = Durations.ofMinutes(130)),
+                4,
+                GoalMode.TARGET_TIME,
+            )!!
+        assertEquals(PlanFeasibility.Level.LIMITED, slow.level())
+        assertEquals(
+            "Your plan prepares you to finish a Half Marathon, but your target time isn't backed by recent results.",
+            slow.headline(),
+        )
+        assertTrue(
+            slow.reasons().single().contains("about 2:10:00") &&
+                slow.reasons().single().contains("2:00:00")
+        )
     }
 
     @Test

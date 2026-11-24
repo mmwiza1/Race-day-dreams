@@ -16,7 +16,7 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 
 | Piece | Scope | Class | Status |
 | --- | --- | --- | --- |
-| 1 | Training safety, correctness and transparency | Medium | **Implemented; awaiting owner approval** |
+| 1 | Training safety, correctness and transparency | Medium | **Implemented, plus owner-requested correction (draft PR #51); awaiting owner approval** |
 | 2 | Strength dashboard usability | Small–medium | Not started (needs approval) |
 | 3 | Running progression engine | Major | Not started |
 | 4 | Race-specific workout engine | Major | Not started |
@@ -45,30 +45,56 @@ on each push; keep pushes to a minimum and trigger nothing manually.
 - **Usual session budget.** It was only applied to run/walk durations. With a pace estimate in the
   baseline, it now limits everyday runs; the long run is exempt by design and its estimated duration
   is explained. Without a pace estimate, behaviour and wording are unchanged.
-- **Race readiness.** New `PlanFeasibility` (shared domain) assesses each race plan against what plans
-  for the distance usually build to: Supported, Limited or Not supported, with reasons (missing history,
-  short build, few running days, target time) and alternatives (add history, later race, shorter race
-  first, extra running day, completion goal, run/walk and professional advice). A beginner marathon or
-  half with 30-minute run/walk sessions is reported as **Not supported**. The plan itself is never made
-  more aggressive.
-- **Plan screen.** New `PlanFeasibilityCard` on the shared Plan screen (Android and iOS) for Limited and
-  Not-supported plans only: headline, first reason, and an expander with the other reasons, options and
-  a "Review goal and routine" button.
-- **Reference values** (in `PlanFeasibility`, contextual, not safety thresholds): longest planned run
-  for "supported" 5K 4 km, 10K 8 km, half 15 km, marathon 26 km; run/walk minutes 20, 60, 120, 180; usual
-  build 6, 8, 12, 16 weeks.
+- **Race readiness.** New `PlanFeasibility` rates each race plan Supported, Limited or Not
+  supported. After the owner's correction, several factors must agree before a plan is Supported, and
+  each factor can only lower the rating:
+  - endurance: the longest run, long runs repeated near the peak (one long run is not enough) and the
+    busiest week;
+  - time until race day compared with the usual build for the distance;
+  - running days (two days for a 10K-plus race lowers the rating);
+  - run/walk-only plans, which never rate Supported, because session minutes are time on feet, not
+    continuous running;
+  - for a target time, a recent race result that supports it (a Riegel-style estimate). Without one,
+    the plan is rated for finishing and the target is called unproven.
+
+  Alternatives are offered for each shortfall: add history, choose a later race, build towards a
+  shorter race first, add a running day, run a shorter race or switch to a completion goal, or run/walk
+  with professional advice. Every rating carries a "guide, not a guarantee" caveat. The plan itself is
+  never made more aggressive.
+- **Plan screen.** New `PlanFeasibilityCard` on the shared Plan screen (Android and iOS), shown for
+  Limited and Not-supported plans only. It shows the headline and first reason, with an expander for
+  the other reasons, options, the caveat and "Review goal and routine".
+- **Moved long runs.** `OriginalTrainingPlanGenerator.relocatedLongDay` picks only from the week's
+  scheduled, available days. It keeps at least two days from the previous demanding run and the week's
+  quality session, and applies the scheduler's soft recovery costs for hard lower-body strength days and
+  the day after them. Among equally suitable days it picks the latest; if no day is suitable, the week
+  has no long run.
+- **Reference values** (in `PlanFeasibility`; contextual, not safety thresholds), for 5K / 10K / half /
+  marathon:
+  - longest run for Supported: 4, 8, 15 and 26 km; minimum: 0, 5, 10 and 20 km;
+  - usual busiest week: 12, 20, 28 and 40 km;
+  - run/walk minimum: 0, 20, 60 and 120 minutes;
+  - usual build: 6, 8, 12 and 16 weeks.
 
 ## Piece 1 — tests
 
-- **New:** `sharedDomain/src/commonTest/.../TrainingPlanSafetyTest.kt` (5 tests). It covers:
-  - the demotion fix and cross-week spacing;
+- **`TrainingPlanSafetyTest`** (shared domain, 10 tests) covers:
+  - the moved long run and cross-week spacing, and the relocation choice (available days, recovery
+    spacing, hard leg days);
   - budget reconciliation, with the reported half-marathon week 23 unchanged;
-  - a beginner marathon reported as Not supported;
-  - the feasibility levels and reasons across distances;
+  - a beginner marathon rated Not supported;
+  - ratings across distances, including the not-a-guarantee caveat;
+  - short builds and two running days lowering the rating;
+  - run/walk time not treated as continuous running;
+  - one long run not being enough evidence;
+  - target-time evidence;
   - the session budget.
 - **Focused run:** `:sharedDomain:jvmTest` filtered to coaching, plan, adaptive, weekly and safety
-  tests: 79 tests, 0 failures. `:sharedUi:compileDebugKotlinAndroid`, `:app:compileDebugKotlin`,
+  tests: 84 tests, 0 failures. `:sharedUi:compileDebugKotlinAndroid`, `:app:compileDebugKotlin`,
   `:app:compileDebugAndroidTestKotlin` and the format check pass.
+- **First CI run on PR #51:** the iOS `apple-shared` job failed because the test used `toSortedMap()`,
+  which is JVM-only. The test has been fixed and the shared files scanned for other JVM-only APIs.
+  Kotlin/Native cannot be compiled locally, so iOS is checked by CI.
 
 ## Deferred to Piece 5
 
