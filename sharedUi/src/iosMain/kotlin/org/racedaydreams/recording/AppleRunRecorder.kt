@@ -45,10 +45,13 @@ class AppleRunRecorder(
         val source =
             monitor
                 ?: AppleHeartRateSource { bpm ->
-                        val time = AppleRecordingClock.monotonicMillis()
-                        session?.engine?.heartRate(bpm, time)
-                        lastHeartRateTime = time
-                        mutableHeartRate.value = bpm
+                        // A Core Bluetooth delegate callback: guarded like Core Location (A-R2).
+                        guarded("Heart-rate reading rejected.") {
+                            val time = AppleRecordingClock.monotonicMillis()
+                            session?.engine?.heartRate(bpm, time)
+                            lastHeartRateTime = time
+                            mutableHeartRate.value = bpm
+                        }
                     }
                     .also { monitor = it }
         if (scanTimeout?.isActive == true) return
@@ -98,16 +101,22 @@ class AppleRunRecorder(
 
     private val location =
         AppleRecordingLocation(
+            // Core Location delegate callbacks: guarded as on Android, because an uncaught
+            // exception in Kotlin/Native ends the app mid-run (audit A-R2).
             onFix = { fix, received, wall ->
-                val engine = session?.engine
-                if (engine != null && engine.qualifyDelivery(fix, received, wall))
-                    engine.accept(fix)
-                // Multiple fixes in a Core Location batch share one receipt time.
-                publish(received)
+                guarded("GPS observation rejected.") {
+                    val engine = session?.engine
+                    if (engine != null && engine.qualifyDelivery(fix, received, wall))
+                        engine.accept(fix)
+                    // Multiple fixes in a Core Location batch share one receipt time.
+                    publish(received)
+                }
             },
             onUnavailable = { time, wall ->
-                session?.engine?.missingFix(time, wall)
-                publish(time)
+                guarded("GPS observation rejected.") {
+                    session?.engine?.missingFix(time, wall)
+                    publish(time)
+                }
             },
             onAuthorizationChanged = { granted -> mutablePermission.value = granted },
         )
@@ -319,6 +328,15 @@ class AppleRunRecorder(
             if (!status.paused()) speech?.deliver(it.text(), it.haptic())
         }
         result.paceEvent()?.let { engine.event(it, time, AppleRecordingClock.now()) }
+    }
+
+    /** Runs a platform delegate callback; a failure is reported, never thrown into the OS. */
+    private inline fun guarded(message: String, action: () -> Unit) {
+        try {
+            action()
+        } catch (_: Exception) {
+            mutableError.value = message
+        }
     }
 
     private suspend fun <T> command(action: suspend () -> T): T {
