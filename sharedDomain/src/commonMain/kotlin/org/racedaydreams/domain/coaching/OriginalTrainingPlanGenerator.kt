@@ -179,13 +179,91 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             if (request.distribution() == "MORE_SHORTER") longKm *= .85
             longKm *= taperFactor
             val n = selectedDays.size
-            for (day in selectedDays) {
-                var isLong = n >= 2 && day == schedule.longRun() && !taper
-                var isQuality = day == quality
-                if (previousDemanding != null && days(previousDemanding, day) < 2) {
-                    isLong = false
-                    isQuality = false
+            // Each day's role is settled before any distance is allocated (Piece 1). A long run
+            // that would follow a demanding day too closely, including one at the end of the
+            // previous week, moves to another available day when spacing allows; otherwise the
+            // week has no long run and its whole budget is shared by the remaining runs, so the
+            // planned kilometres no longer silently disappear.
+            val ordered = selectedDays.sortedBy { it.toEpochDay() }
+            val demandingBefore = previousDemanding
+            var effectiveQuality: LocalDate? = null
+            var effectiveLong: LocalDate? = null
+            var longDemoted = false
+            run {
+                var last = demandingBefore
+                for (day in ordered) {
+                    val wantsLong = n >= 2 && day == schedule.longRun() && !taper
+                    val wantsQuality = day == quality
+                    if (last != null && days(last, day) < 2) {
+                        if (wantsLong) longDemoted = true
+                        continue
+                    }
+                    if (wantsLong) effectiveLong = day
+                    if (wantsQuality) effectiveQuality = day
+                    if (wantsLong || wantsQuality) last = day
                 }
+            }
+            var longMoved = false
+            if (longDemoted) {
+                fun spaced(a: LocalDate?, b: LocalDate) =
+                    a == null || kotlin.math.abs(days(a, b)) >= 2
+                effectiveLong =
+                    ordered
+                        .filter {
+                            it != effectiveQuality &&
+                                spaced(demandingBefore, it) &&
+                                spaced(effectiveQuality, it)
+                        }
+                        .maxByOrNull { it.toEpochDay() }
+                longMoved = effectiveLong != null
+            }
+            val hasLong = effectiveLong != null
+            val sessionCap = min(longCap, longBase + max(0, index - index / 4) * .5)
+            val maximumMinutesBudget = request.maximumMinutes()
+            val easyPace = baseline.easyPaceSecondsPerKm()
+            // With a pace estimate, the usual session budget becomes a real limit for everyday
+            // runs. The long run is exempt by design and its estimated duration is explained.
+            val budgetKm =
+                if (established && maximumMinutesBudget != null && easyPace != null && easyPace > 0)
+                    maximumMinutesBudget * 60.0 / easyPace
+                else null
+            val plannedKm = mutableMapOf<LocalDate, Double>()
+            if (established)
+                for (day in ordered) {
+                    val raw =
+                        if (n == 1) weekly
+                        else if (day == effectiveLong) longKm
+                        else if (hasLong) (weekly - longKm) / (n - 1) else weekly / n
+                    var km = rounded(min(rounded(raw), sessionCap))
+                    if (budgetKm != null && day != effectiveLong)
+                        km = min(km, kotlin.math.floor(budgetKm * 10) / 10)
+                    plannedKm[day] = km
+                }
+            val plannedTotal = plannedKm.values.sum()
+            val shortfall = if (established) weekly - plannedTotal else 0.0
+            val capacityNote =
+                if (shortfall > 0.15 * n + 0.05)
+                    "This week's runs add up to ${rounded(plannedTotal)} km, below the ${rounded(weekly)} km budget, because " +
+                        (if (
+                            budgetKm != null &&
+                                plannedKm.any { (d, km) ->
+                                    d != effectiveLong &&
+                                        km >= kotlin.math.floor(budgetKm * 10) / 10
+                                }
+                        )
+                            "everyday runs are kept within your usual ${maximumMinutesBudget}-minute session budget"
+                        else "a single run is limited to ${rounded(sessionCap)} km at this stage") +
+                        "; the difference is not added elsewhere. "
+                else ""
+            val relocationNote =
+                if (longMoved)
+                    "The long run moved within this week so it does not follow another demanding run too closely. "
+                else if (longDemoted)
+                    "No day this week leaves enough recovery after the previous demanding run, so there is no long run and the week's distance is shared across the other runs. "
+                else ""
+            for (day in selectedDays) {
+                var isLong = day == effectiveLong
+                var isQuality = day == effectiveQuality
                 var category =
                     if (isLong) WorkoutCategory.LONG_RUN
                     else if (isQuality) {
@@ -201,18 +279,8 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     )
                         WorkoutCategory.ZONE_2_RUN
                     else WorkoutCategory.EASY_RUN
-                var km: Double? =
-                    if (established)
-                        rounded(
-                            if (n == 1) weekly
-                            else if (isLong) longKm
-                            else
-                                (weekly - (if (n >= 2 && !taper) longKm else 0.0)) /
-                                    (n - (if (n >= 2 && !taper) 1 else 0))
-                        )
-                    else null
+                val km: Double? = if (established) plannedKm[day] else null
                 if (km != null) {
-                    km = rounded(min(km, min(longCap, longBase + max(0, index - index / 4) * .5)))
                     if (isQuality && km < 4) {
                         isQuality = false
                         category = WorkoutCategory.EASY_RUN
@@ -338,10 +406,17 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                         caution
                 if (maximumMinutes != null) {
                     reason += " Your usual time preference is $maximumMinutes minutes. "
-                    if (km != null)
+                    if (km != null && easyPace != null && easyPace > 0) {
+                        val estimate = kotlin.math.round(km * easyPace / 60).toLong()
+                        reason +=
+                            if (isLong && estimate > maximumMinutes)
+                                "This long run is estimated at about $estimate minutes at your usual easy pace, longer than your usual budget by design; move it to a day with more time or shorten by effort. "
+                            else "Estimated about $estimate minutes at your usual easy pace. "
+                    } else if (km != null)
                         reason +=
                             "This distance prescription has no reliable pace-based duration estimate; shorten by effort to your time budget rather than adding catch-up distance. "
                 }
+                reason += (if (isLong || !hasLong) relocationNote else "") + capacityNote
                 reason +=
                     " Session distribution: ${request.distribution().lowercase().replace('_', ' ')}; requested running frequency is a maximum, not an obligation."
                 workouts.add(
