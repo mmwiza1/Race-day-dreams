@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Offline artifact-pair and publisher-contract tests; never uploads files."""
 import importlib.util
+import json
+import subprocess
+import sys
 from pathlib import Path
 import tempfile
 import unittest
@@ -297,6 +300,82 @@ class AndroidSigningAndUpdateManifestTest(unittest.TestCase):
         assets.check_not_downgrade(live, 24)
         with self.assertRaises(ValueError):
             assets.check_not_downgrade(live, 22)
+
+    def test_different_apk_contents_are_never_published_under_a_published_version_code(self):
+        # Audit D-1: six merges republished different bytes as versionCode 27.
+        published, rebuilt = 'a' * 64, 'b' * 64
+        live = json.dumps({'versionCode': 27, 'apkSha256': published})
+        assets.check_not_downgrade(None, 27, rebuilt)
+        assets.check_not_downgrade(live, 27, published)  # an identical rebuild may be re-uploaded
+        assets.check_not_downgrade(live, 28, rebuilt)    # a bumped version is always allowed
+        with self.assertRaisesRegex(ValueError, 'already published with different APK contents'):
+            assets.check_not_downgrade(live, 27, rebuilt)
+        with self.assertRaisesRegex(ValueError, 'lower than the published'):
+            assets.check_not_downgrade(live, 26, rebuilt)
+        with self.assertRaisesRegex(ValueError, 'no valid apkSha256'):
+            assets.check_not_downgrade(json.dumps({'versionCode': 27}), 27, rebuilt)
+
+    def test_update_manifest_cli_refuses_a_reused_version_code_with_new_bytes(self):
+        apk = self.root / 'Race-Day-Dreams-0.15.5-test1.apk'
+        apk.write_bytes(b'apk-bytes')
+        pin = self.root / 'pin.sha256'
+        pin.write_text(self.cert + '\n')
+        live = self.root / 'live.json'
+        script = str(ROOT / 'scripts/development-assets.py')
+        out = self.root / 'out'
+        out.mkdir()
+
+        def run(code):
+            return subprocess.run([sys.executable, '-I', script, '--update-manifest', str(apk), '--version', '0.15.5-test1',
+                                   '--version-code', str(code), '--commit', 'c' * 40, '--pin', str(pin),
+                                   '--live-manifest', str(live), '--directory', str(out)], capture_output=True, text=True)
+        live.write_text(json.dumps({'versionCode': 28, 'apkSha256': 'f' * 64}))
+        refused = run(28)
+        self.assertNotEqual(0, refused.returncode)
+        self.assertIn('already published with different APK contents', refused.stderr)
+        self.assertFalse((out / assets.UPDATE_MANIFEST).exists())
+        live.write_text(json.dumps({'versionCode': 28, 'apkSha256': assets.digest(apk)}))
+        same = run(28)
+        self.assertEqual(0, same.returncode, same.stderr)
+        live.write_text(json.dumps({'versionCode': 27, 'apkSha256': 'f' * 64}))
+        ok = run(28)
+        self.assertEqual(0, ok.returncode, ok.stderr)
+        self.assertEqual(28, json.loads((out / assets.UPDATE_MANIFEST).read_text())['versionCode'])
+
+    def test_publication_uses_the_non_debuggable_release_build(self):
+        # Audit D-3: the debug APK stays for instrumentation; only the release build is published.
+        workflow = (ROOT / '.github/workflows/android.yml').read_text()
+        build = workflow.split('\n  build:', 1)[1].split('\n  formatting:', 1)[0]
+        publisher = workflow.split('  publish-test-release:', 1)[1]
+        self.assertIn(':app:assembleRelease', build)
+        self.assertIn(':app:assembleDebug ', build)
+        self.assertIn('app/build/outputs/apk/release/app-release-unsigned.apk', build)
+        self.assertIn('-release-api-35', publisher)
+        self.assertNotIn('-debug-api-35', publisher)
+        # The debuggable check runs on both the gated input and the signed output, and the
+        # published file is verified by apksigner before any upload.
+        self.assertGreaterEqual(publisher.count('scripts/assert-not-debuggable.sh'), 2)
+        self.assertIn('"$APKSIGNER" verify', publisher)
+        gradle = (ROOT / 'app/build.gradle').read_text()
+        release = gradle.split('release {', 1)[1].split('}', 1)[0]
+        self.assertIn('debuggable false', release)
+        self.assertNotIn('signingConfig', release)
+
+    def test_versioned_names_follow_the_built_version_everywhere(self):
+        # Audit D-1: a bump must reach every version source, or CI names drift from the build.
+        import re
+        gradle = (ROOT / 'app/build.gradle').read_text()
+        name = re.search(r"versionName\s+'([^']+)'", gradle).group(1)
+        code = re.search(r'versionCode\s+(\d+)', gradle).group(1)
+        workflow = (ROOT / '.github/workflows/android.yml').read_text()
+        artifact_versions = set(re.findall(r'Race-Day-Dreams-(\d+\.\d+\.\d+-test\d+)-', workflow))
+        self.assertEqual({name}, artifact_versions)
+        plist = (ROOT / 'iosApp/Info.plist').read_text()
+        self.assertIn(f'<key>CFBundleShortVersionString</key>\n\t<string>{assets.bundle_version(name)}</string>', plist)
+        self.assertIn(f'<key>CFBundleVersion</key>\n\t<string>{code}</string>', plist)
+        numbers = name.split('-', 1)[0].split('.')
+        note = (ROOT / ('docs/RELEASE_' + '_'.join(numbers) + '.md')).read_text()
+        self.assertTrue(note.startswith(f'# Race Day Dreams {name}\n'))
 
     def test_build_info_names_the_release_certificate_when_signed(self):
         digests = {'android-apk': '1' * 64, 'ios-simulator': '2' * 64, 'iphoneos-unsigned': '3' * 64, 'ipa': '4' * 64}

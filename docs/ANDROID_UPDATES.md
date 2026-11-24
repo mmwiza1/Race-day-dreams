@@ -27,8 +27,13 @@ older test build. The iOS app is unaffected: iOS builds remain unsigned develope
 
 ## How it works
 
-1. **CI builds and verifies one APK** (API 28/35/36 instrumentation, screenshots, lint) exactly as
-   before. That verified API 35 APK is the only binary published.
+1. **CI builds and verifies the app** (API 28/35/36 instrumentation, screenshots, lint). Each job
+   builds two APKs from the same checkout: the debuggable `debug` build used only by the
+   instrumentation and upgrade-path tests, and the unsigned, **non-debuggable `release` build**
+   (same applicationId, versionCode, versionName, code and resources; R8 off). The API 35 job's
+   release APK is the only binary published (audit D-3). `scripts/assert-not-debuggable.sh`
+   (`aapt dump badging`) refuses a debuggable APK in the build job, and again in the publish job
+   before and after re-signing.
 2. **The publish job re-signs that exact APK** with the release key
    (`scripts/sign-distribution-apk.sh`). The key comes only from GitHub Actions secrets, which are
    available to the publish job on pushes to `main` and version tags, never to pull-request builds.
@@ -43,7 +48,8 @@ older test build. The iOS app is unaffected: iOS builds remain unsigned develope
    package, version name and code, minimum Android version, versioned APK URL, size, SHA-256,
    certificate SHA-256, source commit and the release note's "What's new"). It is uploaded last,
    after the APK, and checked again after upload. A lower versionCode than the live manifest is
-   refused.
+   refused, and so is the live versionCode with a different APK SHA-256 (audit D-1): new contents
+   always need a new versionCode.
 4. **In the app** (`app/.../update/`), Settings › App updates:
    - fetches the manifest over HTTPS from `github.com` (strictly validated; only the official
      release's versioned APK URL is accepted);
@@ -218,9 +224,13 @@ This release does not change any data format.
 - Android's own approval screen and a real end-to-end in-app install (download → approve → app
   restarts as the new version) have **not been performed on a physical phone**. The emulator test
   proves the in-place update and data preservation with `adb`, and the verifier on real APKs.
-- The published APK is still the verified **debug build type** (debuggable), now consistently
-  signed. A separate release build type would be a later, deliberately tested change.
+- From 0.15.5-test1 the published APK is the non-debuggable **release build type** (R8 still off).
+  Earlier published builds (up to 0.15.4-test1) were the debuggable debug build type; updating
+  in place from them keeps data, because the package and signing key are unchanged.
+- The instrumentation suites exercise the debug build. The release build is the same source and
+  configuration apart from the debuggable flag, but it is not itself instrumented.
 - Updates come from the rolling `development` release. Every update people should receive needs a
-  higher versionCode; republishing the same versionCode is never offered as an update.
+  higher versionCode; republishing the same versionCode is never offered as an update, and the
+  publish job refuses different APK contents under the versionCode that is already live.
 - Device policies (work profiles, OEM restrictions) may block installs from apps; the card explains
   and nothing changes.
