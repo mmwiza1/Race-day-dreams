@@ -195,6 +195,35 @@ class DashboardAnalyticsContractTest {
     }
 
     @Test
+    fun skippedWorkoutsRemovedFromTheCurrentPlanStillCountAsSkipped() {
+        // B-06: production removes a skipped workout from the new plan version, so the current
+        // plan no longer contains it. Only its decision remains, with the original date.
+        val planned =
+            listOf(
+                plan("done", today.minusDays(2)),
+                plan("missed", today.minusDays(3)),
+                plan("today", today),
+            )
+        val activities = listOf(run("linked", today.minusDays(2), 5_000.0, 1_800, planned = "done"))
+        val window = DashboardAnalytics.window(Period.FOUR_WEEKS, today)
+        val withoutSkips =
+            DashboardAnalytics.planCompletion(planned, activities, emptyList(), window, today)
+        val decisions =
+            listOf(
+                decision("skipped", today.minusDays(5), WorkoutDecision.Kind.SKIPPED),
+                decision("skipped-too-old", today.minusDays(60), WorkoutDecision.Kind.SKIPPED),
+            )
+        val completion =
+            DashboardAnalytics.planCompletion(planned, activities, decisions, window, today)
+        assertEquals(DashboardAnalytics.PlanCompletion(2, 1, 1, 1), completion)
+        // Other completion figures are unchanged by counting skips.
+        assertEquals(withoutSkips.due, completion.due)
+        assertEquals(withoutSkips.completed, completion.completed)
+        assertEquals(withoutSkips.missed, completion.missed)
+        assertEquals(0, withoutSkips.skipped)
+    }
+
+    @Test
     fun programmeCompletionCountsLinkedScheduledSessionsOnly() {
         val window = DashboardAnalytics.window(Period.FOUR_WEEKS, today)
         val completion =
