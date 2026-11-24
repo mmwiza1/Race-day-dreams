@@ -208,7 +208,7 @@ The production snapshot fixtures were **not changed** by Piece 5A. Generation is
 
 | Item | Class | Status |
 | --- | --- | --- |
-| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android instrumented, `android-shared`) | **Known failing test, deferred by the owner to 5B.** Introduced with Piece 2 (`f9318590`). | Failed on every CI run from Piece 2 to `cd20f242`, always as the only `android-shared` failure. **Cause found and fix attempted at the owner's request** (after `f1883495`): the test scrolled to each card before reading its position, so each position was measured at a different scroll offset. Positions are now read in one pass without scrolling; the order checks are unchanged and now carry diagnostic messages. **Not verified until CI passes on the PR head.** If it still fails, the message gives the measured positions. Never disable or weaken it. |
+| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android instrumented, `android-shared`) | **Fixed in 5A at the owner's request** (test defect, introduced with Piece 2 `f9318590`). | Failed on every CI run from Piece 2 to `cd20f242`, always as the only `android-shared` failure. **Cause found and fix attempted at the owner's request** (after `f1883495`): the test scrolled to each card before reading its position, so each position was measured at a different scroll offset. Positions are now read in one pass without scrolling; the order checks are unchanged and now carry diagnostic messages. **Verified: passes in CI at `be7029f7`.** Fixed, not disabled or weakened. |
 | Readiness card (`PlanFeasibilityCard`) has no instrumented or screenshot coverage | Test gap | Existing Plan-screen tests use a general-fitness plan, which shows no card. Add a race-plan UI test and screenshots in 5B. |
 | Recovery segments (`WorkoutSegment.Kind.RECOVERY`, duration only) | Unverified on device | The execution engine supports duration-only steps (`WorkoutExecutionEngine`, step completion by `millis`), but live recording, cues, watch/notification display and post-run analysis of recoveries have **not** been exercised on a device or emulator. |
 | Short running days and quality sessions | Product limitation | Days under about 5.6 km (threshold with a 1 km warm-up) cannot hold a session; they get strides. High-frequency, low-volume runners get no structured session. |
@@ -255,7 +255,7 @@ Pieces 1–5A.
   - the run appearing as evidence in the next weekly review;
   - Health Connect and HealthKit imports, with duplicates counted once.
 - **Before/after programme comparisons** across distances (main against PR #51).
-- Fix the known Strength dashboard test. Optional wording change: "Top set" → "Heaviest set".
+- Optional wording change: "Top set" → "Heaviest set". (The Strength dashboard test is fixed and passes.)
 
 ## 9. Independent full-app audit (5B)
 
@@ -307,7 +307,9 @@ All must hold, and the owner must then explicitly approve the merge:
 | Commit | Content | CI |
 | --- | --- | --- |
 | `cd20f242` | Piece 5A implementation and handover | Android coaching test build: **passed**. `android-shared`: **failed only on the known** `SharedDashboardScreenTest` (1 failure; all other instrumented tests passed). `apple-shared`: **failed**, because the new test called `LocalDate.minusWeeks`, which is JVM-only (iOS test compile error, 3 lines). Main code compiled for iOS. `apple-device`: skipped by design. |
-| The commit that adds this row (the PR #51 head when 5A stopped) | Test fix: `minusWeeks(n)` → `minusDays(7n)`; this CI record | **Pending when written.** Check the PR #51 checks. Expected: `apple-shared` green, `android-shared` failing only on the known test. If anything else fails, treat it as a new regression. |
+| `f1883495` | Test fix: `minusWeeks(n)` → `minusDays(7n)`; CI record | Superseded by `be7029f7` before its own CI was read. |
+| `be7029f7` (**final 5A code head**) | Strength dashboard test fix (owner request) | **All green on 24 November 2026:** Android coaching test build passed; `android-shared` passed, **including `SharedDashboardScreenTest`**; `apple-shared` passed; `apple-device` skipped by design. |
+| The docs-only commit that adds this row (PR #51 head when 5A stopped) | Records the CI above | Docs only; check the PR #51 checks. |
 
 Lesson for 5B: `org.racedaydreams.domain.time.LocalDate` exposes only `getYear`, `getMonthValue`,
 `getDayOfMonth`, `toEpochDay`, `plusDays`, `plusWeeks`, `minusDays` and `getDayOfWeek` in common code.

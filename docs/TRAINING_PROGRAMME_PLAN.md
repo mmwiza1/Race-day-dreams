@@ -319,7 +319,7 @@ See `docs/HANDOFF_5A_TO_5B.md` for the full rules, limitations and the Piece 5B 
 
 | Test | First seen | Status |
 | --- | --- | --- |
-| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Fix attempted at the owner's request** (test measured positions at different scroll offsets; see `docs/HANDOFF_5A_TO_5B.md`, section 7). Pending CI confirmation; never disable or weaken it. Any other failing test is a new regression and must be reported separately. |
+| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Fix attempted at the owner's request** (test measured positions at different scroll offsets; see `docs/HANDOFF_5A_TO_5B.md`, section 7). **Fixed: passes in CI at `be7029f7`.** Any other failing test is a new regression and must be reported separately. |
 
 ## Deferred to Piece 5B (full list: `docs/HANDOFF_5A_TO_5B.md`, section 8)
 
@@ -331,7 +331,7 @@ See `docs/HANDOFF_5A_TO_5B.md` for the full rules, limitations and the Piece 5B 
 - Piece 4: compile and run `QualityWorkoutEngineTest` on iOS; review generated plans on device;
   consider whether runners with many short days should get a longer quality day (today they get
   strides only); recovery-jog distance is an estimate (0.18 km a minute).
-- Fix the known failing dashboard test above, and the optional wording change "Top set" → "Heaviest set".
+- Optional wording change "Top set" → "Heaviest set" (the dashboard test above is fixed).
 
 ## Known limitations after Piece 1
 
