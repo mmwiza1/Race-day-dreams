@@ -167,8 +167,7 @@ rebuilt; saved plan versions and training history are untouched.
   grows by about 3 minutes a fortnight towards a ceiling for the distance (5K 35, 10K 50, half 70,
   marathon 90, general fitness 40 minutes), and is shortened in the taper. The runner's usual time
   budget, when set, still caps every session.
-- **General fitness** progresses gently, by at most about 30% and to no more than 30 km a week, and
-  never below the current volume.
+- **General fitness:** maintains by default; see the corrections below.
 - **Before and after, for the reported half marathon** (19.6 km/week, 3 runs, 25 weeks): the busiest
   week goes from 30.7 to 34 km and the longest run from 14.7 to 17 km. A 12.8 km long run is now
   kept 13 days out (previously no long run in the last 20 days), and the rating goes from Limited to
@@ -189,6 +188,40 @@ rebuilt; saved plan versions and training history are untouched.
       one ≤ 35 minutes for a 5K.
   - Focused run: 91 tests, 0 failures. Android app, shared UI and Android test compilation and the
     format check pass.
+
+### Piece 3 corrections (owner review)
+
+- **Long-run shares are guidance, not cuts.**
+  - The plan starts from the runner's credible recent long run (up to 70% of their week). Each week's
+    long run is the larger of the share-guided long run and the one they already do (scaled in the
+    taper), always within the 30-day guide, the distance ceiling, and a 70%-of-week recovery safeguard.
+  - Example: 30 km a week, an 18 km long run and 4 days keeps 18 km, where it was previously cut to
+    13.5 km.
+  - A long run kept in the taper is at most 70% of the last full one.
+- **General fitness maintains by default.** Weekly volume and the long run stay at the runner's level.
+  Gentle progression happens only if they chose the existing Distance First approach, so no new setting
+  was added. General-fitness run/walk without Distance First is unchanged from before Piece 3.
+- **Restored foundation safeguard.** While a race is more than 28 weeks away, weekly volume stays within
+  6 km and the long run within 3 km of the start. This is the existing `WeeklyCoachingTestSuite` rule,
+  which Piece 3 had weakened.
+- **Experienced marathoners:** the busiest-week target may reach about 130% of the runner's own volume
+  when that is above the reference.
+- **Production snapshots** (`domain/src/test/resources/coaching/*.txt`) were reviewed plan by plan before
+  being updated. 11 changed and the general-fitness run/walk one is identical. Every change is intended:
+  - higher, gradual half-marathon builds, peaking at 18 km;
+  - 10K long runs up to 14 km instead of 11 km;
+  - marathon long runs of 29.3 km three weeks out, then 20.5 km two weeks out;
+  - beginner run/walk longer sessions of up to 30 minutes, previously 25;
+  - a 3-week marathon keeping a short taper long run.
+
+  Accepted trade-off: a runner dropping from 4 to 3 days whose credible 10 km long run is held
+  (`three-days`) gets short other runs, so one early quality session is dropped; quality resumes from
+  week 5.
+- **Focused checks:**
+  - `:domain:domainTest` passes; it was not in the original Piece 3 run, and is now part of the focused
+    set for generator changes.
+  - 92 shared-domain tests pass, including the new `aCredibleExistingLongRunIsNotCutByTheShareGuide`
+    and `generalFitnessMaintainsUnlessDistanceFirstWasChosen`.
 
 ## Known failing tests (tracked separately from new regressions)
 

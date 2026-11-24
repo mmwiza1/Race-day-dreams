@@ -30,12 +30,13 @@ class RunningProgressionTest {
         days: Set<DayOfWeek>,
         long: DayOfWeek,
         maximum: Int? = null,
+        strategy: TrainingStrategy = TrainingStrategy.BALANCED,
     ): TrainingPlan {
         val p =
             UserProfile(
                 RaceGoal(distance, if (race == null) "" else "Race", race, GoalMode.FINISH, null),
                 TrainingPreferences(
-                    TrainingStrategy.BALANCED,
+                    strategy,
                     days,
                     days.size,
                     long,
@@ -225,16 +226,61 @@ class RunningProgressionTest {
     }
 
     @Test
-    fun generalFitnessProgressesGentlyWithoutAPush() {
-        val p =
+    fun generalFitnessMaintainsUnlessDistanceFirstWasChosen() {
+        // Default (Zone 2 or Balanced): the runner's current volume is maintained, not increased.
+        for (strategy in listOf(TrainingStrategy.ZONE_2, TrainingStrategy.BALANCED)) {
+            val p =
+                plan(
+                    RaceDistance.GENERAL_FITNESS,
+                    null,
+                    baseline(20.0, 8.0, 3.0),
+                    monThuFri,
+                    DayOfWeek.MONDAY,
+                    strategy = strategy,
+                )
+            // Weekly volume and the long run are both held at the runner's own level.
+            assertTrue(weeks(p).all { total(it) <= 20.05 }, strategy.name)
+            assertTrue(longs(p).all { it.distanceKm()!! <= 8.0 }, strategy.name)
+        }
+        // Distance First is an explicit choice to build gently.
+        val gentle =
             plan(
                 RaceDistance.GENERAL_FITNESS,
                 null,
                 baseline(20.0, 8.0, 3.0),
                 monThuFri,
                 DayOfWeek.MONDAY,
+                strategy = TrainingStrategy.DISTANCE_FIRST,
             )
-        val peak = weeks(p).maxOf { total(it) }
+        val peak = weeks(gentle).maxOf { total(it) }
         assertTrue(peak > 20.0 && peak <= 28.1, "peak $peak")
+    }
+
+    @Test
+    fun aCredibleExistingLongRunIsNotCutByTheShareGuide() {
+        // 30 km a week on four days with an established 18 km long run: the 45% share (13.5 km)
+        // must not override it; it is held, within the 70% recovery safeguard.
+        val race = start.plusWeeks(16).minusDays(1)
+        val p =
+            plan(
+                RaceDistance.HALF_MARATHON,
+                race,
+                baseline(30.0, 18.0, 4.0),
+                four,
+                DayOfWeek.SUNDAY,
+            )
+        val firstLong = longs(p).minBy { it.date().toEpochDay() }
+        assertTrue(firstLong.distanceKm()!! >= 18.0, "first long ${firstLong.distanceKm()}")
+        for (week in weeks(p)) {
+            val long =
+                week
+                    .filter { it.category() == WorkoutCategory.LONG_RUN }
+                    .maxOfOrNull { it.distanceKm()!! }
+            if (long != null)
+                assertTrue(
+                    long <= total(week) * .7 + 0.05,
+                    "${week.first().date()}: $long of ${total(week)}",
+                )
+        }
     }
 }

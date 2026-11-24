@@ -81,7 +81,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 frequency == 4 -> .45
                 else -> .4
             } + (if (goal.distance() == RaceDistance.MARATHON) .05 else .0)
-        val longBase = if (established) min(longestEvidence!!, base * longShare) else 0.0
+        // The share is guidance for how far the long run grows, never a reason to cut a credible,
+        // recent long run the runner already does (Piece 3 correction). A recovery safeguard
+        // still keeps at least 30% of each week for the other runs.
+        val longBase = if (established) min(longestEvidence!!, base * .7) else 0.0
         val distance = goal.distance().kilometres()
         var taperDays =
             if (race == null) 0
@@ -116,10 +119,15 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     frequency == 4 -> 1.0
                     else -> 1.15
                 }
+        // General fitness maintains the runner's current volume by default; it builds gently only
+        // when they have chosen the Distance First approach (Piece 3 correction).
+        val generalFitness = goal.distance() == RaceDistance.GENERAL_FITNESS
+        val gentleProgression = prefs.strategy() == TrainingStrategy.DISTANCE_FIRST
         val volumeCap =
-            if (goal.distance() == RaceDistance.GENERAL_FITNESS)
-                max(base, min(30.0, base * 1.3 + 2))
-            else max(base, min(referencePeak, max(base * 1.8, base + 10)))
+            if (generalFitness)
+                (if (gentleProgression) max(base, min(30.0, base * 1.3 + 2)) else base)
+            // Experienced runners already near or above the reference may build about 30% more.
+            else max(base, min(max(referencePeak, base * 1.3), max(base * 1.8, base + 10)))
         // The long-run ceiling is the usual peak for the distance, but never below the longest run
         // the runner already does: established 5K and 10K runners keep their tolerated long runs.
         val longCap =
@@ -194,6 +202,9 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 // a race is still more than 28 weeks away, and held once the target is reached.
                 val step = (level * .07).coerceIn(.5, 3.0) * (if (distantFoundation) .5 else 1.0)
                 level = min(volumeCap, level + step)
+                // While the race is more than 28 weeks away, stay near the starting volume
+                // (existing foundation safeguard): the real build starts closer to the race.
+                if (distantFoundation) level = min(level, base + 6)
             }
             val build = if (cutback) level * .8 else level
             val raceWeek = race != null && days(from, race) < 7
@@ -216,8 +227,21 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 )
             val progressionLimit =
                 if (recentLong > 0) min(recentLong * 1.10, recentLong + 1.5) else longBase
-            var longKm = min(longCap, min(progressionLimit, weekly * longShare))
+            // Guided growth (the share for the runner's days), or holding the long run they already
+            // do (scaled by the taper), whichever is larger; never beyond the 30-day guide, the
+            // distance ceiling or 70% of the week.
+            val heldLong = longBase * taperFactor
+            var longKm =
+                min(
+                    longCap,
+                    min(progressionLimit, min(max(weekly * longShare, heldLong), weekly * .7)),
+                )
+            // General-fitness maintenance also holds the long run at the runner's own level.
+            if (generalFitness && !gentleProgression) longKm = min(longKm, longBase)
+            if (distantFoundation) longKm = min(longKm, longBase + 3)
             if (cutback) longKm = min(longKm, lastFullLong * .8)
+            // A long run kept in the taper is clearly shorter than the last full one.
+            if (taper) longKm = min(longKm, lastFullLong * .7)
             if (request.distribution() == "MORE_SHORTER") longKm *= .85
             val n = selectedDays.size
             // Each day's role is settled before any distance is allocated (Piece 1). A long run
@@ -341,11 +365,12 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                         RaceDistance.HALF_MARATHON -> 70
                         RaceDistance.TEN_K -> 50
                         RaceDistance.FIVE_K -> 35
-                        else -> 40
+                        // General fitness: the longer session grows only with Distance First.
+                        else -> if (gentleProgression) 40 else 30
                     }
                 val duration =
                     if (established) null
-                    else if (isLong)
+                    else if (isLong && !(generalFitness && !gentleProgression))
                     // The runner's usual time budget, when set, still applies (athlete choice).
                     Durations.ofMinutes(
                             max(
