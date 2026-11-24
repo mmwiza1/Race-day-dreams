@@ -45,5 +45,6 @@ fun TrainingRecoveryContent(
         onMove,
         dateLabel = { date.format(it) },
         instantLabel = { date.format(it.atZone(java.time.ZoneId.systemDefault())) },
+        appBarBack = true,
     )
 }

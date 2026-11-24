@@ -128,6 +128,8 @@ internal class RecordingSessionCoordinator(
 
     suspend fun flush() = shared.flush()
 
+    fun requestFinish(now: Long) = shared.requestFinish(now)
+
     suspend fun finish(): String = shared.finish()
 }
 

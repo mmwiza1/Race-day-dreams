@@ -1792,7 +1792,7 @@ class CoachingScreenshotTest {
                 await("An optional lighter week is available for review")
                 alignHeading("Recovery & training balance")
                 capture("training-recovery$suffix")
-                compose.onNodeWithText("Supporting evidence ▾").performScrollTo().performClick()
+                compose.onNodeWithText("Supporting evidence").performScrollTo().performClick()
                 alignHeading("Why this guidance?")
                 capture("training-recovery-evidence$suffix")
                 compose.onNodeWithText("Keep my current programme").performScrollTo().performClick()
@@ -4164,6 +4164,10 @@ class CoachingScreenshotTest {
         val deadlift = lift("deadlift")
         val press = lift("overhead-press")
         val row = lift("barbell-row")
+        // Sessions are completed in the past: 18:00 today has not happened yet before 18:00, and
+        // storage rightly rejects a completed session in the future.
+        val latest = java.time.Instant.now().minusSeconds(60)
+        fun at18(day: LocalDate) = minOf(day.atTime(18, 0).atZone(zone).toInstant(), latest)
         fun sets(id: String, reps: Int, kg: Double, count: Int) =
             listOf(StrengthSession.SetEntry("$id-w", 8, kg * 0.5, null, true)) +
                 (1..count).map { StrengthSession.SetEntry("$id-$it", reps, kg, 7.5, false) }
@@ -4178,7 +4182,7 @@ class CoachingScreenshotTest {
                 store.saveStrength(
                     StrengthSession(
                         id,
-                        dayA.atTime(18, 0).atZone(zone).toInstant(),
+                        at18(dayA),
                         ZoneOffset.UTC,
                         Duration.ofMinutes(55),
                         7.5,
@@ -4205,7 +4209,7 @@ class CoachingScreenshotTest {
                 store.saveStrength(
                     StrengthSession(
                         id,
-                        dayB.atTime(18, 0).atZone(zone).toInstant(),
+                        at18(dayB),
                         ZoneOffset.UTC,
                         Duration.ofMinutes(60),
                         8.0,

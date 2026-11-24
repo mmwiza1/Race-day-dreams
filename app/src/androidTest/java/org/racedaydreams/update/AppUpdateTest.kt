@@ -329,6 +329,30 @@ class AppUpdateTest {
     }
 
     @Test
+    fun onlyTheVerifiedBytesReachTheInstallSession() {
+        // Audit R-7: the session copy is hashed as it is written, so a file that changed after
+        // verification is never committed.
+        val bytes = ByteArray(200_000) { (it % 251).toByte() }
+        val sha = ApkVerifier.hex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes))
+        val copied = java.io.ByteArrayOutputStream()
+        UpdateInstaller.copyVerified(bytes.inputStream(), copied, sha, bytes.size.toLong())
+        assertArrayEquals(bytes, copied.toByteArray())
+
+        val changed = bytes.copyOf().also { it[123_456] = (it[123_456] + 1).toByte() }
+        fun refused(input: ByteArray, size: Long = bytes.size.toLong()) =
+            try {
+                UpdateInstaller.copyVerified(input.inputStream(), java.io.ByteArrayOutputStream(), sha, size)
+                false
+            } catch (_: UpdateInstaller.ChangedAfterVerification) {
+                true
+            }
+        assertTrue(refused(changed))
+        assertTrue(refused(bytes.copyOf(bytes.size - 1)))
+        assertTrue(refused(bytes + byteArrayOf(0)))
+        assertTrue(refused(bytes, size = bytes.size - 1L))
+    }
+
+    @Test
     fun aVerifiedUpdateIsHandedToAndroidsOwnApprovalScreen() {
         // The test never changes "Install unknown apps": on Android 12+ revoking that access kills
         // the app process (and with it the test run), as a real person revoking it would.
@@ -357,7 +381,7 @@ class AppUpdateTest {
             }
             // The verified file goes into a real PackageInstaller session; Android answers with its
             // own approval screen through the unexported receiver. It is never approved here.
-            UpdateInstaller.commit(context, apk)
+            UpdateInstaller.commit(context, apk, update.apkSha256)
             waitFor(90_000) {
                 model.state.value.status.let {
                     it is UpdateStatus.AwaitingApproval || it is UpdateStatus.Failed

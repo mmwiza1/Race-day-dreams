@@ -9,6 +9,8 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.util.Locale
+import org.racedaydreams.domain.body.MassUnit
+import org.racedaydreams.domain.presentation.MassText
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
@@ -36,9 +38,9 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
         state,
         onBack,
         ::gymElapsed,
-        ::gymActualDescription,
+        { set, exercise -> gymActualDescription(set, exercise, state.massUnit) },
         ::gymExerciseContext,
-        ::gymTargetDescription,
+        { slot -> gymTargetDescription(slot, state.massUnit) },
         { it.format(java.time.format.DateTimeFormatter.ofPattern("d MMM uuuu", Locale.UK)) },
         { slot, enabled -> GymRestCard(state, model, slot, enabled) },
         { slot, enabled -> GymWarmupCard(state, model, slot, enabled) },
@@ -48,12 +50,14 @@ fun GymWorkoutScreen(model: GymNowViewModel, onBack: () -> Unit) {
 internal fun gymActualDescription(
     actual: StrengthSession.SetEntry,
     exercise: StrengthExercise,
+    unit: MassUnit = MassUnit.KG,
 ): String {
     val load =
         if (
             exercise.measurement().usesLoad() && exercise.mode() != StrengthExercise.Mode.BODYWEIGHT
         )
-            "${gymDecimal(actual.kilograms())} kg × "
+            if (unit == MassUnit.KG) "${gymDecimal(actual.kilograms())} kg × "
+            else "${MassText.label(actual.kilograms(), unit)} × "
         else ""
     val measurement =
         if (exercise.measurement().usesReps()) "${actual.reps()} reps"

@@ -76,6 +76,12 @@ fun NavGraphBuilder.strengthGraph(
         }
     }
     composable("gym-now") {
+        // System and app-bar Back leave the overview with the same refresh as the screen's own
+        // Back (C-03). GymNowScreen's sub-section handler is registered later, so it wins first.
+        androidx.activity.compose.BackHandler {
+            model.refresh()
+            nav.popBackStack()
+        }
         GymNowScreen(
             gymModel(),
             onWorkout = { nav.navigate("gym-workout") { launchSingleTop = true } },
@@ -123,7 +129,11 @@ fun NavGraphBuilder.strengthGraph(
     composable("strength/log") { StrengthScreen(readState(), model) }
 
     composable("strength/analytics") {
-        StrengthAnalyticsScreen(readState().strengthSessions, onBack = { nav.popBackStack() })
+        StrengthAnalyticsScreen(
+            readState().strengthSessions,
+            onBack = { nav.popBackStack() },
+            massUnit = readState().massUnit,
+        )
     }
 
     composable("strength/pbs") {

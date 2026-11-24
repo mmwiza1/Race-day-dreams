@@ -31,6 +31,18 @@ class HomePresentation(
 )
 
 /**
+ * The eyebrow above the race name on Home's countdown card (audit B-03). Before the race it is
+ * preparation, on the day it is the race itself, and afterwards it invites the result instead of
+ * counting down.
+ */
+internal fun homeRaceCountdownLabel(days: Long): String =
+    when {
+        days > 0 -> "Race preparation"
+        days == 0L -> "Race day"
+        else -> "Race complete · add your result"
+    }
+
+/**
  * Actual existing Home hierarchy, routes and evidence; platform effects stay required callbacks.
  */
 @Composable
@@ -134,9 +146,18 @@ private fun RunningTodayScreen(
                 }
             val minimumPace = run?.minimumSecondsPerKm()
             val maximumPace = run?.maximumSecondsPerKm()
+            // Stored in km and s/km; shown in the user's distance unit (B-04).
+            val imperial = DisplayUnits.imperial(state)
+            val unit = DisplayUnits.distanceUnit(imperial)
             StatRow(
                 listOfNotNull(
-                    today.distanceKm()?.let { Stat("Distance", presentation.decimal(it), "km") }
+                    today.distanceKm()?.let {
+                        Stat(
+                            "Distance",
+                            presentation.decimal(DisplayUnits.distance(it, imperial)),
+                            unit,
+                        )
+                    }
                         ?: today.duration()?.let {
                             Stat("Duration", "${it.getSeconds() / 60}", "min")
                         }
@@ -154,8 +175,8 @@ private fun RunningTodayScreen(
                     if (minimumPace != null && maximumPace != null)
                         Stat(
                             "Pace",
-                            "${presentation.paceSeconds(minimumPace)}–${presentation.paceSeconds(maximumPace)}",
-                            "/km",
+                            "${presentation.paceSeconds(DisplayUnits.pace(minimumPace, imperial))}–${presentation.paceSeconds(DisplayUnits.pace(maximumPace, imperial))}",
+                            "/$unit",
                             unitGap = false,
                         )
                     else null,
@@ -277,7 +298,8 @@ private fun RunningTodayScreen(
                     Discipline.RUNNING,
                     presentation.workoutName(next.category()),
                     presentation.shortDate(next.date()),
-                    next.distanceKm()?.let { "${presentation.decimal(it)} km" }
+                    // The platform distance formatter honours the user's km/mi setting (B-04).
+                    next.distanceKm()?.let { presentation.distance(it * 1000) }
                         ?: next.duration()?.let { "${it.getSeconds() / 60} min" },
                 ) {
                     workout(next.id())
@@ -288,15 +310,16 @@ private fun RunningTodayScreen(
     // 3. The race the plan builds towards: a milestone, high enough to motivate.
     state.profile?.raceGoal()?.let { goal ->
         val raceDate = goal.raceDate()
-        if (raceDate != null)
+        if (raceDate != null) {
+            val days = raceDate.toEpochDay() - currentDate.toEpochDay()
             CountdownCard(
-                raceDate.toEpochDay() - currentDate.toEpochDay(),
-                "Race preparation",
+                days,
+                homeRaceCountdownLabel(days),
                 goal.raceName().ifBlank { goal.distance().label() },
                 presentation.friendlyDate(raceDate),
                 race,
             )
-        else
+        } else
             Panel {
                 Text("Current goal", style = MaterialTheme.typography.labelLarge)
                 Text(goal.distance().label(), style = MaterialTheme.typography.titleLarge)

@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 /** Existing application chrome; routing, lifecycle and recorder ownership stay with the host. */
@@ -53,11 +55,14 @@ fun CoachShell(
             modifier = Modifier.weight(1f),
             topBar = {
                 TopAppBar(
+                    // The full name at a capped size: large text no longer turns it into "RDD"
+                    // (C-06).
                     title = {
                         Text(
-                            if (LocalDensity.current.fontScale >= 1.5f) "RDD"
-                            else "Race Day Dreams",
+                            "Race Day Dreams",
                             maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            style = cappedTextStyle(MaterialTheme.typography.titleLarge),
                             modifier = Modifier.semantics { contentDescription = "Race Day Dreams" },
                         )
                     },
@@ -112,9 +117,38 @@ fun CoachNavigationBar(route: String?, selectTab: (String) -> Unit) {
                     route == destination ||
                         destination == "strength" && route?.startsWith("strength") == true,
                 icon = { CoachDestinationIcon(destination) },
-                label = if (largeFont) null else ({ Text(label, maxLines = 1, softWrap = false) }),
+                // Always labelled (C-06): one line at a capped size, so the names stay visible at
+                // 200% text instead of leaving ambiguous icons. The full name stays in semantics.
+                label = {
+                    Text(
+                        label,
+                        maxLines = 1,
+                        softWrap = false,
+                        overflow = TextOverflow.Ellipsis,
+                        style = cappedTextStyle(MaterialTheme.typography.labelMedium),
+                    )
+                },
                 onClick = { selectTab(destination) },
             )
         }
     }
+}
+
+/** Largest text scale applied to the shell's one-line title and navigation labels (C-06). */
+internal const val SHELL_MAX_FONT_SCALE = 1.2f
+
+/**
+ * Scales [style] so that it grows with the system text size only up to [SHELL_MAX_FONT_SCALE].
+ * Single-line chrome (the app bar title and navigation labels) stays legible and in place at 200%
+ * text, while page content keeps the full scale.
+ */
+@Composable
+internal fun cappedTextStyle(style: TextStyle): TextStyle {
+    val scale = LocalDensity.current.fontScale
+    if (scale <= SHELL_MAX_FONT_SCALE) return style
+    val factor = SHELL_MAX_FONT_SCALE / scale
+    return style.copy(
+        fontSize = if (style.fontSize.isSp) style.fontSize * factor else style.fontSize,
+        lineHeight = if (style.lineHeight.isSp) style.lineHeight * factor else style.lineHeight,
+    )
 }

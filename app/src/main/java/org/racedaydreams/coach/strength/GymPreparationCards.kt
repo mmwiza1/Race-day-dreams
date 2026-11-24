@@ -88,5 +88,6 @@ internal fun GymWarmupCard(
         enabled = enabled,
         formatKilograms = { String.format(Locale.UK, "%.1f", it) },
         onPrepare = model::prepareWarmup,
+        massUnit = state.massUnit,
     )
 }

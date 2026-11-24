@@ -32,7 +32,8 @@ class SharedStrengthGenerationCoordinator(
     private val user = SqliteStrengthChoices(database)
     private val exclusions = SqliteExerciseExclusions(database)
     private val profiles = SqliteAthleteProfile(database)
-    private val focus = SqlitePrimaryFocus(SqliteSettings(database))
+    private val settings = SqliteSettings(database)
+    private val focus = SqlitePrimaryFocus(settings)
     private val mutable = MutableStateFlow(StrengthGenerationState())
     val state: StateFlow<StrengthGenerationState> = mutable.asStateFlow()
 
@@ -569,6 +570,12 @@ class SharedStrengthGenerationCoordinator(
                     slot,
                     advice,
                     history.filter { it.id() in advice.supportingSessionIds() },
+                    runCatching {
+                            org.racedaydreams.domain.body.MassUnit.valueOf(
+                                settings.getSetting("mass.unit") ?: "KG"
+                            )
+                        }
+                        .getOrDefault(org.racedaydreams.domain.body.MassUnit.KG),
                 )
         )
     }

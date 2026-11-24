@@ -27,6 +27,8 @@ import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivitySources
 import org.racedaydreams.domain.activity.SplitAnalysis
 import org.racedaydreams.domain.activity.SplitCalculator
+import org.racedaydreams.domain.coaching.RunFeedback
+import org.racedaydreams.domain.coaching.RunScoreEngine
 import org.racedaydreams.domain.time.*
 import org.racedaydreams.reminders.KotlinxReminderCalendar
 import platform.UIKit.UIViewController
@@ -64,7 +66,7 @@ fun AppleHistoryScreen(
                 session.activities.activitySummaryPage(time, id, limit)
             }
         },
-        activityDate = { dateLabel(it.start(), it.startOffset()) },
+        activityDate = { dateLabel(it) },
         strengthDate = ::dateLabel,
         distance = { distanceLabel(it, imperial) },
         elapsedPace = { activity, miles ->
@@ -167,7 +169,7 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                 // The shared summary, heart-rate and route sections carry their own labelled
                 // panels.
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(dateLabel(run.start(), run.startOffset()))
+                    Text(dateLabel(run))
                     SharedRecordedRunSummary(
                         run,
                         { distanceLabel(it, imperial) },
@@ -276,6 +278,9 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                     SharedRunNotes(current, state.busy) { notes, effort ->
                         session.services.runningEvidence.saveNotes(id, notes, effort)
                     }
+                    // D-4: the shared comparison and read-only feedback cards, in Android's order
+                    // and with the same inputs. Proposals and manual plan linking stay elsewhere.
+                    AppleRunComparisonAndFeedback(state, run, imperial)
                     (state.error ?: state.message)?.let { Text(it) }
                     TextButton(onClick = { showRoute = !showRoute }) {
                         Text(if (showRoute) "Hide route" else "View recorded route")
@@ -355,8 +360,70 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
     }
 }
 
-private fun dateLabel(instant: Instant, offset: ZoneOffset?): String {
-    val date = CalendarDates.atOffset(instant, offset ?: Offsets.ofTotalSeconds(0))
+/**
+ * iOS adapter for the shared run comparison and Run Score feedback, mirroring Android's
+ * `RunComparisonSection` and the read-only part of `RunFeedbackSection`.
+ */
+@Composable
+private fun AppleRunComparisonAndFeedback(
+    state: CoachUiState,
+    run: ActivityRecord,
+    imperial: Boolean,
+) {
+    val prescriptions =
+        remember(state.planVersions) {
+            state.planVersions.flatMap { it.plan().workouts() }.distinctBy { it.id() }
+        }
+    SharedRunComparisonSection(
+        run,
+        state.activities,
+        prescriptions,
+        imperial,
+        { dateLabel(it) },
+        { distanceLabel(it, imperial) },
+        ::paceLabel,
+        ::oneDecimal,
+    )
+    val response = state.runResponses.firstOrNull { it.activityId() == run.id() }
+    val planned =
+        state.planVersions
+            .firstOrNull { it.id() == response?.planVersionId() }
+            ?.plan()
+            ?.workouts()
+            ?.firstOrNull { it.id() == response?.plannedWorkoutId() }
+    val feedback by
+        produceState<RunFeedback?>(null, run, planned, response) {
+            value =
+                withContext(applicationIoDispatcher()) {
+                    runCatching { RunScoreEngine.analyse(planned, run, response) }.getOrNull()
+                }
+        }
+    SectionLabel(
+        if (planned == null) "Run Analysis" else "Run Score and feedback",
+        Glyph.SPARK,
+        ChartHue.VIOLET,
+    )
+    feedback?.let { SharedRunFeedbackCard(it) }
+}
+
+private fun paceLabel(seconds: Double): String {
+    val rounded = kotlin.math.round(seconds).toLong()
+    return "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
+}
+
+private fun oneDecimal(value: Double): String {
+    val tenths = (value * 10).roundToLong()
+    return (tenths / 10).toString() + "." + kotlin.math.abs(tenths % 10)
+}
+
+/** Runs use the shared dating rule: the source's offset, else the device zone (audit B-01). */
+private fun dateLabel(run: ActivityRecord): String =
+    dateText(org.racedaydreams.domain.activity.ActivityDates.localDate(run))
+
+private fun dateLabel(instant: Instant, offset: ZoneOffset?): String =
+    dateText(org.racedaydreams.domain.activity.ActivityDates.localDate(instant, offset))
+
+private fun dateText(date: LocalDate): String {
     val day = date.getDayOfMonth().toString().padStart(2, '0')
     val month = date.getMonthValue().toString().padStart(2, '0')
     return "$day/$month/${date.getYear()}"

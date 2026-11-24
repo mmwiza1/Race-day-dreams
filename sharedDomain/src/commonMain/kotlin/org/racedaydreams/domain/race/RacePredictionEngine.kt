@@ -1,5 +1,6 @@
 package org.racedaydreams.domain.race
 
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.math.*
 import org.racedaydreams.domain.activity.*
@@ -28,11 +29,14 @@ object RacePredictionEngine {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun predict(
         metres: Double,
         results: List<RecordedResult>,
         runs: List<ActivityRecord>,
         today: LocalDate,
+        /** Shows the reason distances in miles; the evidence itself is unchanged (audit B-04). */
+        imperial: Boolean = false,
     ): Prediction {
         require(metres.isFinite() && metres >= 1000 && metres <= 100000) { "Invalid race distance" }
         val reasons = mutableListOf<String>()
@@ -63,9 +67,9 @@ object RacePredictionEngine {
         var total = 0.0
         var longest = 0.0
         val weeks = mutableSetOf<LocalDate>()
-        for (a in runs) {
-            val date =
-                CalendarDates.atOffset(a.start(), a.startOffset() ?: Offsets.ofTotalSeconds(0))
+        // Each physical run counts once, however many sources reported it (audit B-02).
+        for (a in PhysicalRunSessions.counted(runs)) {
+            val date = ActivityDates.localDate(a)
             if (
                 date.toEpochDay() > today.toEpochDay() ||
                     date.toEpochDay() < today.minusDays(27).toEpochDay() ||
@@ -77,8 +81,10 @@ object RacePredictionEngine {
             longest = max(longest, distance)
             weeks.add(date.minusDays((date.getDayOfWeek().getValue() - 1).toLong()))
         }
+        val unitMetres = if (imperial) 1609.344 else 1000.0
+        val unit = if (imperial) "mi" else "km"
         reasons.add(
-            "Recent weekly average ${performanceDecimal(total/4000)} km; longest ${performanceDecimal(longest/1000)} km. Endurance coverage is separate from short-distance speed."
+            "Recent weekly average ${performanceDecimal(total / 4 / unitMetres)} $unit; longest ${performanceDecimal(longest / unitMetres)} $unit. Endurance coverage is separate from short-distance speed."
         )
         val endurance =
             longest >= metres * (if (metres >= 40000) 0.6 else if (metres >= 20000) 0.6 else 0.5) &&

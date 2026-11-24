@@ -24,11 +24,15 @@ fun SharedTrainingRecoveryContent(
     onMove: (String, LocalDate) -> Unit,
     dateLabel: (LocalDate) -> String,
     instantLabel: (Instant) -> String,
+    appBarBack: Boolean = false,
 ) {
     var evidence by rememberSaveable { mutableStateOf(false) }
     var scheduling by rememberSaveable { mutableStateOf(false) }
     CoachPage {
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
+        // Android hosts pass appBarBack = true: the shell's app bar already has Back for this
+        // route (audit C-04). iOS has no app bar Back, so it keeps this in-content control.
+        if (!appBarBack)
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
         ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Recovery", "Recovery & training balance")
         QuietNote("Useful options from your recorded training. You decide what feels appropriate.")
         if (state.busy) LinearProgressIndicator(Modifier.fillMaxWidth())
@@ -98,7 +102,7 @@ fun SharedTrainingRecoveryContent(
                             stateDescription = if (evidence) "Expanded" else "Collapsed"
                         },
                 ) {
-                    Text(if (evidence) "Supporting evidence ▴" else "Supporting evidence ▾")
+                    DisclosureLabel("Supporting evidence", evidence)
                 }
                 if (evidence) {
                     if (review.evidence().isEmpty())
@@ -122,9 +126,7 @@ fun SharedTrainingRecoveryContent(
                             stateDescription = if (scheduling) "Expanded" else "Collapsed"
                         },
                 ) {
-                    Text(
-                        if (scheduling) "Review schedule options ▴" else "Review schedule options ▾"
-                    )
+                    DisclosureLabel("Review schedule options", scheduling)
                 }
                 if (scheduling)
                     state.conflicts
@@ -168,4 +170,14 @@ fun SharedTrainingRecoveryContent(
             Text("Refresh local evidence")
         }
     }
+}
+
+/**
+ * A disclosure button's label with its ▾/▴ glyph hidden from screen readers (audit C-R05): the
+ * button's "Expanded"/"Collapsed" state already says what the glyph shows.
+ */
+@Composable
+private fun DisclosureLabel(label: String, expanded: Boolean) {
+    Text(label)
+    Text(if (expanded) " ▴" else " ▾", modifier = Modifier.clearAndSetSemantics {})
 }

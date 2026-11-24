@@ -38,5 +38,6 @@ fun AchievementsScreen(
         onBack = onBack,
         onDismiss = model::dismiss,
         onRefresh = model::refresh,
+        appBarBack = true,
     )
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Health access is optional. No network or broad-storage permission. Location is only used during explicit recording. -->
+    <!-- Health access is optional. No broad-storage permission. Network is used only for the optional update check (at most daily, when the app opens) and an update you choose. Location is only used during explicit recording. -->
     <uses-permission android:name="android.permission.health.READ_EXERCISE" />
     <uses-permission android:name="android.permission.health.READ_WEIGHT" />
     <uses-permission android:name="android.permission.health.READ_HEIGHT" />

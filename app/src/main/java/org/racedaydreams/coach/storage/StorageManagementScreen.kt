@@ -30,6 +30,7 @@ fun StorageManagementScreen(model: StorageManagementViewModel, onBack: () -> Uni
         model::choose,
         model::preview,
         model::cleanup,
+        appBarBack = true,
     )
 }
 
@@ -41,13 +42,17 @@ fun StorageManagementContent(
     onChoice: (DetailRetention.Policy) -> Unit,
     onPreview: () -> Unit,
     onCleanup: () -> Unit,
+    appBarBack: Boolean = false,
 ) {
     var selected by
         rememberSaveable(state.preferences) { mutableStateOf(state.preferences.policy()) }
     var confirming by rememberSaveable { mutableStateOf(false) }
     var details by rememberSaveable { mutableStateOf(false) }
     CoachPage {
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
+        // The Android host passes appBarBack = true: the shell's app bar already has Back for
+        // this route (audit C-04). Direct content callers keep the in-content control.
+        if (!appBarBack)
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
         CoachHeading("Storage & recording detail")
         Text(
             "Keep your training history. Choose how long to keep detailed GPS and sensor recordings."
@@ -126,7 +131,9 @@ fun StorageManagementContent(
                             stateDescription = if (details) "Expanded" else "Collapsed"
                         },
                 ) {
-                    Text(if (details) "Storage details ▴" else "Storage details ▾")
+                    Text("Storage details")
+                    // The glyph repeats the Expanded/Collapsed state, so it is not read (C-R05).
+                    Text(if (details) " ▴" else " ▾", modifier = Modifier.clearAndSetSemantics {})
                 }
                 if (details) {
                     Text(

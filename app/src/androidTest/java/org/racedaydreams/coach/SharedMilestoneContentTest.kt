@@ -39,6 +39,8 @@ class SharedMilestoneContentTest {
         show(true)
         val title=requireNotNull(award.kind().title())
         compose.onNodeWithText("✓ $title").assertDoesNotExist()
+        // C-04: without appBarBack (iOS) the page keeps its own Back.
+        compose.onNodeWithText("Back").assertExists()
         compose.onNodeWithTag("milestone-${award.kind().name}").assertIsDisplayed()
             .assert(hasText(title)).assert(hasText("Recognised 15 Nov 2026"))
     }

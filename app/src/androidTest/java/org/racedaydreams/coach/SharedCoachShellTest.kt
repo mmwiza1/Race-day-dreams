@@ -110,8 +110,13 @@ class SharedCoachShellTest {
             compose.onNodeWithContentDescription(it).assertIsDisplayed().assertHasClickAction()
         }
         compose.onNodeWithContentDescription("Strength").assertIsSelected()
+        // C-06: the tab names stay visible at 200% text and the title stays meaningful.
+        listOf("Home", "Plan", "Calendar", "Progress", "Strength").forEach {
+            compose.onNodeWithText(it, useUnmergedTree = true).assertIsDisplayed()
+        }
+        compose.onNodeWithText("RDD").assertDoesNotExist()
+        compose.onNodeWithText("Race Day Dreams", useUnmergedTree = true).assertIsDisplayed()
         compose.onNodeWithContentDescription("Progress").performClick()
-        compose.onNodeWithText("RDD").assertIsDisplayed()
         compose.runOnIdle { assertEquals(listOf("progress"), selected) }
     }
 

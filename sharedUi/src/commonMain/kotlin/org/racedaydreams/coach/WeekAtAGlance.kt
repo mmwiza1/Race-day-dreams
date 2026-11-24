@@ -83,6 +83,31 @@ object WeekAtAGlance {
                     state.runResponses.mapNotNull { it.plannedWorkoutId() })
                 .toSet()
         val gym = programmeSchedule(state)
+        // One chip per physical run (B-07): another source's copy of a run is not a second run,
+        // and a copy of a run linked to a planned workout is already shown by that workout.
+        val unplannedRuns =
+            if (dateOf == null) emptyList()
+            else
+                org.racedaydreams.domain.activity.PhysicalRunSessions.sessions(state.activities)
+                    .filter { session ->
+                        session.records().none { record ->
+                            record.plannedWorkoutId()?.let { it in planIds } == true
+                        }
+                    }
+                    .map { dateOf(it.counted.start()) }
+        // A recorded gym workout linked to a scheduled session is shown as that session, done, on
+        // its scheduled day; it is not also listed on the day it was recorded (B-07). Links may
+        // join sessions up to three days apart.
+        val linkedActualIds =
+            gym?.let { (scheduled, completed) ->
+                val shown = scheduled.map { it.first }.toSet()
+                state.gymLinks.values
+                    .filter {
+                        it.prescribedSessionId() in shown && it.prescribedSessionId() in completed
+                    }
+                    .map { it.actualSessionId() }
+                    .toSet()
+            } ?: emptySet()
         return (0 until 7).map { offset ->
             val day = start.plusDays(offset.toLong())
             val past = day.toEpochDay() < today.toEpochDay()
@@ -99,19 +124,13 @@ object WeekAtAGlance {
                         workoutName(workout.category()),
                     )
             }
-            if (dateOf != null)
-                state.activities
-                    .filter {
-                        dateOf(it.start()) == day &&
-                            it.plannedWorkoutId().let { id -> id == null || id !in planIds }
-                    }
-                    .forEach { sessions += DaySession(Discipline.RUNNING, SessionMark.DONE, "Run") }
-            var linkedStrength = 0
+            repeat(unplannedRuns.count { it == day }) {
+                sessions += DaySession(Discipline.RUNNING, SessionMark.DONE, "Run")
+            }
             gym?.let { (scheduled, completed) ->
                 for ((id, date) in scheduled.distinctBy { it.first }) {
                     if (date != day) continue
                     val done = id in completed
-                    if (done) linkedStrength++
                     sessions +=
                         DaySession(
                             Discipline.STRENGTH,
@@ -125,8 +144,11 @@ object WeekAtAGlance {
                 }
             }
             if (dateOf != null) {
-                val recorded = state.strengthSessions.count { dateOf(it.startedAt()) == day }
-                repeat((recorded - linkedStrength).coerceAtLeast(0)) {
+                val recorded =
+                    state.strengthSessions.count {
+                        it.id() !in linkedActualIds && dateOf(it.startedAt()) == day
+                    }
+                repeat(recorded) {
                     sessions +=
                         DaySession(Discipline.STRENGTH, SessionMark.DONE, "Strength workout")
                 }

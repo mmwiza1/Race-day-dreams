@@ -62,6 +62,7 @@ internal fun AppleWeeklyReview(
                 listOfNotNull(presentation.workoutName(workout.category()), task)
                     .joinToString(" · ")
             },
+            DisplayUnits.imperial(state),
         )
     }
     state.error?.let { Text(it) }

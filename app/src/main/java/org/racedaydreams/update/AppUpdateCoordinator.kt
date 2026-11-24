@@ -289,7 +289,16 @@ class AppUpdateCoordinator(
                     return@launch
                 }
                 try {
-                    UpdateInstaller.commit(app, apk)
+                    UpdateInstaller.commit(app, apk, update.apkSha256)
+                } catch (_: UpdateInstaller.ChangedAfterVerification) {
+                    apk.delete()
+                    status(
+                        UpdateStatus.Failed(
+                            "The download is damaged or does not match the published release. It was deleted; try again.",
+                            update,
+                            UpdateStatus.Retry.DOWNLOAD,
+                        )
+                    )
                 } catch (_: Exception) {
                     status(
                         UpdateStatus.Failed(

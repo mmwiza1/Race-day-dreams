@@ -101,6 +101,17 @@ object DashboardAnalytics {
         var due = 0
         var completed = 0
         var skipped = 0
+        // Skipping a workout removes it from the next plan version, so a skipped workout is
+        // usually absent from [workouts]. Its decision keeps the workout's original date: count
+        // it from there (audit B-06). Due and completed figures are unchanged.
+        val present = workouts.mapTo(HashSet()) { it.id() }
+        for (d in latest.values) if (
+            d.kind() == WorkoutDecision.Kind.SKIPPED &&
+                d.workoutId() !in present &&
+                d.workoutId() !in linked &&
+                window.contains(d.originalDate())
+        )
+            skipped++
         for (w in workouts.distinctBy { it.id() }) {
             val decision = latest[w.id()]
             val date =

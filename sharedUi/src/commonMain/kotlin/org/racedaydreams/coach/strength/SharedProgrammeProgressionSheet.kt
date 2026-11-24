@@ -47,7 +47,9 @@ fun SharedProgrammeProgressionContent(
         }
     val target = review.advice.proposedTarget()
     val comparisons =
-        remember(review.slot, target) { StrengthPrescriptionText.comparisons(review.slot, target) }
+        remember(review.slot, target, review.massUnit) {
+            StrengthPrescriptionText.comparisons(review.slot, target, review.massUnit)
+        }
     val changed = comparisons.filter { it.changed() }
     val unchanged = comparisons.filterNot { it.changed() }
     val why =
@@ -116,7 +118,9 @@ fun SharedProgrammeProgressionContent(
             item {
                 SemanticCard(Tile.Progress) {
                     ProgressionHeading("About the weight", ProgressionSymbol.WEIGHT)
-                    StrengthPrescriptionText.weight(review.slot, target).forEach { Text(it) }
+                    StrengthPrescriptionText.weight(review.slot, target, review.massUnit).forEach {
+                        Text(it)
+                    }
                 }
             }
             if (!advanced) item(key = "summary-reason") { ProgressionReason(why) }
@@ -249,7 +253,7 @@ fun SharedProgrammeProgressionContent(
                                                     }
                                                 val load =
                                                     if (block.exercise().measurement().usesLoad())
-                                                        "${StrengthPrescriptionText.number(set.kilograms())} kg recorded · "
+                                                        "${org.racedaydreams.domain.presentation.MassText.label(set.kilograms(), review.massUnit)} recorded · "
                                                     else ""
                                                 Text(load + task)
                                                 Text(

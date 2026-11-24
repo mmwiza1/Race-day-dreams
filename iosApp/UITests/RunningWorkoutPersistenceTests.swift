@@ -148,14 +148,20 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
 
         addTeardownBlock { XCUIDevice.shared.location = nil }
         // A loaded CI simulator can drop or delay the first simulated fix, for example when it is
-        // set before location updates have started. Repeat the same starting fix (up to 10 times)
-        // until the app reports a real GPS fix; the recording still needs one to become ready.
+        // set before location updates have started. "GPS ready" is also transient: the shared
+        // RunMetricsEngine shows "GPS signal weak" once no usable fix has arrived for 5 seconds,
+        // and a fix stamped before recording started is rejected as stale, so a fix cannot be
+        // primed before Start. Main job 137696416489 saw "GPS ready" after one fix, then
+        // re-waited 4 seconds later with no new fix and timed out on "GPS signal weak". Keep
+        // fresh fixes arriving well inside that window (at most 45 fixes, about 2 minutes) while
+        // waiting, and give one more fresh fix right before the unchanged readiness assertion.
         let gpsReady = control("GPS ready", in: app)
         var fixes = 0
         repeat {
             setSimulatedLocation(latitude: 51.5000)
             fixes += 1
-        } while !gpsReady.waitForExistence(timeout: 6) && fixes < 10
+        } while !gpsReady.waitForExistence(timeout: 2) && fixes < 45
+        setSimulatedLocation(latitude: 51.5000)
         XCTAssertTrue(gpsReady.waitForExistence(timeout: 20))
         let measuredDistance = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label CONTAINS %@", "0.1 km")).firstMatch
@@ -171,6 +177,8 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         XCTAssertTrue(measuredDistance.waitForExistence(timeout: 20))
         tap("Finish & save", in: app)
         tap("Save recorded run", in: app)
+        // D-4: the shared run analysis card is on the iOS run detail (an unplanned run).
+        XCTAssertTrue(reveal("Run Analysis", in: app))
         tap("View recorded route", in: app)
         XCTAssertTrue(control("Your recorded route", in: app).waitForExistence(timeout: 20))
         tap("Export recorded route (GPX)", in: app)

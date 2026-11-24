@@ -4,6 +4,7 @@ package org.racedaydreams.recording
 
 import kotlin.math.floor
 import kotlin.math.roundToLong
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.useContents
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.time.Instant
@@ -11,14 +12,22 @@ import org.racedaydreams.domain.time.Instants
 import platform.CoreLocation.*
 import platform.Foundation.NSDate
 import platform.Foundation.NSError
-import platform.Foundation.NSProcessInfo
 import platform.Foundation.NSThread
 import platform.Foundation.timeIntervalSince1970
 import platform.darwin.NSObject
+import platform.posix.CLOCK_MONOTONIC_RAW
+import platform.posix.clock_gettime_nsec_np
 
 /** Device clocks for live recording. Recovery uses the stored times from the former process. */
 object AppleRecordingClock {
-    fun monotonicMillis(): Long = (NSProcessInfo.processInfo.systemUptime * 1_000).toLong()
+    /**
+     * Continuous monotonic time that keeps advancing while the device sleeps (Darwin's
+     * CLOCK_MONOTONIC_RAW, as mach_continuous_time), like Android's elapsedRealtime. The former
+     * systemUptime base stops during sleep, which could under-report a locked-screen run (audit
+     * A-R1). Values are only compared within one process; recovery uses stored times.
+     */
+    fun monotonicMillis(): Long =
+        (clock_gettime_nsec_np(CLOCK_MONOTONIC_RAW.convert()) / 1_000_000u).toLong()
 
     fun now(): Instant = instant(NSDate().timeIntervalSince1970)
 

@@ -156,6 +156,27 @@ installations that cannot support them (all existing debug-signed installs).
     - APK SHA-256 `19fe06d6…18e8`, matching its `.sha256`, the `latest` alias and the update manifest.
     - `apksigner` certificate `e7af758a…929d`.
     - Unsigned .ipa SHA-256 `07616f5c…7080`.
+- **Visual modernisation W2–W4d merged (23 November 2026):** integration PR #47 was squash-merged as `main` `471d5290`. The tree is identical to its verified head `8b3e7cb8`: source `eadf2de3` passed Android API 28/35/36, iOS shared and device, and one canonical screenshot regeneration of 524 captures.
+  - It supersedes #42 (W2), #40 (W3), #41 (W4a), #43 (W4b), #45 (W4d) and #46 (docs). The owner chose one integrated validation over six separate runs. Those PRs are closed with comments naming their final heads, which went in unchanged.
+- **W4c merged (23 November 2026, owner's conditional approval):** PR #44 was squash-merged as `main` `aa6fa233`. The tree is identical to its verified head `58cbe2f0` (source `b3812f81` = `main` `471d5290` + W4c). It includes the three owner-required fixes:
+  - Android bouldering has a single app-bar Back, and iOS keeps its in-content Back.
+  - The race-date countdown reads "Today".
+  - Milestone titles have no ✓ and are announced with "Recognised <date>".
+- **Final `main` verified:** run 45243713104 on `aa6fa233` was green on attempt 1.
+  - It published 0.15.4-test1 / 27 from `aa6fa233`.
+    - APK SHA-256 `5bbf7ed9…`, matching its `.sha256`, the `latest` alias and the manifest.
+    - `apksigner` certificate `e7af758a…929d`.
+    - Unsigned .ipa SHA-256 `a44de976…`.
+  - The earlier `471d5290` run was cancelled by the next push to `main` before its API 28 and 35 infra reruns finished; `aa6fa233` covers that tree.
+- **Whole-application audit (report only, 23 November 2026):** `docs/AUDIT_2026-11.md`, with area reports in `docs/audit-2026-11/`.
+  - 24 confirmed bugs (P1 4, P2 16, P3 4) and 35 risks; no P0.
+  - Top items:
+    - D-3: the published APK is debuggable;
+    - D-1 and D-2: version not bumped and stale release notes;
+    - B-01: HealthKit runs dated in UTC in Calendar and review;
+    - A-B1 and A-B2: Android recording edge cases.
+  - Nothing is implemented. Fix-forward priorities wait for owner approval.
+  - **Correction:** the API 35 "5K not displayed" flake is Home's "Current goal" text after recreation (a test-timing issue), not the onboarding goal control. It is not evidence for the Galaxy S24 issue.
 - **Recurring CI flakes, for the reliability review (not visual work):**
   - **iOS `RunningWorkoutPersistenceTests.testFavouriteSurvivesRelaunchWithoutLocationPermission`:** three failures on loaded macOS runners on 23 November 2026, at "Could not reach Pause" and at the `gpsReady` wait on line 159. It also caused a job timeout. The simulated location fix is unreliable under load.
   - **Android API 35 onboarding "5K" not displayed:** seen after the V1 and V3 merges.

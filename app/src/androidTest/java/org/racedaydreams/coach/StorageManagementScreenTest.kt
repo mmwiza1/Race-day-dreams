@@ -79,10 +79,13 @@ class StorageManagementScreenTest {
                         { choices++ },
                         {},
                         { cleaned++ },
+                        appBarBack = true,
                     )
                 }
             }
         }
+        // C-04: as on the Android host, the app bar has the only Back.
+        compose.onAllNodesWithText("Back").assertCountEquals(0)
         compose.onNodeWithText("5 years").performScrollTo().performClick()
         compose
             .onNodeWithText("✓ 5 years")
@@ -95,11 +98,11 @@ class StorageManagementScreenTest {
             .performClick()
         Assert.assertEquals(1, choices)
         Assert.assertEquals(0, cleaned)
-        compose.onNodeWithText("Storage details ▾").performScrollTo().performClick()
+        compose.onNodeWithText("Storage details").performScrollTo().performClick()
         compose
-            .onNodeWithText("Storage details ▴")
+            .onNodeWithText("Storage details")
             .assert(SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded"))
-        compose.onNodeWithText("Storage details ▴").performClick()
+        compose.onNodeWithText("Storage details").performClick()
         compose
             .onNodeWithText("Detail recorded before: 5 November 2024 at 12:00 UTC")
             .performScrollTo()

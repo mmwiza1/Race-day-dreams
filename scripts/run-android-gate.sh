@@ -55,6 +55,10 @@ rdd_wait_for_platform_focus() {
         while :; do
             focus=$(timeout 5 adb shell dumpsys window | awk "/mCurrentFocus=/")
             case "$focus" in
+                *"Application Not Responding: com.android.launcher3"*)
+                    printf "%s\n" "PLATFORM_FOCUS_BLOCKED $focus"
+                    exit 3
+                    ;;
                 *"Application Not Responding:"*)
                     printf "%s\n" "PLATFORM_FOCUS_BLOCKED $focus"
                     exit 1
@@ -69,12 +73,34 @@ rdd_wait_for_platform_focus() {
     ' sh "$1"
 }
 
-# Warm a real platform window, then return to the default AOSP launcher. Existing ANR
-# dialogs prevent these checks from passing; none is dismissed or force-stopped here.
-timeout 20 adb shell am start -W -a android.settings.SETTINGS
-rdd_wait_for_platform_focus com.android.settings
-adb shell input keyevent KEYCODE_HOME
-rdd_wait_for_platform_focus com.android.launcher3
+# Warm a real platform window, then return to the default AOSP launcher. Each step returns
+# its own status because callers test it with `if`, where `set -e` does not apply.
+rdd_prepare_platform_focus() {
+    timeout 20 adb shell am start -W -a android.settings.SETTINGS || return $?
+    rdd_wait_for_platform_focus com.android.settings || return $?
+    adb shell input keyevent KEYCODE_HOME || return $?
+    rdd_wait_for_platform_focus com.android.launcher3 || return $?
+}
+
+# The emulator action presses KEYCODE_MENU as soon as sys.boot_completed is set. If the AOSP
+# launcher has no focused window yet, that key times out into a launcher3 ANR ("Application
+# does not have a focused window") before any app test runs. CI jobs 137881465453 (API 35),
+# 136748283333 and 136697098918 (API 36) failed here. Recover from exactly that platform
+# state, once: report it, stop the launcher process (its ANR dialog closes with it) and
+# require real Settings and launcher focus again. A SystemUI or any other ANR, or a second
+# launcher ANR, still fails before the app under test starts.
+if rdd_prepare_platform_focus; then
+    :
+else
+    rdd_focus_status=$?
+    if [ "$rdd_focus_status" -ne 3 ]; then
+        exit "$rdd_focus_status"
+    fi
+    printf '%s\n' "PLATFORM_LAUNCHER_ANR_RECOVERY stopping com.android.launcher3 once before tests"
+    timeout 10 adb shell am force-stop com.android.launcher3
+    timeout 20 adb shell am wait-for-broadcast-idle
+    rdd_prepare_platform_focus
+fi
 # Test-only identities and bounded stacks; never dump private application logs.
 adb logcat -v raw -s RddGate:I '*:S' &
 rdd_test_log_pid=$!

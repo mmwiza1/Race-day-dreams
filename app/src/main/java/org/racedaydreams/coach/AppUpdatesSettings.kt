@@ -9,7 +9,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -95,7 +98,7 @@ fun AppUpdatesCard(state: AppUpdateState, actions: AppUpdateActions) =
         Text(
             "App updates",
             style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.testTag("app-updates"),
+            modifier = Modifier.testTag("app-updates").semantics { heading() },
         )
         Text(
             "Installed: ${installed.versionName} (build ${installed.versionCode})",
@@ -256,7 +259,15 @@ private fun StatusText(status: UpdateStatus) {
         color =
             if (status is UpdateStatus.Failed) MaterialTheme.colorScheme.error
             else MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.testTag("app-updates-status"),
+        // Announced politely when a check, download or install changes state (C-07). Download
+        // progress is spoken once per update rather than at every byte count; the progress bar
+        // carries the percentage.
+        modifier =
+            Modifier.testTag("app-updates-status").semantics {
+                liveRegion = LiveRegionMode.Polite
+                if (status is UpdateStatus.Downloading)
+                    contentDescription = "Downloading ${versionLabel(status.update)}…"
+            },
     )
 }
 

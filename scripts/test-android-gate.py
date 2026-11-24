@@ -3,6 +3,7 @@
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import signal
 import subprocess
@@ -59,6 +60,9 @@ if Path(sys.argv[0]).name == 'adb':
         event('platform-settings')
         (state / 'foreground').write_text('com.android.settings')
         sys.exit(int(os.environ.get('RDD_GATE_TEST_PLATFORM_START_EXIT', '0')))
+    elif args == ['shell', 'am', 'force-stop', 'com.android.launcher3']:
+        event('launcher-stop')
+        (state / 'launcher-stopped').touch()
     elif args == ['shell', 'input', 'keyevent', 'KEYCODE_HOME']:
         event('platform-home')
         (state / 'foreground').write_text('com.android.launcher3')
@@ -68,8 +72,11 @@ if Path(sys.argv[0]).name == 'adb':
     elif args == ['shell', 'dumpsys', 'window']:
         event('window-focus')
         foreground = state / 'foreground'
+        launcher_anr = os.environ.get('RDD_GATE_TEST_LAUNCHER_ANR')
         if os.environ.get('RDD_GATE_TEST_PLATFORM_ANR') == '1':
             print('mCurrentFocus=Window{1 u0 Application Not Responding: com.android.systemui}')
+        elif launcher_anr == 'persist' or (launcher_anr == '1' and not (state / 'launcher-stopped').exists()):
+            print('mCurrentFocus=Window{1 u0 Application Not Responding: com.android.launcher3}')
         elif foreground.exists():
             package = foreground.read_text()
             if os.environ.get('RDD_GATE_TEST_FOCUS_DELAY') == '1' and not (state / 'focus-polled').exists():
@@ -107,6 +114,39 @@ else:
     event('verify')
     sys.exit(int(os.environ.get('RDD_GATE_TEST_VERIFY_EXIT', '0')))
 '''
+
+
+def instrumentation_test_classes(root):
+    """Every androidTest class that JUnit runs: a file's own top-level class with a JUnit 4
+    @Test method, or a JUnit 3 (Android)TestCase subclass. Helper classes are not runnable."""
+    found = {}
+    for source in sorted((root / 'app/src/androidTest').rglob('*')):
+        if source.suffix not in ('.kt', '.java'):
+            continue
+        text = source.read_text(encoding='utf-8')
+        package = re.search(r'^package\s+([\w.]+)', text, re.M)
+        declared = re.search(
+            r'^(?:(?:public|internal|open|abstract|final)\s+)*class\s+' + re.escape(source.stem) + r'\b(.*)$',
+            text, re.M,
+        )
+        if not package or not declared:
+            continue
+        junit4 = '@Test' in text
+        junit3 = re.search(r'(?::|extends)\s*(?:android\.test\.)?(?:Android)?TestCase\b', declared.group(1))
+        if junit4 or junit3:
+            found[package.group(1) + '.' + source.stem] = source
+    return found
+
+
+def draft_gate_contract(workflow_text):
+    listed = re.search(r'RDD_FOCUSED_CLASSES:\s*(\S+)', workflow_text)
+    classes = listed.group(1).split(',') if listed else []
+    excluded = {}
+    for line in workflow_text.splitlines():
+        entry = re.match(r'\s*#\s*RDD_FOCUSED_EXCLUDED:\s*([\w.]+)\s*\|\s*(.*)$', line)
+        if entry:
+            excluded[entry.group(1)] = entry.group(2).strip()
+    return classes, excluded
 
 
 class AndroidGateTest(unittest.TestCase):
@@ -272,6 +312,34 @@ class AndroidGateTest(unittest.TestCase):
         self.assertNotIn('gradle-guard', self.events())
         self.assertFalse((self.state / 'reader.pid').exists())
 
+    def test_boot_launcher_anr_is_recovered_once_and_focus_is_proven_again(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_LAUNCHER_ANR='1')
+        self.assertEqual(0, code, stderr)
+        self.assertIn('PLATFORM_LAUNCHER_ANR_RECOVERY', stdout)
+        events = self.events()
+        self.assertEqual(1, events.count('launcher-stop'))
+        stop = events.index('launcher-stop')
+        # Settings and launcher focus are both proven again after the recovery, before tests.
+        self.assertEqual(2, events.count('platform-settings'))
+        self.assertIn('platform-home', events[stop:])
+        self.assertLess(stop, events.index('gradle-guard'))
+        self.assertIn('PLATFORM_FOCUS_READY com.android.settings', stdout)
+        self.assertIn('PLATFORM_FOCUS_READY com.android.launcher3', stdout)
+        self.assert_reader_stopped()
+
+    def test_persistent_launcher_anr_still_fails_before_tests(self):
+        code, stdout, stderr = self.run_gate(RDD_GATE_TEST_LAUNCHER_ANR='persist')
+        self.assertEqual(3, code, stderr)
+        self.assertEqual(1, self.events().count('launcher-stop'))
+        self.assertNotIn('PLATFORM_FOCUS_READY', stdout)
+        self.assertNotIn('gradle-guard', self.events())
+        self.assertFalse((self.state / 'reader.pid').exists())
+
+    def test_systemui_anr_is_never_recovered(self):
+        code, _, stderr = self.run_gate(RDD_GATE_TEST_PLATFORM_ANR='1')
+        self.assertEqual(1, code, stderr)
+        self.assertNotIn('launcher-stop', self.events())
+
     def test_focused_app_is_not_accepted_until_its_actual_window_has_focus(self):
         code, stdout, stderr = self.run_gate(RDD_GATE_TEST_FOCUS_DELAY='1')
         self.assertEqual(0, code, stderr)
@@ -298,6 +366,63 @@ class AndroidGateTest(unittest.TestCase):
         self.assertIn('emulator-build: 16740729', workflow)
         self.assertIn('emulator-options: -no-window -gpu software -no-snapshot -noaudio -no-boot-anim', workflow)
         self.assertNotIn('rdd_test_log_pid', workflow)
+
+
+class DraftGateCoverageTest(unittest.TestCase):
+    """D-5: the draft gate's focused list cannot silently drift from the instrumentation suite."""
+
+    def setUp(self):
+        self.classes = instrumentation_test_classes(ROOT)
+        self.listed, self.excluded = draft_gate_contract(
+            (ROOT / '.github/workflows/multiplatform.yml').read_text(encoding='utf-8'))
+
+    def test_discovery_finds_both_junit_styles_and_skips_helpers(self):
+        self.assertIn('org.racedaydreams.AppPrivacyTest', self.classes)
+        self.assertIn('org.racedaydreams.data.Release081ReliabilityTest', self.classes)
+        self.assertIn('org.racedaydreams.coach.CoachOnboardingTest', self.classes)
+        self.assertNotIn('org.racedaydreams.coach.GateProgressListener', self.classes)
+        self.assertGreater(len(self.classes), 150)
+
+    def test_every_instrumentation_class_is_listed_or_excluded_with_a_reason(self):
+        missing = sorted(set(self.classes) - set(self.listed) - set(self.excluded))
+        self.assertEqual([], missing, 'Add these to RDD_FOCUSED_CLASSES or to an RDD_FOCUSED_EXCLUDED line with a reason')
+        for name, reason in self.excluded.items():
+            self.assertGreaterEqual(len(reason), 20, name + ' needs a stated exclusion reason')
+
+    def test_listed_and_excluded_entries_are_real_unique_and_disjoint(self):
+        self.assertEqual(len(self.listed), len(set(self.listed)), 'Duplicate RDD_FOCUSED_CLASSES entry')
+        self.assertEqual([], sorted(set(self.listed) - set(self.classes)), 'Stale RDD_FOCUSED_CLASSES entry')
+        self.assertEqual([], sorted(set(self.excluded) - set(self.classes)), 'Stale RDD_FOCUSED_EXCLUDED entry')
+        self.assertEqual([], sorted(set(self.listed) & set(self.excluded)))
+
+    def test_d5_coverage_classes_stay_in_the_draft_gate(self):
+        for name in (
+            'org.racedaydreams.AppPrivacyTest',
+            'org.racedaydreams.coach.PrimaryFocusOnboardingTest',
+            'org.racedaydreams.data.PrimaryFocusRepositoryTest',
+            'org.racedaydreams.ui.OnboardingDraftTest',
+            'org.racedaydreams.ui.OnboardingPaletteTest',
+            'org.racedaydreams.ui.OnboardingReviewTest',
+            'org.racedaydreams.coach.StrengthTodayScreenTest',
+            'org.racedaydreams.coach.TrainingTrendsScreenTest',
+            'org.racedaydreams.data.DevelopmentStoreTest',
+            'org.racedaydreams.data.StrengthReleaseStoreTest',
+        ):
+            self.assertIn(name, self.listed)
+        self.assertIn('org.racedaydreams.coach.CoachingScreenshotTest', self.excluded)
+
+    def test_draft_gate_timeout_covers_the_added_classes(self):
+        workflow = (ROOT / '.github/workflows/multiplatform.yml').read_text(encoding='utf-8')
+        step = workflow.split('- name: Exercise migrated UI, health and durable workout flows', 1)[1]
+        self.assertIn('timeout-minutes: 20', step.split('uses: reactivecircus/android-emulator-runner@v2', 1)[0])
+
+    def test_contract_parser_reports_an_unlisted_class(self):
+        listed, excluded = draft_gate_contract(
+            '  # RDD_FOCUSED_EXCLUDED: a.B | a sufficiently long stated reason\n'
+            '  RDD_FOCUSED_CLASSES: a.C,a.D\n')
+        self.assertEqual(['a.C', 'a.D'], listed)
+        self.assertEqual({'a.B': 'a sufficiently long stated reason'}, excluded)
+        self.assertEqual(['a.E'], sorted({'a.B', 'a.C', 'a.D', 'a.E'} - set(listed) - set(excluded)))
 
 
 if __name__ == '__main__':

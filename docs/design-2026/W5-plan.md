@@ -18,7 +18,8 @@ Plan:
   - Highlight the selected card with a **gold** border and container, with a check glyph and `selected` semantics so it is never colour-only.
   - The cards are full-width 64 dp targets that stack at 200% text.
   - This is the **final hardening stage**, after the other visual workstreams. It is not marked resolved until the revised interaction is tested **on the owner's physical Galaxy S24**; emulator evidence alone is not acceptance.
-  - Related evidence: the post-merge `main` runs for V1 and V3 each hit a one-off API 35 timing flake in which the "5K" option was not displayed in time (`CoachOnboardingTest.canContinueWithoutHealthAndSaveGoalThroughExistingForm`). Investigate it together with the S24 issue.
+  - Correction (audit, 23 November 2026): the recurring API 35 "5K not displayed" CI flake is Home's "Current goal" text checked after activity recreation (`CoachOnboardingTest.kt:106-108`), a test-timing issue. It is not the onboarding goal control, so it is not evidence for the S24 issue.
+  - The audit's likely S24 contributors are that the form rebuilds and jumps to the top on a goal tap (C-01) and that the options give no touch feedback (C-02); see `docs/AUDIT_2026-11.md`.
 - **Other options and actions:** remaining option groups (routine, effort approach) use the same selectable cards. The race date and name sit in one borderless panel. Back and Next form a sticky bottom action row: Next is the accent button and Back the quiet one.
 - **No changes to:** onboarding data, validation, draft persistence or the saved profile.
 

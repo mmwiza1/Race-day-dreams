@@ -255,14 +255,28 @@ def update_manifest(apk, version, code, commit, certificate, min_sdk=28):
     }, sort_keys=True, ensure_ascii=False, indent=1) + '\n'
 
 
-def check_not_downgrade(live_manifest_text, new_code):
-    """Refuse to announce a lower versionCode than the live manifest; equal codes are never offered."""
+def check_not_downgrade(live_manifest_text, new_code, new_sha=None):
+    """Refuse to announce a lower versionCode than the live manifest; equal codes are never offered.
+
+    With ``new_sha`` (audit D-1), an equal versionCode is accepted only for byte-identical APK
+    contents: different bytes published under an already-published versionCode would never be
+    offered to installed apps and would break the version-to-checksum traceability. Every
+    release-worthy merge must therefore bump versionCode and versionName.
+    """
     import json
     if live_manifest_text is None:
         return
     live = json.loads(live_manifest_text)
     if int(new_code) < int(live['versionCode']):
         raise ValueError(f"versionCode {new_code} is lower than the published {live['versionCode']}")
+    if new_sha is not None and int(new_code) == int(live['versionCode']):
+        if not re.fullmatch(r'[0-9a-f]{64}', str(live.get('apkSha256', ''))):
+            raise ValueError(f'The published manifest for versionCode {new_code} has no valid apkSha256')
+        if live['apkSha256'] != new_sha:
+            raise ValueError(
+                f"versionCode {new_code} is already published with different APK contents "
+                f"(published SHA-256 {live['apkSha256']}, new {new_sha}). Bump versionCode and "
+                'versionName in app/build.gradle (and iosApp/Info.plist) with a new release note.')
 
 
 def verify_update_manifest(manifest_text, apk, certificate):
@@ -355,7 +369,7 @@ if __name__ == '__main__':
     if args.update_manifest:
         pin = read_pin(args.pin)
         live = args.live_manifest.read_text() if args.live_manifest and args.live_manifest.exists() else None
-        check_not_downgrade(live, args.version_code)
+        check_not_downgrade(live, args.version_code, digest(args.update_manifest))
         (args.directory / UPDATE_MANIFEST).write_text(
             update_manifest(args.update_manifest, args.version, args.version_code, args.commit, pin))
         print(f'Wrote {UPDATE_MANIFEST} for {args.update_manifest.name}')

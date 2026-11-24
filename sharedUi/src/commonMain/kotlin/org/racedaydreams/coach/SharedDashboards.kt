@@ -606,7 +606,7 @@ fun SharedStrengthDashboard(
                 .map { link -> link.title to { open(link) } },
     )
 
-    PeriodSelector(period) { periodName = it.name }
+    PeriodSelector(period, Discipline.STRENGTH) { periodName = it.name }
 
     // V3 hierarchy: exercise progression (with actual lifts), volume, workload, then figures.
     ExerciseProgressionCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
@@ -691,10 +691,6 @@ private val weekdays = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
 private fun weekdaySpan(days: Int) = if (days <= 1) "Mon" else "Mon–${weekdays[days - 1]}"
 
-@Composable
-internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) =
-    PeriodSelector(selected, null, select)
-
 /**
  * The reporting period. With a [discipline] (Progress and Training trends), the choices are
  * borderless tonal capsules and the selected one takes the discipline's container colour with a
@@ -702,35 +698,21 @@ internal fun PeriodSelector(selected: Period, select: (Period) -> Unit) =
  * screens; every choice stays at least 48 dp tall.
  */
 @Composable
-internal fun PeriodSelector(selected: Period, discipline: Discipline?, select: (Period) -> Unit) {
-    val reporting = Modifier.semantics { contentDescription = "Reporting period" }
-    if (discipline != null) {
-        // One row at normal text on phones; wraps at 150%+ text or on narrow screens.
-        TonalPills(
-            Period.values().map { it to it.label },
-            selected,
-            select,
-            selectedContainer = discipline.container(),
-            selectedContent = discipline.onContainer(),
-            unselectedContainer = MaterialTheme.colorScheme.surfaceContainerLow,
-            unselectedContent = MaterialTheme.colorScheme.onSurfaceVariant,
-            tag = { "period-${it.name}" },
-            modifier = reporting,
-        )
-        return
-    }
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-        modifier = reporting,
-    ) {
-        for (period in Period.values()) FilterChip(
-            selected = period == selected,
-            onClick = { select(period) },
-            label = { Text(period.label) },
-            modifier = Modifier.heightIn(min = 48.dp).testTag("period-${period.name}"),
-        )
-    }
+internal fun PeriodSelector(selected: Period, discipline: Discipline, select: (Period) -> Unit) {
+    // Every screen passes its discipline, so the selected period always carries the checkmark,
+    // never colour alone (audit C-09: Strength and Bouldering used a plain chip fallback).
+    // One row at normal text on phones; wraps at 150%+ text or on narrow screens.
+    TonalPills(
+        Period.values().map { it to it.label },
+        selected,
+        select,
+        selectedContainer = discipline.container(),
+        selectedContent = discipline.onContainer(),
+        unselectedContainer = MaterialTheme.colorScheme.surfaceContainerLow,
+        unselectedContent = MaterialTheme.colorScheme.onSurfaceVariant,
+        tag = { "period-${it.name}" },
+        modifier = Modifier.semantics { contentDescription = "Reporting period" },
+    )
 }
 
 internal class Kpi(

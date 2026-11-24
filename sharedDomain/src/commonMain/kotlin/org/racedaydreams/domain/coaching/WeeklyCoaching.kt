@@ -200,7 +200,9 @@ object WeeklyCoaching {
         val linked = HashMap<String, String>()
         for (l in links) l.plannedWorkoutId()?.let { linked[l.activityId()] = it }
         val actual = HashMap<String, ActivityRecord>()
-        val tomorrow = Instants.ofEpochSecond(today.plusDays(1).toEpochDay() * 86400)
+        // Local midnight, so a run finished late today west of UTC still counts (audit B-R5).
+        val tomorrow =
+            org.racedaydreams.domain.activity.ActivityDates.startOfDeviceDay(today.plusDays(1))
         for (a in runs) {
             val key = if (linked.containsKey(a.id())) linked[a.id()] else a.plannedWorkoutId()
             if (key != null && !a.end().isAfter(tomorrow)) actual[key] = a
@@ -220,7 +222,9 @@ object WeeklyCoaching {
         var faded = 0
         var durable = 0
         val countedRuns = mutableSetOf<String>()
-        for (a in runs) {
+        // One physical run reported by two sources (a native recording and a watch import, say)
+        // counts once towards volume, as on Progress (audit B-02).
+        for (a in org.racedaydreams.domain.activity.PhysicalRunSessions.counted(runs)) {
             val date = coachingDate(a)
             val metres = a.distanceMetres()
             if (
@@ -426,9 +430,13 @@ object WeeklyCoaching {
         if (strain) {
             recommendation =
                 "Hold the next two weeks rather than increasing workload; reducing remains an option."
-            choices.add(Choice("hold", "Hold volume for two weeks", scaled(version, end, 2, km)))
+            // Without recorded distance there is no ceiling: hold keeps the planned volume and
+            // only reduce cuts it (audit B-R4).
             choices.add(
-                Choice("reduce", "Reduce the next two weeks", scaled(version, end, 2, km * .8))
+                Choice("hold", "Hold volume for two weeks", scaled(version, end, 2, km, 1.0))
+            )
+            choices.add(
+                Choice("reduce", "Reduce the next two weeks", scaled(version, end, 2, km * .8, .8))
             )
         }
         val last =
@@ -486,6 +494,7 @@ object WeeklyCoaching {
         start: LocalDate,
         weeks: Int,
         ceiling: Double,
+        noEvidenceFactor: Double,
     ): List<PlannedWorkout> {
         val out = mutableListOf<PlannedWorkout>()
         for (i in 0 until weeks) {
@@ -502,7 +511,8 @@ object WeeklyCoaching {
                         }
                         .mapNotNull { it.distanceKm() }
                 )
-            val factor = if (total > 0 && ceiling > 0) min(1.0, ceiling / total) else .8
+            val factor =
+                if (total > 0 && ceiling > 0) min(1.0, ceiling / total) else noEvidenceFactor
             for (w in v.plan().workouts()) if (
                 !coachingBefore(w.date(), from) &&
                     coachingBefore(w.date(), to) &&

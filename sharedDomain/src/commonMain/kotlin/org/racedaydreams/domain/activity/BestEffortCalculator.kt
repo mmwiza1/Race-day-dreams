@@ -106,10 +106,7 @@ object BestEffortCalculator {
                     record.id() + ":" + effort.distance().code(),
                     effort.distance(),
                     effort.duration(),
-                    CalendarDates.atOffset(
-                        record.start(),
-                        record.startOffset() ?: Offsets.ofTotalSeconds(0),
-                    ),
+                    ActivityDates.localDate(record),
                     null,
                     ResultSource.ROLLING,
                     record.id(),

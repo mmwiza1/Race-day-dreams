@@ -15,6 +15,19 @@ import org.racedaydreams.domain.coaching.WeeklyCoaching
 import org.racedaydreams.domain.presentation.WeeklyReviewData
 import org.racedaydreams.domain.time.LocalDate
 
+/** The review's headline distance, converted from stored km to the user's unit (B-04). */
+internal fun weeklyDistanceHeadline(
+    kilometres: Double,
+    longestKm: Double?,
+    imperial: Boolean,
+    formatNumber: (Double) -> String,
+): String {
+    val unit = DisplayUnits.distanceUnit(imperial)
+    return "${formatNumber(DisplayUnits.distance(kilometres, imperial))} $unit" +
+        (longestKm?.let { " · longest ${formatNumber(DisplayUnits.distance(it, imperial))} $unit" }
+            ?: "")
+}
+
 /** Actual weekly review and explicit preview/accept flow; platform owns storage and formatting. */
 @Composable
 fun SharedWeeklyReviewContent(
@@ -28,6 +41,8 @@ fun SharedWeeklyReviewContent(
     formatShortDate: (LocalDate) -> String,
     formatNumber: (Double) -> String,
     workoutSummary: (PlannedWorkout) -> String,
+    /** The user's distance unit; the review's figures are stored in km (B-04). */
+    imperial: Boolean = false,
 ) {
     val presentation = WeeklyReviewData.of(review)
     val attention = requireNotNull(presentation.attention())
@@ -49,8 +64,7 @@ fun SharedWeeklyReviewContent(
         )
         // The week's distance is the headline figure; completion and the longest run support it.
         Text(
-            "${formatNumber(review.kilometres())} km" +
-                (review.longestKm()?.let { " · longest ${formatNumber(it)} km" } ?: ""),
+            weeklyDistanceHeadline(review.kilometres(), review.longestKm(), imperial, formatNumber),
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
             color = chartAccent(ChartHue.BLUE).strong,

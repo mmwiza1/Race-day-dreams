@@ -33,7 +33,7 @@ internal fun coachingMonday(day: LocalDate): LocalDate =
     day.minusDays((day.getDayOfWeek().getValue() - 1).toLong())
 
 internal fun coachingDate(run: org.racedaydreams.domain.activity.ActivityRecord): LocalDate =
-    CalendarDates.atOffset(run.start(), run.startOffset() ?: Offsets.ofTotalSeconds(0))
+    org.racedaydreams.domain.activity.ActivityDates.localDate(run)
 
 /** Exact ISO calendar six-month lookback, including end-of-month clamping and leap years. */
 internal fun coachingSixMonthsBefore(day: LocalDate): LocalDate {

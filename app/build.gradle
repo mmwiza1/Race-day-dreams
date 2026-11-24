@@ -12,8 +12,8 @@ android {
         applicationId 'org.racedaydreams'
         minSdk 28
         targetSdk 35
-        versionCode 27
-        versionName '0.15.4-test1'
+        versionCode 28
+        versionName '0.15.5-test1'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         // Public fingerprint of the project's release signing certificate (never a key). Builds
         // whose own certificate matches it may check for and install in-place updates; all other
@@ -24,6 +24,19 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildTypes {
+        // The distribution build (audit D-3). It is the same source, applicationId, versionCode,
+        // versionName and resources as the gated debug build, but never debuggable, so
+        // `run-as` and JDWP cannot reach private data on a tester's phone. R8 stays off for now so
+        // behaviour is identical to the instrumented debug build. No signing config: the unsigned
+        // APK is re-signed with the release key only in the CI publish job.
+        release {
+            debuggable false
+            minifyEnabled false
+            shrinkResources false
+        }
     }
 
     kotlinOptions { jvmTarget = '17' }
