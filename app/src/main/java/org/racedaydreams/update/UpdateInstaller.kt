@@ -10,6 +10,9 @@ import android.os.Build
 import android.provider.Settings
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.security.MessageDigest
 
 /**
  * Hands a verified APK to Android's standard installer. Android always asks the person to approve
@@ -27,9 +30,43 @@ object UpdateInstaller {
             Uri.parse("package:${context.packageName}"),
         )
 
-    /** Starts an install session; the result arrives in [UpdateInstallReceiver]. */
+    /** The file changed between verification and the install session (audit R-7). */
+    class ChangedAfterVerification : IOException("The update file changed after it was verified")
+
+    /**
+     * Copies [input] to [output] while hashing exactly the bytes written, and throws
+     * [ChangedAfterVerification] unless they match [expectedSha256] and [expectedBytes]. This closes
+     * the gap between [ApkVerifier.verify] and the bytes Android actually receives.
+     */
     @Throws(IOException::class)
-    fun commit(context: Context, apk: File) {
+    fun copyVerified(
+        input: InputStream,
+        output: OutputStream,
+        expectedSha256: String,
+        expectedBytes: Long,
+    ) {
+        val digest = MessageDigest.getInstance("SHA-256")
+        val buffer = ByteArray(1 shl 16)
+        var total = 0L
+        while (true) {
+            val read = input.read(buffer)
+            if (read < 0) break
+            total += read
+            if (total > expectedBytes) throw ChangedAfterVerification()
+            digest.update(buffer, 0, read)
+            output.write(buffer, 0, read)
+        }
+        if (total != expectedBytes || ApkVerifier.hex(digest.digest()) != expectedSha256)
+            throw ChangedAfterVerification()
+    }
+
+    /**
+     * Starts an install session; the result arrives in [UpdateInstallReceiver]. The bytes written
+     * to the session must still be the verified [expectedSha256]; otherwise the session is
+     * abandoned before commit and [ChangedAfterVerification] is thrown.
+     */
+    @Throws(IOException::class)
+    fun commit(context: Context, apk: File, expectedSha256: String) {
         val installer = context.packageManager.packageInstaller
         val params =
             PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL).apply {
@@ -41,9 +78,10 @@ object UpdateInstaller {
         val id = installer.createSession(params)
         val session = installer.openSession(id)
         try {
+            val size = apk.length()
             apk.inputStream().use { input ->
-                session.openWrite("base.apk", 0, apk.length()).use { output ->
-                    input.copyTo(output, 1 shl 16)
+                session.openWrite("base.apk", 0, size).use { output ->
+                    copyVerified(input, output, expectedSha256, size)
                     session.fsync(output)
                 }
             }
