@@ -63,7 +63,15 @@ jobs:
           python3 scripts/test-dream-screenshots.py
           java -cp domain/build/offline-tests scripts/ExerciseGuidanceAudit.java --report
       - name: Build, lint and compile instrumentation tests
-        run: ./gradlew :domain:check :app:assembleDebug :app:lintDebug :app:assembleDebugAndroidTest
+        # The release build type is the published distribution APK (audit D-3): the same source,
+        # version and resources, never debuggable, unsigned until the publish job re-signs it. The
+        # debug build is kept for instrumentation and the upgrade-path test only.
+        run: ./gradlew :domain:check :app:assembleDebug :app:assembleRelease :app:lintDebug :app:assembleDebugAndroidTest
+      - name: Require a non-debuggable distribution build
+        run: |
+          export AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          sh scripts/assert-not-debuggable.sh app/build/outputs/apk/release/app-release-unsigned.apk
+          sh scripts/assert-not-debuggable.sh --expect-debuggable app/build/outputs/apk/debug/app-debug.apk
       - name: Resolved runtime dependency inventory
         run: ./gradlew :app:dependencies --configuration debugRuntimeClasspath
       - name: Enable emulator acceleration
@@ -94,16 +102,26 @@ jobs:
           # API 35 also proves a real in-place upgrade with throwaway test keys (data kept, other key
           # and downgrade refused); the verified gate APK is restored byte-for-byte afterwards.
           script: sh scripts/run-android-gate.sh && if [ "${{ matrix.api-level }}" = "35" ]; then sh scripts/verify-android-upgrade.sh; fi
-      - name: Prepare named test APK
+      - name: Prepare named test APKs
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.15.4-test1-debug.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.15.5-test1-debug.apk
+          cp app/build/outputs/apk/release/app-release-unsigned.apk build/distributions/Race-Day-Dreams-0.15.5-test1-release-unsigned.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
+          stat --format='RELEASE_APK_BYTES=%s' app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.15.4-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.15.4-test1-debug.apk
+          name: Race-Day-Dreams-0.15.5-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.15.5-test1-debug.apk
+      - name: Upload non-debuggable distribution APK
+        # Built from the same checkout as the gated debug APK in this job; only API 35's is published.
+        if: matrix.api-level == 35
+        uses: actions/upload-artifact@v4
+        with:
+          name: Race-Day-Dreams-0.15.5-test1-release-api-35
+          path: build/distributions/Race-Day-Dreams-0.15.5-test1-release-unsigned.apk
+          if-no-files-found: error
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
         with:
@@ -289,7 +307,8 @@ jobs:
           python3 scripts/verify-dream-screenshots.py docs/screenshots
       - uses: actions/download-artifact@v4
         with:
-          name: Race-Day-Dreams-0.15.4-test1-debug-api-35
+          # The non-debuggable release build from the gated API 35 job (audit D-3), never the debug APK.
+          name: Race-Day-Dreams-0.15.5-test1-release-api-35
           path: build/verified-apk
       - uses: actions/download-artifact@v4
         with:
@@ -302,9 +321,10 @@ jobs:
       - name: Sign the verified APK with the release key when configured
         id: sign
         # Secrets reach only this publish job, which runs on pushes to main and version tags, never on
-        # pull requests. Without a committed fingerprint the verified test-signed APK is published
-        # unchanged with no update manifest; if secrets exist, the real key is first checked on a
-        # scratch copy and only its public fingerprint is reported (see docs/ANDROID_UPDATES.md).
+        # pull requests. The input is the unsigned, non-debuggable release build; the fingerprint is
+        # committed, so publication requires the release key (an unsigned APK fails apksigner verify
+        # below and is never published). Only the public fingerprint is ever reported
+        # (see docs/ANDROID_UPDATES.md).
         env:
           RDD_ANDROID_KEYSTORE_BASE64: ${{ secrets.RDD_ANDROID_KEYSTORE_BASE64 }}
           RDD_ANDROID_KEYSTORE_PASSWORD: ${{ secrets.RDD_ANDROID_KEYSTORE_PASSWORD }}
@@ -320,8 +340,14 @@ jobs:
           mkdir -p build/distribution
           verified=(build/verified-apk/*.apk)
           test "${#verified[@]}" -eq 1
+          # Audit D-3: never sign or publish a debuggable APK, before and after re-signing.
+          export AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt"
+          sh scripts/assert-not-debuggable.sh "${verified[0]}"
           mode=$(sh scripts/sign-distribution-apk.sh "${verified[0]}" build/distribution/app.apk | tail -n 1)
           case "$mode" in signed|test-signed) ;; *) echo "Unexpected signing result: $mode" >&2; exit 1 ;; esac
+          sh scripts/assert-not-debuggable.sh build/distribution/app.apk
+          # The release build is unsigned until re-signed; never publish an APK Android cannot install.
+          "$APKSIGNER" verify build/distribution/app.apk
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
       - name: Publish verified APK and maintained release notes
         env:

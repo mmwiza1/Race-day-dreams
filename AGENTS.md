@@ -61,6 +61,18 @@ When changing `versionName` or preparing release-worthy changes:
 6. Run `python3 scripts/test-release-notes.py` before committing release-note or
    release-workflow changes.
 
+**Every release-worthy merge to `main` needs a version bump.** Any merge that changes the
+published Android APK must raise `versionCode` and `versionName` in `app/build.gradle`, keep
+`iosApp/Info.plist` (`CFBundleShortVersionString` / `CFBundleVersion`) consistent, rename the
+versioned CI artifact names in `.github/workflows/android.yml`, and add the matching
+`docs/RELEASE_<major>_<minor>_<patch>.md`. The in-app updater never offers an equal versionCode,
+and the publish job (`scripts/development-assets.py --update-manifest`) refuses to publish
+different APK contents under the versionCode that is already live (audit D-1).
+
+**Only the non-debuggable `release` build type is published** (audit D-3). The debug build exists
+for instrumentation only; the publish job re-signs the release APK and
+`scripts/assert-not-debuggable.sh` refuses a debuggable APK before and after signing.
+
 The intended published order is:
 
 `title + summary` → `status` → `Download` → `Installation and first launch` →
