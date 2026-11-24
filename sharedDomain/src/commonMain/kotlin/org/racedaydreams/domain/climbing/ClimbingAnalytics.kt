@@ -15,6 +15,12 @@ import org.racedaydreams.domain.time.LocalDate
 object ClimbingAnalytics {
     data class GradeCount(val grade: ClimbingGrade, val attempted: Int, val sent: Int)
 
+    /**
+     * One week of the progression chart. [highestSend] is the hardest send in the chosen grading
+     * system only; [sends] counts every send in the week, graded in either system or ungraded. No
+     * screen shows [sends] beside the grade line today (audit B-R7); label it as all sends if it is
+     * ever shown there.
+     */
     data class WeekPoint(val weekStart: LocalDate, val highestSend: ClimbingGrade?, val sends: Int)
 
     data class Summary(

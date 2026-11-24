@@ -27,7 +27,7 @@ fun GymNowScreen(
         LocalDate.now(),
         { it.format(GYM_DAY) },
         { it.atZone(ZoneId.systemDefault()).format(GYM_DAY) },
-        ::gymTargetDescription,
+        { slot -> gymTargetDescription(slot, state.massUnit) },
         plannedDate = plannedDate,
         backHandler = { enabled, action -> BackHandler(enabled = enabled, onBack = action) },
         // The Android shell's app bar Back leaves Gym Now, so the overview shows no second Back.

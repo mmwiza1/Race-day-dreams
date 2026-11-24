@@ -18,6 +18,7 @@ fun StrengthAnalyticsScreen(
     onBack: () -> Unit,
     asOf: Instant = Instant.now(),
     today: LocalDate = LocalDate.now(),
+    massUnit: org.racedaydreams.domain.body.MassUnit = org.racedaydreams.domain.body.MassUnit.KG,
 ) {
     val date = remember { DateTimeFormatter.ofPattern("d MMM", Locale.UK) }
     SharedStrengthAnalyticsScreen(
@@ -29,5 +30,6 @@ fun StrengthAnalyticsScreen(
         ::decimal,
         StrengthMeasurements::duration,
         AthleteLanguage.WORKING_SETS,
+        massUnit,
     )
 }

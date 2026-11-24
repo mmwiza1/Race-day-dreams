@@ -555,9 +555,27 @@ fun ScheduleRow(
     }
 }
 
+/** What the countdown disc shows: a headline and the small unit line beneath it. */
+internal data class CountdownBadge(val headline: String, val unit: String)
+
+/**
+ * The disc text for a signed number of days until the goal date, consistent with the race-day
+ * screen's `raceCountdown`: "Today" on the day itself and an elapsed count afterwards. The disc
+ * never shows a negative number (audit B-03).
+ */
+internal fun countdownBadge(days: Long): CountdownBadge =
+    when {
+        days > 1 -> CountdownBadge("$days", "days")
+        days == 1L -> CountdownBadge("1", "day")
+        days == 0L -> CountdownBadge("Today", "race day")
+        days == -1L -> CountdownBadge("1", "day ago")
+        else -> CountdownBadge("${-days}", "days ago")
+    }
+
 /**
  * A countdown to a dated goal: the number of days is the headline, in a large accent disc beside a
- * flag-marked label, on a borderless tonal panel.
+ * flag-marked label, on a borderless tonal panel. [days] is signed: zero is the goal date itself
+ * and a negative value is a date that has passed, shown as "N days ago", never "-N days".
  */
 @Composable
 fun CountdownCard(
@@ -580,14 +598,15 @@ fun CountdownCard(
                     .padding(horizontal = 10.dp, vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                val badge = countdownBadge(days)
                 Text(
-                    "$days",
+                    badge.headline,
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )
                 Text(
-                    if (days == 1L) "day" else "days",
+                    badge.unit,
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                 )

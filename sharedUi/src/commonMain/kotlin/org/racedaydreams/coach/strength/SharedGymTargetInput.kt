@@ -1,5 +1,7 @@
 package org.racedaydreams.coach.strength
 
+import org.racedaydreams.domain.body.MassUnit
+import org.racedaydreams.domain.presentation.MassText
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
 
@@ -16,6 +18,21 @@ data class GymSlotInput(
     val restSeconds: String = "",
     val referenceKilograms: String = "",
 )
+
+/**
+ * A reference load typed in [unit], as the kilogram text [gymSlotFromInput] parses (audit B-05).
+ * Kilogram entries and anything that is not a number pass through unchanged, so the existing
+ * validation message still names the field.
+ */
+fun referenceKilogramsText(typed: String, unit: MassUnit): String {
+    if (unit == MassUnit.KG) return typed
+    val value = typed.trim().toDoubleOrNull() ?: return typed
+    if (!value.isFinite() || value < 0) return typed
+    return unit.toKilograms(value).toString()
+}
+
+/** A set load typed in [unit] converted to kilograms for storage (audit B-05). */
+fun gymLoadKilograms(typed: String, unit: MassUnit): Double = MassText.parse(typed, unit, "load")
 
 /** One parser for programme and one-off intentions; actual set entry remains separate. */
 fun gymSlotFromInput(

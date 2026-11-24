@@ -25,6 +25,8 @@ fun SharedStrengthAnalyticsScreen(
     formatNumber: (Double) -> String,
     formatDuration: (Long) -> String,
     workingSetExplanation: String,
+    /** Load × repetitions is stored in kg and shown in this unit (audit B-05). */
+    massUnit: org.racedaydreams.domain.body.MassUnit = org.racedaydreams.domain.body.MassUnit.KG,
 ) {
     var window by rememberSaveable { mutableIntStateOf(8) }
     var attribution by rememberSaveable { mutableStateOf(false) }
@@ -179,7 +181,7 @@ fun SharedStrengthAnalyticsScreen(
                             Text("${formatNumber(exercise.metres())} m recorded distance")
                         exercise.loadRepetitions()?.let {
                             Text(
-                                "${formatNumber(it)} kg × repetitions · total recorded weight across repetitions for this exercise only"
+                                "${formatNumber(massUnit.fromKilograms(it))} ${org.racedaydreams.domain.presentation.MassText.symbol(massUnit)} × repetitions · total recorded weight across repetitions for this exercise only"
                             )
                         }
                     }

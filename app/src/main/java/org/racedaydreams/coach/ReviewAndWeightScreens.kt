@@ -24,6 +24,7 @@ import org.racedaydreams.domain.body.MassUnit
             r, s.currentPlan?.plan(), s.weeklyDecision, s.busy, editRoutine,
             model.runningPlan::weeklyDecision, ::friendlyDate, ::shortDate, ::decimal,
             { workoutSummary(it, s) },
+            DisplayUnits.imperial(s),
         )
     }
     var report by rememberSaveable{mutableStateOf(false)}
