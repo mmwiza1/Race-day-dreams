@@ -31,6 +31,13 @@ data class BoulderingState(
  * Shared bouldering operations for Android and iOS. Climbing is stored separately from strength
  * training and never creates working sets, estimated 1RM, lifting records or muscle workload.
  */
+/** A stopped live timer's duration: at least one minute and at most the 24-hour limit (B-R6). */
+internal fun stoppedClimbingSeconds(elapsedSeconds: Long): Long =
+    elapsedSeconds.coerceIn(ClimbingSession.MIN_DURATION, ClimbingSession.MAX_DURATION)
+
+internal const val OVERRAN_TIMER =
+    "The timer ran for more than 24 hours, so it stopped at 24 hours. Correct the climbing time before saving."
+
 class SharedBoulderingCoordinator(
     database: SqlDatabase,
     private val scope: CoroutineScope,
@@ -143,11 +150,21 @@ class SharedBoulderingCoordinator(
         draft.copy(problems = draft.problems.filterNot { it.id == id })
     }
 
-    /** Stops the live timer; the measured time can still be corrected before saving. */
-    fun stopTimer() = change { draft ->
-        if (draft.live())
-            draft.copy(durationSeconds = draft.elapsedSeconds(now()).coerceAtLeast(60))
-        else draft
+    /**
+     * Stops the live timer; the measured time can still be corrected before saving. A timer left
+     * running past the 24-hour limit stops at the limit and asks for the real time (audit B-R6),
+     * instead of failing validation and leaving the session stuck live.
+     */
+    fun stopTimer() {
+        var overran = false
+        change { draft ->
+            if (draft.live()) {
+                val elapsed = draft.elapsedSeconds(now())
+                overran = elapsed > ClimbingSession.MAX_DURATION
+                draft.copy(durationSeconds = stoppedClimbingSeconds(elapsed))
+            } else draft
+        }
+        if (overran) mutable.update { it.copy(message = OVERRAN_TIMER) }
     }
 
     fun setDurationMinutes(minutes: Long) = change { it.copy(durationSeconds = minutes * 60) }
