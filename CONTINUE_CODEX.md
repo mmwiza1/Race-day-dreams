@@ -31,11 +31,18 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   with estimated distance budgeted separately. Workout details display recovery seconds.
   Added multi-runner review, Android recording/backup/upgrade, iOS live and five
   canonical capture scenarios. See [handover](docs/HANDOFF_5A_TO_5B.md).
-- Exact next steps: finish focused emulator and local checks, push one coherent
-  candidate, mark ready, verify API 28/35/36, iOS shared/simulator/XCTest/device,
-  upgrade, backup and source-bound captures, review the actual screenshots, then
-  merge and verify publication if all mandatory gates pass. After the confirmed
-  merge, create a separate documentation PR for the full app, running and gym audits.
+- PR #51 is ready for review. API 28 local checks passed the in-place upgrade
+  from the published 0.15.5 source with a temporary test key (identical database
+  fingerprint), timed recovery link and complete backup, and dark 200% readiness.
+  Both capture tests passed after correcting their navigation selector to Home
+  and all five captures were reviewed. The replacement Android full gate is
+  required on the new head; the earlier Android run was cancelled for the
+  reproduced test defect. See the PR body for the active CI links.
+- Exact next steps: verify the unfiltered API 28/35/36 and Apple shared,
+  simulator/XCTest and unsigned device jobs, the canonical screenshot commit
+  and source fingerprint. Review the canonical captures. Merge and verify the
+  development publication only after all release gates pass. Then create a
+  separate documentation PR for the full app, running and gym audits.
   Physical-device results remain separate.
 
 ## Current verified baseline (20 November 2026)

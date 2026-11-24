@@ -642,10 +642,12 @@ class CoachingScreenshotTest {
             .onNodeWithText("The total includes an estimate for timed recoveries. Recover by time.")
             .assertExists()
         compose.onNodeWithText("1 min 30 sec").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithText("3. Recovery").assertExists()
+        alignHeading("3. Recovery")
+        compose.onNodeWithText("1 min 30 sec").assertIsDisplayed()
         capture("planned-workout-timed-recovery")
         back()
-        click("Today")
+        clickOriginalNavigationTab("Home")
+        await("Today")
         captureAdaptivePreview("Rebuild from my recent running", "weekly-review-rebuild-preview")
     }
 
@@ -659,7 +661,8 @@ class CoachingScreenshotTest {
         compose.onNodeWithTag("plan-feasibility").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Race readiness").assertIsDisplayed()
         capture("plan-readiness-not-supported")
-        click("Today")
+        clickOriginalNavigationTab("Home")
+        await("Today")
         captureAdaptivePreview(
             "Progress cautiously for two weeks",
             "weekly-review-progress-preview",

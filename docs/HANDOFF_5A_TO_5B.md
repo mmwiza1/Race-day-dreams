@@ -338,3 +338,18 @@ JVM tests compile against `java.time` and will not catch other calls; only the i
 - The release candidate bumps once to Android `0.16.0-test1` / 29 and iOS `0.16.0` / 29.
   Full matrix, iOS simulator coverage, actual capture review, final upgrade and
   publication verification are still pending. No post-merge audit is claimed here.
+
+
+### Focused device-gate results (API 28 emulator)
+
+- In-place install from the published main 0.15.5 source to the candidate:
+  passed using a temporary emulator key on both copies. The full database
+  and appearance fingerprint was identical. Readback included plan versions,
+  completed and skipped workouts, weekly reviews and a decision, gym history
+  and programme, bouldering, and the Dream Route assignment.
+- Timed-recovery step evidence, retained run-to-plan link and complete backup
+  round-trip: passed. Dark readiness interaction at 200% font: passed.
+- The capture tests initially used Today, the page title, as the bottom-tab
+  selector. They now use Home, the actual tab label, then await Today. Both
+  passed and the five original captures were inspected locally. The full
+  canonical capture set remains a release gate on GitHub.
