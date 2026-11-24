@@ -353,3 +353,23 @@ JVM tests compile against `java.time` and will not catch other calls; only the i
   selector. They now use Home, the actual tab label, then await Today. Both
   passed and the five original captures were inspected locally. The full
   canonical capture set remains a release gate on GitHub.
+
+
+### First full-gate findings (source head `813e6c15`)
+
+- [Android gate](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45482622074):
+  API 35 and 36 passed. API 35 upgrade same-key install and signer/downgrade
+  rejection passed. All 524 API 35 originals passed integrity and the changed
+  screens were reviewed. API 28 instrumentation process stopped without a stack
+  during Gym Now at 200%; the failing test and three predecessors passed on the
+  local API 28 emulator with the same display size. Only the failed API 28 job
+  was retried; the app and existing assertions were unchanged.
+- [Apple gate](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45482622072):
+  shared Native build/tests, startup and the unsigned device build passed. Four
+  existing XCTest cases passed. The new recovery case stopped at a label/type
+  mismatch for the Compose time field. The follow-up taps the visible label
+  before typing and still requires the timed recovery to advance in the live app.
+- Local production-service probe (API 28): paused the timed recovery with
+  simulated GPS, resumed, completed both repetitions and saved step evidence
+  against the exact plan, all of which passed. Separate upgrade and backup probes
+  passed a legacy review decision and retained a rebuild preview.

@@ -38,12 +38,24 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   and all five captures were reviewed. The replacement Android full gate is
   required on the new head; the earlier Android run was cancelled for the
   reproduced test defect. See the PR body for the active CI links.
-- Exact next steps: verify the unfiltered API 28/35/36 and Apple shared,
-  simulator/XCTest and unsigned device jobs, the canonical screenshot commit
-  and source fingerprint. Review the canonical captures. Merge and verify the
-  development publication only after all release gates pass. Then create a
-  separate documentation PR for the full app, running and gym audits.
-  Physical-device results remain separate.
+- The first full gate on `813e6c15` passed API 35/36 and the unsigned iPhone
+  build. API 35 verified 524 original captures and the signing/upgrade guard.
+  API 28 stopped at a process crash without a stack in the existing Gym Now
+  capture; that test and three preceding captures passed in a focused API 28
+  reproduction. Only the failed API 28 job was retried on that head.
+- Apple shared compilation, simulator startup and four existing XCTest cases
+  passed. The new timed-recovery XCTest failed at input selection, before
+  recording. Its visible Compose label was present, while the native TextField
+  query did not match. The follow-up focuses the visible label and retains the
+  actual timed-workout assertions. Recheck the exact latest head on GitHub.
+- Extra API 28 probes passed actual foreground interval execution with a timed
+  pause and retained run linkage, and a real old weekly review was actionable
+  after upgrade. The rebuild proposal survived complete export and restore.
+- Exact next steps: obtain green unfiltered API 28/35/36 and Apple shared/UI/device
+  jobs, verify the canonical screenshot commit and source fingerprint, then
+  merge if all required gates pass. Verify development publication before
+  claiming release completion. Create the separate audit documentation PR only
+  after the confirmed merge. Physical-device checks remain separate.
 
 ## Current verified baseline (20 November 2026)
 

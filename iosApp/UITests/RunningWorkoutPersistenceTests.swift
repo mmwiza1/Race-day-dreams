@@ -162,20 +162,25 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Save step", in: app)
         tap("Add step to group", in: app)
         tap("Recovery", in: app)
-        XCTAssertTrue(reveal("Time (seconds)", in: app))
-        let time = app.textFields.matching(NSPredicate(format: "label == %@", "Time (seconds)")).firstMatch
-        XCTAssertTrue(time.waitForExistence(timeout: 15))
-        time.tap()
-        time.typeText("15")
+        // Compose exposes the outlined input's visible label in this accessibility tree.
+        // Tap that label inside the input and send keys to the focused Compose editor.
+        tap("Time (seconds)", in: app)
+        app.typeText("30")
         tap("Save step", in: app)
         tap("Add step to group", in: app)
         tap("Save step", in: app)
         tap("Start custom workout", in: app)
         XCTAssertTrue(control("Step 1 of 3", in: app).waitForExistence(timeout: 20))
         tap("Complete open step", in: app)
-        XCTAssertTrue(control("Step 2 of 3", in: app).waitForExistence(timeout: 10))
+        let recoveryStep = control("Step 2 of 3", in: app)
+        // Completing an open step may leave the scroll position near the bottom of the panel.
+        if !recoveryStep.exists {
+            app.swipeDown()
+            app.swipeDown()
+        }
+        XCTAssertTrue(recoveryStep.waitForExistence(timeout: 15), app.debugDescription)
         // With no simulated movement, advancing to the third step requires the active-time target.
-        XCTAssertTrue(control("Step 3 of 3", in: app).waitForExistence(timeout: 40))
+        XCTAssertTrue(control("Step 3 of 3", in: app).waitForExistence(timeout: 60), app.debugDescription)
         tap("Pause", in: app)
         XCTAssertTrue(control("Resume", in: app).waitForExistence(timeout: 15))
         app.terminate()
