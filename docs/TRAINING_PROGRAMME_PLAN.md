@@ -19,8 +19,9 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 | 1 | Training safety, correctness and transparency | Medium | **Approved at `067bf228`** |
 | 2 | Strength dashboard usability | Small–medium | **Approved at `f9318590`** (one known UI-test failure deferred, see below) |
 | 3 | Running progression engine | Major | **Approved at `f723eeec`** |
-| 4 | Race-specific workout engine | Major | **Implemented (draft PR #51); awaiting owner approval** |
-| 5 | Adaptive coaching and comprehensive validation | Major | Not started |
+| 4 | Race-specific workout engine | Major | **Approved at `fe216621`** (iOS test compile fixed in `35d5b20f`; final CI shows only the known failure) |
+| 5A | Adaptive coaching (Claude) | Major | **Implemented on draft PR #51; awaiting owner approval.** Handover: `docs/HANDOFF_5A_TO_5B.md` |
+| 5B | Comprehensive validation, full-app audit, release preparation (Codex) | Major | **Next.** Not started; begins only after owner approval of 5A |
 
 ## Testing policy (Pieces 1–4)
 
@@ -284,13 +285,43 @@ session fits inside the day's planned distance, so weekly totals are identical t
   - `heavy-lower-body` (30 km over 6 days of 3.6–4 km runs): strides only;
   - the taper keeps a shorter familiar session; race week has strides only.
 
+## Piece 5A — what changed
+
+Adaptive coaching extends the existing weekly review (`WeeklyCoaching.review`) with a new
+`BlockReassessment`. There is no new service, storage, screen or background work.
+
+- **Evidence.** The last four weeks of recorded runs, with duplicates counted once and only before
+  the review week. Planned future workouts never count. Weeks without recorded runs are unknown, not
+  rest. With no runs recorded at all, the review suggests checking sync or recording a break, and
+  changes nothing.
+- **Rebuild** (runner-approved). When recorded running is below 75% of the next two planned weeks,
+  the next four weeks are capped at the recorded average, rising about 5% a week. Missed sessions are
+  never made up. Not offered within 14 days of the race, or when the misses are a recurring
+  unavailable day; that case points to editing the runner's days instead.
+- **Progress** (runner-approved). Only after four fully recorded weeks with every planned run
+  completed and at least 115% of planned volume. The next two weeks' easy and long runs grow by at most
+  10%. Quality sessions and intensity are unchanged. Never for general fitness without Distance First,
+  and not within 35 days of the race.
+- **Priority.** Strain (hold or reduce) and a break (return bridge) override both changes.
+- **Realism.** If fewer than half the planned runs were recorded within 8 weeks of the race, the
+  review explains that the race or target may no longer be supported. A rebuild that lowers the
+  readiness rating is explained.
+- **Structure kept.** Hold, reduce and rebuild now resize only easy parts. Piece 4 repetitions and
+  recoveries stay intact, or the day becomes an easy run.
+- **Unchanged.** Acceptance, history and versioning work as before: preview, accept or keep, one
+  decision per review, completed sessions locked, and a new plan version on accept.
+- **Tests.** New `AdaptiveBlockReviewTest` (8). The focused shared-domain set has 118 tests and 0
+  failures, and `:domain:domainTest` passes. No production snapshot changed.
+
+See `docs/HANDOFF_5A_TO_5B.md` for the full rules, limitations and the Piece 5B plan.
+
 ## Known failing tests (tracked separately from new regressions)
 
 | Test | First seen | Status |
 | --- | --- | --- |
-| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Known, deferred to Piece 5 by the owner.** Do not investigate, fix, disable or weaken it before Piece 5. Any other failing test is a new regression and must be reported separately. |
+| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Known, deferred to Piece 5B by the owner.** Fix it in 5B; never disable or weaken it. Any other failing test is a new regression and must be reported separately. |
 
-## Deferred to Piece 5
+## Deferred to Piece 5B (full list: `docs/HANDOFF_5A_TO_5B.md`, section 8)
 
 - Full shared-domain suite, Android API 28/35/36 matrix, iOS compilation and tests. iOS was not
   compiled locally; the changes are in shared code only.

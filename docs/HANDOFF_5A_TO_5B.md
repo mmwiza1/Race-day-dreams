@@ -1,0 +1,309 @@
+# Handover: Piece 5A (Claude) → Piece 5B (Codex)
+
+Written at the end of Piece 5A on 24 November 2026. Everything needed for Piece 5B is in this
+repository; nothing depends on the Claude conversation. Read with `AGENTS.md`, `CLAUDE.md` and
+`docs/TRAINING_PROGRAMME_PLAN.md`.
+
+## 1. Repository state
+
+| Item | Value |
+| --- | --- |
+| Repository | `mmwiza1/Race-day-dreams` |
+| Integration branch | `ccr-60f602a7-tfmok3-training` (created from `main` `60b5201b`) |
+| Pull request | [#51](https://github.com/mmwiza1/Race-day-dreams/pull/51), **draft**, not merged |
+| Piece 5A implementation commit | see the "Final commit and CI" table at the end of this file |
+| Version | Unchanged (0.15.5-test1 / 28 on `main`). The bump happens once, in Piece 5B. |
+| Documentation PR #50 | Parked draft, unrelated; leave it alone. |
+
+Approval milestones on the branch: Piece 1 `067bf228`, Piece 2 `f9318590`, Piece 3 `f723eeec`,
+Piece 4 `fe216621` (iOS test compile fixed in `35d5b20f`), Piece 5A (this handover).
+
+## 2. What Pieces 1–5A implemented
+
+Full per-piece detail, with reviewed snapshot changes, is in `docs/TRAINING_PROGRAMME_PLAN.md`.
+
+- **Piece 1 — safety, correctness, transparency.**
+  - A long run that would follow a demanding run moves to a well-spaced available day
+    (`OriginalTrainingPlanGenerator.relocatedLongDay`) instead of losing its kilometres.
+  - Weekly budget shortfalls are explained, and the session time budget is honoured.
+  - `PlanFeasibility` rates each race plan as Supported, Limited or Not supported from several
+    factors, with a guide-not-guarantee caveat. It is shown on the Plan screen
+    (`sharedUi/.../PlanFeasibilityCard.kt`).
+- **Piece 2 — Strength dashboard.** Tonnage displays are removed. The dashboard order is progression,
+  then at a glance, recent workouts and sets by muscle group. Required screenshots went from 522 to
+  519.
+- **Piece 3 — running progression.**
+  - Weekly targets are individual, with 7% growth clamped to 0.5–3 km.
+  - The long run has its own track: shares are guidance, with a 70%-of-week safeguard and a 30-day
+    +10% guide.
+  - Cutbacks are 0.8× and never stack with the taper. Taper length depends on race distance.
+  - General fitness maintains volume unless Distance First is chosen. The beginner run/walk cap is
+    kept.
+- **Piece 4 — race-specific workouts.**
+  - `QualityWorkouts` provides threshold, 5K/10K intervals, half-marathon-pace repetitions and
+    marathon-pace blocks, all with `RECOVERY` segments.
+  - Paces come from race results only, never from goal times.
+  - Readiness is graded: none, strides, controlled or Performance.
+  - Returning runners get 3 easy weeks. There is at most one session a week, reduced around hard leg
+    days.
+  - The taper keeps a shorter familiar session; race week has strides only.
+- **Piece 5A — adaptive coaching** (this handover, section 3).
+
+## 3. Adaptive coaching architecture (Piece 5A)
+
+Piece 5A extends the **existing** weekly review. It adds no new screen, service, storage table,
+background job or polling.
+
+```
+Snapshot read (app open / refresh)
+  └─ SharedCoachSnapshotReader (sharedUi/.../coach/application)
+       └─ WeeklyCoaching.review(...)               sharedDomain/.../coaching/WeeklyCoaching.kt
+            ├─ existing channels, observations, hold / reduce / return bridge / pace review
+            └─ BlockReassessment.evidence + assess  sharedDomain/.../coaching/BlockReassessment.kt (new)
+                 → extra observations, optional "rebuild" or "progress" choice
+       └─ saved once per review id (content hash) → shown by SharedWeeklyReviewContent (sharedUi)
+Runner chooses → SqliteCoachingContext.decide (sharedStorage) → WeeklyCoaching.apply
+  → new PlanVersion ("Weekly review: <label>") + REVIEW_DECISION record
+```
+
+Relevant files:
+
+| File | Role |
+| --- | --- |
+| `sharedDomain/src/commonMain/kotlin/org/racedaydreams/domain/coaching/BlockReassessment.kt` | **New.** Four-week evidence, rebuild and progress rules, race realism, structure-preserving `scale`. |
+| `sharedDomain/src/commonMain/kotlin/org/racedaydreams/domain/coaching/WeeklyCoaching.kt` | Calls `BlockReassessment`. Hold/reduce now use `BlockReassessment.scale`, so Piece 4 repetitions survive. |
+| `sharedDomain/.../coaching/AdaptiveCoaching.kt`, `PerformanceReassessment.kt` | Existing per-run proposals and the pace review (unchanged). |
+| `sharedStorage/.../SqliteCoachingContext.kt` | Existing: stores reviews, accepts one decision per review, creates plan versions. Unchanged. |
+| `sharedUi/.../coach/SharedWeeklyReviewContent.kt` | Existing generic UI: recommendation, observations, choice buttons, current-vs-proposed preview, accept or keep. Unchanged. |
+| `sharedDomain/src/commonTest/.../AdaptiveBlockReviewTest.kt` | **New** focused tests (8). |
+
+## 4. Evidence, decision rules, safeguards, acceptance
+
+### Evidence
+
+- **Counted:**
+  - recorded runs (native, imported or manual), with duplicates of one physical run counted once
+    (`PhysicalRunSessions.counted`);
+  - only runs dated before the review week's Monday;
+  - links to planned workouts through `RunExecution` or `plannedWorkoutId`.
+- **Never counted as evidence:** planned or future workouts.
+- **Four-week window:**
+  - kilometres per week;
+  - which weeks have recorded runs;
+  - planned and completed sessions and planned kilometres;
+  - the longest recorded run.
+- **Missing data versus inactivity:**
+  - With no runs recorded in 4 weeks, the review says data may not be syncing, asks the runner to
+    record a break if there was one, and changes nothing.
+  - A week with no recorded run is *unknown*, not rest. It is left out of the rebuild average,
+    blocks progression, and is mentioned to the runner.
+- **Interruptions:**
+  - A recorded gap of 14 days or more, or a runner-entered interruption, uses the existing return
+    bridge.
+  - Recurring misses on the same weekday (3 of 4 weeks) are treated as reduced availability. The
+    runner is pointed to editing their days, which regenerates the plan with all Piece 1–4 rules.
+    No rebuild is offered for this.
+
+### Decision rules (priority order)
+
+1. **Existing review choices take priority:**
+   - strain (rising effort with shortened runs, repeated hard RPE, or fading long runs) → hold or
+     reduce;
+   - a break → three-week return bridge.
+
+   If any of these signals is present, neither rebuild nor progress is offered.
+2. **Rebuild ("Rebuild from my recent running").** Offered when **all** of these hold:
+   - at least 2 weeks have recorded distance;
+   - the recorded average is below 75% of the next two planned weeks;
+   - the race is at least 14 days away;
+   - there are no recurring same-day misses.
+
+   The next 4 weeks are capped at the recorded average × 1.00, 1.05, 1.10 and 1.15. Weeks are never
+   increased, and the race is never touched. The weekly review then reassesses again.
+3. **Progress ("Progress cautiously for two weeks").** Offered when **all** of these hold:
+   - all 4 weeks are recorded;
+   - every planned session was completed (no compensation for misses);
+   - each week was at least 115% of the planned weekly average;
+   - the race is at least 35 days away;
+   - the goal is not general fitness, unless Distance First was chosen.
+
+   Only easy and long runs in the next 2 weeks grow:
+   - the weekly total rises at most 10%, and never above the recorded average;
+   - a long run grows to at most 110% of the longest recent run;
+   - quality sessions and intensity are never increased.
+4. **Race realism** (observations only):
+   - When fewer than half of the planned runs were recorded with 8 weeks or less to go, the review
+     says the race (and any target time) may no longer be fully supported. It offers completion,
+     run/walk or a later race, and says missed runs are not made up.
+   - A rebuild that lowers the `PlanFeasibility` rating, judged as a finish goal, is explained. A
+     target-time goal is told the target may no longer be realistic.
+
+### Safeguards
+
+- **Days and gym schedule:** changes resize existing workouts on their existing dates. The runner's
+  days, long-run day, gym days, the Piece 1 spacing and the race date are never moved.
+- **Structured sessions:** `BlockReassessment.scale` keeps the repetitions and recoveries and resizes
+  only the warm-up, cool-down and easy running. A session that no longer fits (less than 2 km of easy
+  running left) becomes an easy run. No segment drops below 0.1 km, because the execution engine
+  rejects non-positive steps.
+- **Wording:** no medical interpretation; the existing return-bridge text says "not medical
+  clearance". The runner can always keep the plan and run independently of it.
+
+### Acceptance and rejection
+
+- **Proposals:** each review offers "Keep original plan" plus at most the applicable changes. A
+  change opens a preview of current against proposed, per workout.
+- **Accepting** calls `WeeklyCoaching.apply`, which:
+  - requires that the review matches the current version;
+  - refuses to change completed sessions;
+  - preserves ids, dates and all workouts before the review week.
+
+  The plan then moves to a new `PlanVersion`, with the reason "Weekly review: <label>".
+- **Rejecting ("Keep")** records the decision without creating a version.
+- **Prompt limits:** one decision per review id. The review id is a content hash of version, week,
+  observations, channels and choices, so the same review is never prompted twice and there is at
+  most one review per week.
+
+## 5. Design decisions, limitations, trade-offs
+
+- **Reuse over new infrastructure:** no new persistence, schema migration or UI. The risk is low, but
+  rebuild and progress are only as visible as the existing weekly review.
+- **Rolling four-week rebuild:** after a rebuild, week 5 returns to the original plan, and the next
+  weekly reviews reassess. This avoids silently re-planning the whole block, but a runner who stays
+  low will see a rebuild offered again. That is intended: it is periodic, and one choice per weekly
+  review.
+- **Regeneration is not used for rebuilds.** The generator creates new workout ids, and `apply` keeps
+  ids to protect history. A full regeneration from evidence remains available through the existing
+  "edit goal/routine" flow.
+- **Progress is deliberately narrow:** 2 weeks, easy and long runs only, at most 10%.
+- **Thresholds are heuristics:** the 75%, 115%, 8-week and 2-of-4-weeks thresholds are
+  coaching heuristics chosen to be conservative, not validated values.
+- **`PlanFeasibility` without a baseline:** the realism check judges preparation only, as a finish
+  goal. Target-time realism is stated as a caution, not computed.
+- **Inherited limitations:**
+  - from Piece 4: recovery-jog distance is estimated at 0.18 km a minute when sessions are fitted;
+  - runners with many short days, for example 30 km over 6 days, get strides only, with no
+    structured session;
+  - 4–6 km midweek days stay easy until they can hold 2 × 1.6 km.
+
+## 6. Tests run in Piece 5A
+
+All commands were run from the repository root with `ANDROID_HOME=/opt/android-sdk`.
+
+| Command | Result |
+| --- | --- |
+| `./gradlew -q --max-workers=4 :sharedDomain:jvmTest --tests '*Coaching*' --tests '*Plan*' --tests '*Adaptive*' --tests '*Weekly*' --tests '*Review*' --tests '*TrainingPlanSafetyTest*' --tests '*RunningProgressionTest*' --tests '*QualityWorkout*'` | **118 tests, 0 failures.** Includes the new `AdaptiveBlockReviewTest` (8). |
+| `./gradlew -q --max-workers=4 :domain:domainTest` | **Pass.** All legacy suites pass, including `CoachingTestSuite` (29,560 checks) and `WeeklyCoachingTestSuite` (96 checks). |
+| `./gradlew -q --max-workers=4 :sharedUi:compileDebugKotlinAndroid :app:compileDebugKotlin :app:compileDebugAndroidTestKotlin` | **Compiles.** |
+| `python3 scripts/format-code.py --check` | **Pass.** |
+| `grep` scan of new common code for JVM-only APIs (`isAfter`/`isBefore` on `LocalDate`, `toSortedMap`, `String.format`, `java.`) | **None found.** |
+
+**Not run locally:** iOS compile and tests (macOS only; covered by CI `apple-shared`), the full
+shared-domain suite, all instrumented, emulator and device tests, and screenshots.
+
+The production snapshot fixtures were **not changed** by Piece 5A. Generation is untouched, and
+`domainTest` confirms this.
+
+## 7. Known defects, regressions and incomplete work
+
+| Item | Class | Status |
+| --- | --- | --- |
+| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android instrumented, `android-shared`) | **Known failing test, deferred by the owner to 5B.** Introduced with Piece 2 (`f9318590`). | Fails on every CI run since Piece 2. It is the only failure in `android-shared` at `35d5b20f`. Fix in 5B; do not disable or weaken it. |
+| Readiness card (`PlanFeasibilityCard`) has no instrumented or screenshot coverage | Test gap | Existing Plan-screen tests use a general-fitness plan, which shows no card. Add a race-plan UI test and screenshots in 5B. |
+| Recovery segments (`WorkoutSegment.Kind.RECOVERY`, duration only) | Unverified on device | The execution engine supports duration-only steps (`WorkoutExecutionEngine`, step completion by `millis`), but live recording, cues, watch/notification display and post-run analysis of recoveries have **not** been exercised on a device or emulator. |
+| Short running days and quality sessions | Product limitation | Days under about 5.6 km (threshold with a 1 km warm-up) cannot hold a session; they get strides. High-frequency, low-volume runners get no structured session. |
+| Rebuild/progress UI copy | Unreviewed | The text goes through the existing generic review UI and has not been reviewed on screen or with large fonts. |
+| `.claude/worktrees/` | Local clutter, not in git | Old agent worktrees exist in the original Claude container only. They are untracked and do not affect the repository. |
+
+There are no other known failing tests. No signing, release, workflow or version files were changed in
+Pieces 1–5A.
+
+## 8. Deferred to Piece 5B
+
+- Full test suites:
+  - full `:sharedDomain:jvmTest`, `:domain:domainTest` and Android unit tests;
+  - the Android instrumented matrix on **API 28, 35 and 36**;
+  - **iOS** shared tests and the XCTest/UI suites, and an iPhone device build if available.
+- **Screenshots:**
+  - regenerate the required set (519);
+  - capture the Plan screen with the readiness card (Limited and Not supported);
+  - capture the weekly review with rebuild and progress previews;
+  - capture Piece 4 workouts with repetitions and recoveries;
+  - capture the Strength dashboard.
+- **Multi-runner scenarios**, each generating the plan and then simulating 4–8 weeks of recorded
+  runs:
+  - beginner;
+  - established 5K and 10K;
+  - half marathon;
+  - marathon;
+  - returning;
+  - heavy lower-body strength;
+  - general fitness;
+  - Zone 2;
+  - Performance;
+  - missing sync;
+  - partial data;
+  - recurring missed day;
+  - over-achiever.
+
+  For each, check that weekly reviews offer only the expected choices.
+- **Live-workout interactions:**
+  - starting a Piece 4 session;
+  - warm-up, repetitions and duration-only recoveries;
+  - cues, pausing, and ending early;
+  - linking the recording to the planned workout;
+  - the run appearing as evidence in the next weekly review;
+  - Health Connect and HealthKit imports, with duplicates counted once.
+- **Before/after programme comparisons** across distances (main against PR #51).
+- Fix the known Strength dashboard test. Optional wording change: "Top set" → "Heaviest set".
+
+## 9. Independent full-app audit (5B)
+
+Audit the whole app, not only the training programme:
+
+1. **Data integrity and upgrades:**
+   - install `main` (0.15.5-test1 / 28) with real-looking data — plans with history, completed and
+     skipped workouts, reviews and decisions, gym sessions and programmes, bouldering, Dream Routes;
+   - upgrade to the PR #51 build;
+   - confirm nothing is lost or altered: existing plan versions, completed sessions and decisions;
+   - confirm a stored review created before 5A still renders and resolves;
+   - confirm backup/restore (portability) round-trips the new review choices.
+2. **Plan regeneration:** editing a goal or routine regenerates with Pieces 1–4 and keeps history.
+3. **Running features:** recording, live workouts, imports, run scores, race predictions, Training
+   Trends, Progress.
+4. **Gym and bouldering features:** Strength Today, Gym Now, programmes, the exercise library,
+   strength progression charts, the dashboard order (Piece 2), bouldering logging and analytics.
+5. **UI consistency:**
+   - Material 3 / Material You, the bottom navigation icons, light and dark themes, large fonts and
+     TalkBack/VoiceOver;
+   - the readiness card;
+   - the weekly review previews;
+   - new workout and segment text, on Android and iOS.
+6. **Platform integrations:** Health Connect and HealthKit permissions and imports, notifications and
+   reminders, app updates (signing certificate `e7af758a…929d` must stay unchanged).
+7. **Performance:** no new background work (5A adds none), and snapshot read time with long histories.
+
+## 10. Acceptance criteria before PR #51 may be merged
+
+All must hold, and the owner must then explicitly approve the merge:
+
+1. All mandatory CI is green on the final head, **including** `SharedDashboardScreenTest`, which must
+   be fixed, not disabled. No required check is bypassed.
+2. The Android instrumented tests pass on API 28, 35 and 36; iOS shared and UI tests pass.
+3. The required screenshots are regenerated and reviewed, and the counts match the scripts.
+4. The multi-runner scenarios (section 8) behave as documented in section 4, with no catch-up volume,
+   no intensity increase from progression, and no change without acceptance.
+5. Upgrade from `main` preserves all user data, plan history and decisions; backup/restore works.
+6. Live-workout execution of Piece 4 sessions, including duration-only recoveries, is verified on at
+   least one Android device or emulator and the iOS simulator.
+7. Every production snapshot change since `main` has been reviewed and is intended (see
+   `docs/TRAINING_PROGRAMME_PLAN.md`).
+8. The release version is bumped once, and the signing identity, package identity and update metadata
+   are unchanged and verified. Nothing is published automatically as stable.
+9. `docs/TRAINING_PROGRAMME_PLAN.md`, this file and `CONTINUE_CODEX.md` reflect the final state.
+
+## Final commit and CI
+
+| Commit | Content | CI |
+| --- | --- | --- |
+| Piece 5A implementation and handover (the commit that added this file) | `BlockReassessment`, review integration, tests, docs | Pending at the time of writing; the final status is recorded in the next row. |

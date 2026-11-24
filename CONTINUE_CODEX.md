@@ -15,6 +15,17 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
+## Next task — Piece 5B (training programme, PR #51)
+
+- Claude completed Piece 5A (adaptive coaching) on branch `ccr-60f602a7-tfmok3-training`, draft
+  [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51). It is **not merged**.
+- **Read `docs/HANDOFF_5A_TO_5B.md` first.** It records the repository state and CI, Pieces 1–5A,
+  known defects, everything deferred, the full-app audit instructions and the merge acceptance
+  criteria. Programme history is in `docs/TRAINING_PROGRAMME_PLAN.md`.
+- Piece 5B (Codex) covers comprehensive validation, the full-app audit and release preparation. Start
+  it only after the owner has approved Piece 5A. Never merge without the owner's explicit approval.
+- The generic rules above and in `AGENTS.md` still apply.
+
 ## Current verified baseline (20 November 2026)
 
 - **Latest: `main` = `e46d884d` (0.15.2-test1 / 25, iOS 0.15.2 / 25), PR #30 merged (checkpoint
