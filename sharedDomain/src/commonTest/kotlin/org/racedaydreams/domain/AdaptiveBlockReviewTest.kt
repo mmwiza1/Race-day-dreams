@@ -72,7 +72,7 @@ class AdaptiveBlockReviewTest {
                 else easy(m.plusDays(3), 8.0, WorkoutCategory.EASY_RUN)
             workouts += easy(m.plusDays(6), 10.0, WorkoutCategory.LONG_RUN)
         }
-        val start = monday.minusWeeks(4)
+        val start = monday.minusDays(28)
         return PlanVersion(
             "v",
             "p",
@@ -262,7 +262,7 @@ class AdaptiveBlockReviewTest {
             }
         assertTrue(review(v, oneMissed).choices().none { it.id() == "progress" })
         // Two unrecorded weeks are unknown, not rest: no progression, and it is said.
-        val gaps = history(v, 1.3) { it.date().toEpochDay() < monday.minusWeeks(2).toEpochDay() }
+        val gaps = history(v, 1.3) { it.date().toEpochDay() < monday.minusDays(14).toEpochDay() }
         val r = review(v, gaps)
         assertTrue(r.choices().none { it.id() == "progress" })
         assertTrue(r.observations().any { it.contains("treated as unknown, not as rest") })
@@ -275,7 +275,7 @@ class AdaptiveBlockReviewTest {
     fun strainOrABreakTakesPriorityOverRebuildOrProgression() {
         val v = version()
         // Last run more than two weeks ago: the existing return bridge, not a rebuild.
-        val old = history(v, .5) { it.date().toEpochDay() >= monday.minusWeeks(2).toEpochDay() }
+        val old = history(v, .5) { it.date().toEpochDay() >= monday.minusDays(14).toEpochDay() }
         val r = review(v, old)
         assertTrue(r.choices().any { it.id() == "return" })
         assertTrue(r.choices().none { it.id() == "rebuild" || it.id() == "progress" })

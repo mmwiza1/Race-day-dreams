@@ -196,7 +196,7 @@ All commands were run from the repository root with `ANDROID_HOME=/opt/android-s
 | `./gradlew -q --max-workers=4 :domain:domainTest` | **Pass.** All legacy suites pass, including `CoachingTestSuite` (29,560 checks) and `WeeklyCoachingTestSuite` (96 checks). |
 | `./gradlew -q --max-workers=4 :sharedUi:compileDebugKotlinAndroid :app:compileDebugKotlin :app:compileDebugAndroidTestKotlin` | **Compiles.** |
 | `python3 scripts/format-code.py --check` | **Pass.** |
-| `grep` scan of new common code for JVM-only APIs (`isAfter`/`isBefore` on `LocalDate`, `toSortedMap`, `String.format`, `java.`) | **None found.** |
+| `grep` scan of new common code for JVM-only APIs | Missed `minusWeeks` at first; the iOS CI caught it, and it is fixed. A broader scan of all new Piece 4/5A files against the shared `LocalDate` API now finds nothing. |
 
 **Not run locally:** iOS compile and tests (macOS only; covered by CI `apple-shared`), the full
 shared-domain suite, all instrumented, emulator and device tests, and screenshots.
@@ -306,4 +306,9 @@ All must hold, and the owner must then explicitly approve the merge:
 
 | Commit | Content | CI |
 | --- | --- | --- |
-| Piece 5A implementation and handover (the commit that added this file) | `BlockReassessment`, review integration, tests, docs | Pending at the time of writing; the final status is recorded in the next row. |
+| `cd20f242` | Piece 5A implementation and handover | Android coaching test build: **passed**. `android-shared`: **failed only on the known** `SharedDashboardScreenTest` (1 failure; all other instrumented tests passed). `apple-shared`: **failed**, because the new test called `LocalDate.minusWeeks`, which is JVM-only (iOS test compile error, 3 lines). Main code compiled for iOS. `apple-device`: skipped by design. |
+| The commit that adds this row (the PR #51 head when 5A stopped) | Test fix: `minusWeeks(n)` → `minusDays(7n)`; this CI record | **Pending when written.** Check the PR #51 checks. Expected: `apple-shared` green, `android-shared` failing only on the known test. If anything else fails, treat it as a new regression. |
+
+Lesson for 5B: `org.racedaydreams.domain.time.LocalDate` exposes only `getYear`, `getMonthValue`,
+`getDayOfMonth`, `toEpochDay`, `plusDays`, `plusWeeks`, `minusDays` and `getDayOfWeek` in common code.
+JVM tests compile against `java.time` and will not catch other calls; only the iOS compile does.
