@@ -20,6 +20,14 @@ instrumentation, canonical screenshots and all iOS compilation and tests run onl
 cycle; their result is recorded in the PR and in `CONTINUE_CODEX.md`, not assumed here. **No
 physical-device testing was performed.**
 
+**CI result (24 November 2026):**
+- **PR #49, source `15dea009`:** 853/853 Android instrumentation tests passed on each of API 28,
+  35 and 36. Canonical screenshots, apple-shared and apple-device passed.
+- **Merged** as `main` `60b5201b`. The post-merge run 45348502595 passed after one infrastructure
+  rerun.
+- **Published:** 0.15.5-test1 / 28. The APK SHA-256 is `41ba4345…1c97`. It is not debuggable and is
+  signed with certificate `e7af758a…929d`.
+
 ## 1. Confirmed bugs (24)
 
 A bug is "Resolved" only with a code fix plus a regression test (or, for CI and release findings,

@@ -15,7 +15,68 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Current verified baseline (20 November 2026)
+## Current verified baseline (24 November 2026) — 0.15.5-test1 / 28, post-audit hardening
+
+- **`main` = `60b5201b`**, the squash of [PR #49](https://github.com/mmwiza1/Race-day-dreams/pull/49)
+  "Post-Audit Hardening — Security, Reliability, UX and Platform Parity". The owner authorised it
+  with a 12-condition auto-merge, and all 12 conditions were met (evidence in the PR comment).
+  - The merged tree is identical to the verified head `94fe2f35`, which is the canonical screenshots
+    on top of source `15dea009`.
+  - #49 also carried the audit docs from #48, which was closed as merged-in.
+- **Audit and remediation:**
+  - The original audit is unchanged: `docs/AUDIT_2026-11.md` and `docs/audit-2026-11/{A..D}`.
+  - The remediation matrix covers all 24 bugs and 35 risks: `docs/AUDIT_2026-11_REMEDIATION.md`,
+    with per-stage detail in `docs/audit-2026-11/REMEDIATION-{A..E}.md`.
+  - iOS gaps are listed in [`docs/PLATFORM_PARITY.md`](docs/PLATFORM_PARITY.md).
+- **PR gate on `15dea009`:**
+  - Android: run 45340708674, with 853/853 instrumentation tests passing on each of API 28, 35 and
+    36, plus canonical screenshots.
+  - Shared: run 45340708656, apple-shared and apple-device passing.
+- **Post-merge `main` run [45348502595](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45348502595):**
+  passed on attempt 2.
+  - Attempt 1 failed only in `build (35)`, in "Offline-compatible domain tests", when the formatter
+    jar download got an HTTP 404 before any app test ran (infrastructure). One rerun of that job passed.
+  - publish-test-release then succeeded.
+- **Published and checked by download (24 November):**
+  - `Race-Day-Dreams-0.15.5-test1.apk`: 49,071,450 bytes, SHA-256
+    `41ba43456fdfc0b81fa48291080c8ea9ee2ab4444536da6a0ec4af8cdc3d1c97`. The `.sha256` file, the
+    `latest-test.apk` alias, `latest-update.json` (versionCode 28, commit `60b5201b`) and the
+    build-info all match.
+  - aapt reports `org.racedaydreams` / 28 / `0.15.5-test1`, with **no debuggable flag**. This is
+    the first non-debuggable published build (audit D-3).
+  - Signer certificate: `e7af758a…929d` (unchanged).
+  - Unsigned `.ipa` SHA-256: `5c81be29…72db`.
+  - The `development` tag points to `60b5201b`. No stable tag was created.
+- **Release rules now enforced (audit D-1, D-3; see AGENTS.md):**
+  - Only the `release` build type is published.
+  - Every release-worthy merge needs a versionCode/versionName bump, a matching iOS `Info.plist`,
+    the versioned artefact names in `android.yml`, and `docs/RELEASE_x_y_z.md`.
+  - The publish job refuses different APK bytes under a live versionCode. A docs-only merge to
+    `main` therefore publishes only if the rebuilt APK is byte-identical; bump the version if it is not.
+- **Open owner decisions:**
+  - D-R4: move the signing secrets into a protected `release` environment.
+  - A-R4: Health auto-import after onboarding.
+  - B-R1: plan-completion history across rebuilds.
+  - B-R2: whether "+1 day" moves are offered.
+- **Remaining follow-ups (documented, not done):**
+  - Residuals:
+    - B-01: travel-offset imports on Home and Progress.
+    - B-05: kg-only reference-load editors.
+    - C-R05: the remaining ▾/▴ glyphs.
+    - D-R2: an API 28 fail-fast in `GateProgressListener`.
+    - D-R5: an iOS back stack.
+    - A-R3: pause-aware splits.
+  - Make the V3 strength screenshot fixture weekday-independent. A Tuesday run captured a
+    current-week 80 kg × 5 point.
+- **Physical acceptance is still UNPERFORMED:**
+  - Galaxy S24 goal-selection retest (C-R01: awaiting physical-device verification).
+  - Locked-screen iPhone recording time (A-R1).
+  - Outdoor GPS and auto-pause.
+  - First in-place update from the debuggable 0.15.4-test1 to the non-debuggable 0.15.5-test1.
+  - Health Connect, HealthKit, Bluetooth heart rate and battery.
+  - A human TalkBack/VoiceOver pass.
+
+## Previous verified baseline (20 November 2026)
 
 - **Latest: `main` = `e46d884d` (0.15.2-test1 / 25, iOS 0.15.2 / 25), PR #30 merged (checkpoint
   269).** Published and verified by download on 21 November 2026: APK SHA-256 `8f484d61…b6d2`,
