@@ -63,7 +63,8 @@ object RacePredictionEngine {
         var total = 0.0
         var longest = 0.0
         val weeks = mutableSetOf<LocalDate>()
-        for (a in runs) {
+        // Each physical run counts once, however many sources reported it (audit B-02).
+        for (a in PhysicalRunSessions.counted(runs)) {
             val date = ActivityDates.localDate(a)
             if (
                 date.toEpochDay() > today.toEpochDay() ||
