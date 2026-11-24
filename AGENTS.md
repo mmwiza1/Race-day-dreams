@@ -41,6 +41,22 @@ When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as per
 - **Never trade away safety or source integrity:** exact-head required CI, schema/backup checks where applicable, real screenshot/source validation for modified UI, and green post-merge release validation remain mandatory for owner-authorised releases. The existing CI workflow may still run on every PR push until its separate optimization is safely implemented; wording alone does not change GitHub Actions.
 - **Do not bundle unrelated tasks** simply to fill out a release. An ordinary small change is not automatically a new test APK release. Group small fixes into an explicitly requested patch when practical. Preserve the established owner-authorised PR merge/publish policy when a release is requested.
 
+## AI development sessions — permanent owner rules (24 November 2026)
+
+These rules apply to every Claude (and other AI assistant) development session on Race Day Dreams,
+now and in future. Normal GitHub Actions CI execution is not affected.
+
+- Work in **one** development session only. Never start, spawn or launch another development
+  session, parallel agent, sub-agent or background development worker.
+- Work on **one** implementation piece at a time, and actively develop **one** implementation PR at a
+  time. Parked PRs (for example documentation PR #50) are not being actively developed.
+- Never start overlapping monitoring sessions. One session may schedule its own CI check-ins.
+- When work is split into approved pieces, stop after each piece, report, and wait for the owner's
+  explicit approval before starting the next.
+- Never merge a PR without the owner's explicit approval for that merge.
+- Never interfere with a branch actively being developed by Codex or another developer.
+- Keep pushes to a minimum, and do not manually trigger expensive workflows unless necessary.
+
 ## Release notes
 
 All GitHub releases — the rolling `development` release and permanent version tags —
