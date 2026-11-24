@@ -4258,13 +4258,7 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("period-ONE_YEAR").performScrollTo().performClick()
             alignHeading("Exercise progression")
             capture("strength-progression-1-year")
-            compose.onNodeWithTag("volume-chart").performScrollTo()
-            alignHeading("Training volume")
-            capture("strength-volume-1-year")
-            // The volume card opens on the latest week with workouts ("this" or "that" week).
-            compose.onNodeWithTag("volume-week-workouts").performScrollTo()
-            compose.waitForIdle()
-            capture("strength-volume-workouts")
+            // Piece 2: the training-volume chart is no longer on the dashboard.
             compose.onNodeWithTag("muscle-LEGS").performScrollTo().performClick()
             alignHeading("Muscle-group workload")
             capture("strength-muscle-workload")
@@ -4276,9 +4270,6 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("period-TWELVE_WEEKS").performScrollTo().performClick()
             alignHeading("Exercise progression")
             capture("strength-progression-dark")
-            compose.onNodeWithTag("volume-chart").performScrollTo()
-            alignHeading("Training volume")
-            capture("strength-volume-dark")
             closeScenario()
             scenario = null
 

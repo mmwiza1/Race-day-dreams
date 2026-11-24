@@ -16,8 +16,8 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 
 | Piece | Scope | Class | Status |
 | --- | --- | --- | --- |
-| 1 | Training safety, correctness and transparency | Medium | **Implemented, plus owner-requested correction (draft PR #51); awaiting owner approval** |
-| 2 | Strength dashboard usability | Small–medium | Not started (needs approval) |
+| 1 | Training safety, correctness and transparency | Medium | **Approved at `067bf228`** |
+| 2 | Strength dashboard usability | Small–medium | **Implemented (draft PR #51); awaiting owner approval** |
 | 3 | Running progression engine | Major | Not started |
 | 4 | Race-specific workout engine | Major | Not started |
 | 5 | Adaptive coaching and comprehensive validation | Major | Not started |
@@ -95,6 +95,30 @@ on each push; keep pushes to a minimum and trigger nothing manually.
 - **First CI run on PR #51:** the iOS `apple-shared` job failed because the test used `toSortedMap()`,
   which is JVM-only. The test has been fixed and the shared files scanned for other JVM-only APIs.
   Kotlin/Native cannot be compiled locally, so iOS is checked by CI.
+
+## Piece 2 — what changed
+
+- **No tonnage headline.** The training-volume card (weekly load × repetitions chart, e.g. "1,722 kg")
+  is no longer shown on the Strength tab or on Progress → Strength. Recent workouts no longer show a
+  per-workout tonnage figure.
+- **New order** on both screens, each answering a simple question:
+  1. Exercise progression (am I improving?): heaviest set and estimated 1RM per exercise.
+  2. At a glance (what did I accomplish?): Workouts, Working sets, New records (opens personal
+     records), Programme.
+  3. Recent workouts (what did I do?): exercises, date and working sets; each opens the workout.
+  4. Muscle-group workload (where did the work go?): working sets per muscle group from the
+     existing exercise classification, with unassigned and secondary involvement kept separate.
+  5. Bouldering (for climbers) and More (records, analytics, milestones, recovery), unchanged.
+- **Retained:** workout history, all domain calculations, including `DashboardAnalytics` volume by week
+  and by exercise, programmes, exercise library, gym tracking, bouldering, navigation icons and Dream
+  Routes. The `TrainingVolumeCard` composable is kept, unused, for optional advanced analytics later.
+- **Tests and screenshots:**
+  - `SharedDashboardScreenTest` now asserts no volume chart and no tonnage.
+  - The volume-week test is replaced by an order test: progression, then figures, then recent
+    workouts, then muscle groups.
+  - The strength-focus test now expects no "Training volume".
+  - The three `strength-volume-*` captures are removed from `CoachingScreenshotTest`, the screenshot
+    verifier and its test (required captures 522 → 519), and their stale images are deleted.
 
 ## Deferred to Piece 5
 

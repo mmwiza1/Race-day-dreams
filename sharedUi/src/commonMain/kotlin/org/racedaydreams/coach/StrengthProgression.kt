@@ -452,6 +452,9 @@ private fun ProgressionChart(
 }
 
 /**
+ * Not shown on the default dashboards since training Piece 2 (tonnage is not a measure of
+ * strength); kept, with its domain calculation, for optional advanced analytics.
+ *
  * Training volume: accumulated load × repetitions of weighted working sets, by week, with the
  * workouts behind the selected week and the period's largest exercises. Never a weight lifted.
  */
