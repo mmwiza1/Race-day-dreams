@@ -140,6 +140,53 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         verifySavedRoute(in: app)
     }
 
+    func testLiveCoachAdvancesATimedRecoveryWithoutGPSDistance() {
+        let app = XCUIApplication()
+        app.launch()
+        if control("Record my runs", in: app).exists {
+            tap("Record my runs", in: app)
+        } else {
+            tap("Record", in: app)
+        }
+
+        let permissionAction = control("Allow location access", in: app)
+        if permissionAction.exists {
+            permissionAction.tap()
+            let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+                .buttons["Allow While Using App"]
+            XCTAssertTrue(allow.waitForExistence(timeout: 60))
+            allow.tap()
+        }
+        tap("Create custom workout", in: app)
+        tap("Add new group", in: app)
+        tap("Save step", in: app)
+        tap("Add step to group", in: app)
+        tap("Recovery", in: app)
+        XCTAssertTrue(reveal("Time (seconds)", in: app))
+        let time = app.textFields.matching(NSPredicate(format: "label == %@", "Time (seconds)")).firstMatch
+        XCTAssertTrue(time.waitForExistence(timeout: 15))
+        time.tap()
+        time.typeText("15")
+        tap("Save step", in: app)
+        tap("Add step to group", in: app)
+        tap("Save step", in: app)
+        tap("Start custom workout", in: app)
+        XCTAssertTrue(control("Step 1 of 3", in: app).waitForExistence(timeout: 20))
+        tap("Complete open step", in: app)
+        XCTAssertTrue(control("Step 2 of 3", in: app).waitForExistence(timeout: 10))
+        // With no simulated movement, advancing to the third step requires the active-time target.
+        XCTAssertTrue(control("Step 3 of 3", in: app).waitForExistence(timeout: 40))
+        tap("Pause", in: app)
+        XCTAssertTrue(control("Resume", in: app).waitForExistence(timeout: 15))
+        app.terminate()
+        app.launch()
+        tap("Record", in: app)
+        XCTAssertTrue(control("Interrupted recording", in: app).waitForExistence(timeout: 20))
+        tap("Discard interrupted recording", in: app)
+        tap("Discard", in: app)
+        XCTAssertTrue(control("Create custom workout", in: app).waitForExistence(timeout: 15))
+    }
+
     private func verifySavedRoute(in app: XCUIApplication) {
         tap("Start recording", in: app)
         XCTAssertTrue(control("Pause", in: app).waitForExistence(timeout: 20))

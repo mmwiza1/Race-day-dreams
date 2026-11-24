@@ -56,7 +56,8 @@ built around their next session, with one clear way to start and spontaneous tra
 ### Running Coach
 
 Follow a weekly plan towards a 5K, 10K, half marathon or marathon, then record your run with clear
-distance, time, pace and GPS status. Guidance leaves every decision to you.
+distance, time, pace and GPS status. Race preparation checks explain what your plan can support,
+and weekly reviews let you preview changes based on recent runs before deciding.
 
 <a href="docs/screenshots/training-plan.png"><img src="docs/screenshots/training-plan.png" alt="Weekly running plan with planned and completed workouts" width="280"></a> <a href="docs/screenshots/live-refined-statistics.png"><img src="docs/screenshots/live-refined-statistics.png" alt="Live run recording with elapsed time, distance, pace and pause controls" width="280"></a>
 

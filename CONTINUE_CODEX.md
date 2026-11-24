@@ -15,16 +15,28 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Next task — Piece 5B (training programme, PR #51)
+## Active task — Piece 5B (training programme, PR #51)
 
-- Claude completed Piece 5A (adaptive coaching) on branch `ccr-60f602a7-tfmok3-training`, draft
-  [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51). It is **not merged**.
-- **Read `docs/HANDOFF_5A_TO_5B.md` first.** It records the repository state and CI, Pieces 1–5A,
-  known defects, everything deferred, the full-app audit instructions and the merge acceptance
-  criteria. Programme history is in `docs/TRAINING_PROGRAMME_PLAN.md`.
-- Piece 5B (Codex) covers comprehensive validation, the full-app audit and release preparation. Start
-  it only after the owner has approved Piece 5A. Never merge without the owner's explicit approval.
-- The generic rules above and in `AGENTS.md` still apply.
+- Continue [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51) on
+  `ccr-60f602a7-tfmok3-training` in `/workspace/scratch/rdd-piece5b`. The primary
+  checkout contains unrelated experimental history. Do not change it or parked PR #50.
+- Owner authorised squash merge only after every software release gate and visual review.
+  Base inspected at `60b5201b`; initial head `0bc2a4a0` passed its
+  [draft shared run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45473777369).
+  The draft skips the unfiltered Android matrix and unsigned iPhone build.
+- Piece 5B release candidate is `0.16.0-test1` / 29 (iOS `0.16.0` / 29).
+  Database and backup formats are unchanged; keep the published signing identity.
+- Changes: runner-approved rebuilds cap later weeks and individual sessions at the
+  rebuilt workload until further review; timed recoveries keep active-time targets,
+  with estimated distance budgeted separately. Workout details display recovery seconds.
+  Added multi-runner review, Android recording/backup/upgrade, iOS live and five
+  canonical capture scenarios. See [handover](docs/HANDOFF_5A_TO_5B.md).
+- Exact next steps: finish focused emulator and local checks, push one coherent
+  candidate, mark ready, verify API 28/35/36, iOS shared/simulator/XCTest/device,
+  upgrade, backup and source-bound captures, review the actual screenshots, then
+  merge and verify publication if all mandatory gates pass. After the confirmed
+  merge, create a separate documentation PR for the full app, running and gym audits.
+  Physical-device results remain separate.
 
 ## Current verified baseline (20 November 2026)
 

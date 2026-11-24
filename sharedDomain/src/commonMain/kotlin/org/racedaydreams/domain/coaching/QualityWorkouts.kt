@@ -121,6 +121,14 @@ internal object QualityWorkouts {
     /** About how far a recovery jog covers, for fitting a session into its planned distance. */
     private const val RECOVERY_KM_PER_SECOND = .18 / 60
 
+    /** Planning allowance only; the live recovery ends by active time. */
+    fun estimatedRecoveryKm(segments: List<WorkoutSegment>): Double =
+        segments.sumOf {
+            if (it.kind() == WorkoutSegment.Kind.RECOVERY && it.distanceKm() == null)
+                (it.duration()?.getSeconds() ?: 0) * RECOVERY_KM_PER_SECOND
+            else 0.0
+        }
+
     /**
      * Builds [template] within [km] for [readiness]. [reduced] (taper or after hard legs) uses the
      * smallest dose. Returns null when the session does not fit, so the day stays easy.

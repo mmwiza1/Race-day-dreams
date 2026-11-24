@@ -2,6 +2,7 @@ package org.racedaydreams.domain
 
 import kotlin.test.*
 import org.racedaydreams.domain.activity.*
+import org.racedaydreams.domain.baseline.*
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.time.*
 
@@ -155,6 +156,120 @@ class AdaptiveBlockReviewTest {
     }
 
     @Test
+    fun generatedProgrammesFeedActualRunsIntoFourConsecutiveReviews() {
+        val start = monday.minusDays(56)
+        val freshness = noon(start.minusDays(1))
+        val scenarios =
+            listOf(
+                Triple(RaceDistance.FIVE_K, TrainingStrategy.BALANCED, null),
+                Triple(RaceDistance.FIVE_K, TrainingStrategy.PERFORMANCE, 27.0),
+                Triple(RaceDistance.TEN_K, TrainingStrategy.BALANCED, 26.0),
+                Triple(RaceDistance.HALF_MARATHON, TrainingStrategy.PERFORMANCE, 32.0),
+                Triple(RaceDistance.MARATHON, TrainingStrategy.BALANCED, 45.0),
+                Triple(RaceDistance.GENERAL_FITNESS, TrainingStrategy.ZONE_2, 22.0),
+            )
+        for ((distance, strategy, weeklyKm) in scenarios) {
+            val race =
+                if (distance == RaceDistance.GENERAL_FITNESS) null
+                else start.plusWeeks(20).minusDays(1)
+            val profile = version(distance, race, strategy = strategy).goalSnapshot()
+            val empty = RunnerBaseline.empty(noon(start.minusDays(84)), noon(start))
+            val baseline =
+                if (weeklyKm == null) empty
+                else
+                    BaselineEngine.applyManualOverlay(
+                        empty,
+                        ManualBaselineInput(
+                            weeklyKm,
+                            3.0,
+                            weeklyKm * .4,
+                            Durations.ofMinutes(27),
+                            null,
+                            null,
+                            395.0,
+                            8,
+                        ),
+                        freshness,
+                    )
+            val plan = OriginalTrainingPlanGenerator().generate(profile, baseline, start)
+            val version =
+                PlanVersion(
+                    "simulation",
+                    plan.id(),
+                    1,
+                    noon(start),
+                    "Initial",
+                    profile,
+                    "Fixture",
+                    plan,
+                )
+            for (offset in 3..6) {
+                val end = start.plusWeeks(offset.toLong())
+                val actual =
+                    plan
+                        .workouts()
+                        .filter { it.date().toEpochDay() < end.toEpochDay() }
+                        .map { workout ->
+                            val id = "actual-${workout.id()}"
+                            val from = noon(workout.date())
+                            ActivityRecord(
+                                id,
+                                SourceIdentity("manual", id, null),
+                                from,
+                                Instants.ofEpochSecond(from.getEpochSecond() + 1800),
+                                null,
+                                null,
+                                workout.distanceKm()?.times(1000.0),
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                null,
+                                "",
+                                emptyList(),
+                                emptyList(),
+                                workout.id(),
+                                null,
+                            )
+                        }
+                val review =
+                    WeeklyCoaching.review(
+                        version,
+                        listOf(version),
+                        actual,
+                        emptyList(),
+                        emptyList(),
+                        emptyList(),
+                        end.plusDays(1),
+                        null,
+                    )
+                assertTrue(review.completed() > 0, "$distance $strategy week $offset")
+                assertEquals(
+                    listOf("keep"),
+                    review.choices().map { it.id() },
+                    "$distance $strategy week $offset",
+                )
+                assertEquals(
+                    plan,
+                    WeeklyCoaching.apply(version, review, review.choices().single(), emptySet()),
+                )
+            }
+            if (weeklyKm == null) {
+                assertTrue(
+                    plan
+                        .workouts()
+                        .filter { it.category() != WorkoutCategory.RACE }
+                        .all { it.distanceKm() == null }
+                )
+            }
+            if (strategy == TrainingStrategy.ZONE_2) {
+                assertTrue(plan.workouts().none { WorkoutCategories.isQuality(it.category()) })
+            }
+        }
+    }
+
+    @Test
     fun missingDataIsNotTreatedAsInactivityAndChangesNothing() {
         val v = version()
         val r = review(v, emptyList())
@@ -197,6 +312,39 @@ class AdaptiveBlockReviewTest {
     }
 
     @Test
+    fun acceptedRebuildDoesNotSnapBackIfTheRunnerDoesNotReopenTheReview() {
+        val original = version()
+        val review = review(original, history(original, .5))
+        val rebuild = review.choices().single { it.id() == "rebuild" }
+        val applied = WeeklyCoaching.apply(original, review, rebuild, emptySet())
+        val fourth = weekTotal(applied.workouts(), 3)
+        assertEquals(26.0, weekTotal(original.plan().workouts(), 4), 1e-9)
+        assertTrue(fourth in 14.5..14.95, "Fourth week was $fourth km")
+        val fifth = weekTotal(applied.workouts(), 4)
+        assertTrue(fifth in (fourth - .3)..fourth, "Fourth week $fourth km, fifth week $fifth km")
+        assertEquals(original.plan().workouts().map { it.id() }, applied.workouts().map { it.id() })
+    }
+
+    @Test
+    fun scaledQualityDistanceIncludesAnAllowanceForTimedRecoveriesWithoutRequiringDistance() {
+        val session = threshold(monday.plusDays(3))
+        for (factor in listOf(.85, .88, .94, 1.0)) {
+            val workout = BlockReassessment.scale(session, factor, "Rebuilt.")
+            val segments = workout.segments()
+            val estimate = QualityWorkouts.estimatedRecoveryKm(segments)
+            assertEquals(.36, estimate, 1e-9)
+            assertEquals(
+                workout.distanceKm()!!,
+                segments.sumOf { it.distanceKm() ?: 0.0 } + estimate,
+                .05001,
+            )
+            val recovery = segments.single { it.kind() == WorkoutSegment.Kind.RECOVERY }
+            assertNull(recovery.distanceKm())
+            assertEquals(120, recovery.duration()!!.getSeconds().toInt())
+        }
+    }
+
+    @Test
     fun aRebuiltWeekKeepsStructuredSessionsIntactOrMakesThemEasy() {
         val session = threshold(monday.plusDays(3))
         val smaller = BlockReassessment.scale(session, .85, "Rebuilt.")
@@ -231,7 +379,7 @@ class AdaptiveBlockReviewTest {
         for (week in 0 until 2) {
             val before = weekTotal(v.plan().workouts(), week)
             val after = weekTotal(WeeklyCoaching.apply(v, r, progress, emptySet()).workouts(), week)
-            assertTrue(after <= before * 1.10 + .2, "week $week $before -> $after")
+            assertTrue(after <= before * 1.10 + 1e-9, "week $week $before -> $after")
             assertTrue(after > before)
         }
         // Only the next two weeks.
@@ -245,7 +393,7 @@ class AdaptiveBlockReviewTest {
             progress
                 .replacements()
                 .filter { it.category() == WorkoutCategory.LONG_RUN }
-                .all { it.distanceKm()!! <= 13.0 * 1.10 + .05 }
+                .all { it.distanceKm()!! <= 13.0 * 1.10 + 1e-9 }
         )
     }
 

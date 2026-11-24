@@ -1,5 +1,6 @@
 package org.racedaydreams.domain.coaching
 
+import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
@@ -13,7 +14,8 @@ import org.racedaydreams.domain.time.*
  * It compares the last four weeks of actual recorded running with what the plan asked for and with
  * the next two planned weeks, and may offer one runner-approved change:
  * - **rebuild**: recent running is well below the coming weeks, so the next four weeks build
- *   gradually from what the runner is actually doing (never making up missed sessions);
+ *   gradually from what the runner is actually doing, then hold that workload pending fresh
+ *   evidence;
  * - **progress**: every planned run was completed and the runner consistently ran more than
  *   planned, so the next two weeks' easy and long runs may grow by at most 10% (quality sessions
  *   and intensity are never increased).
@@ -138,22 +140,50 @@ internal object BlockReassessment {
                 return Result(observations, null, null)
             }
             val replacements = mutableListOf<PlannedWorkout>()
-            for (i in 0 until 4) {
-                val workouts = week(version, end.plusWeeks(i.toLong()))
+            var heldWeeklyKm = recorded
+            var heldRunKm = 0.0
+            val upcomingWeeks =
+                version
+                    .plan()
+                    .workouts()
+                    .filter {
+                        !coachingBefore(it.date(), end) && it.category() != WorkoutCategory.RACE
+                    }
+                    .groupBy { coachingMonday(it.date()) }
+            for ((from, workouts) in upcomingWeeks.entries.sortedBy { it.key.toEpochDay() }) {
+                val index = ((from.toEpochDay() - end.toEpochDay()) / 7).toInt()
                 val total = workouts.sumOf { it.distanceKm() ?: 0.0 }
-                if (total <= 0) continue
-                val factor = min(1.0, recorded * (1 + .05 * i) / total)
-                if (factor < .98)
-                    for (w in workouts) replacements +=
-                        scale(
-                            w,
-                            factor,
-                            "Rebuilt from your recent running (about ${rounded(recorded)} km a week); missed sessions are not made up.",
-                        )
+                if (total > 0) {
+                    val rebuilding = index < 4
+                    val ceiling = if (rebuilding) recorded * (1 + .05 * index) else heldWeeklyKm
+                    val factor = min(1.0, ceiling / total)
+                    val note =
+                        if (rebuilding)
+                            "Rebuilt from your recent running (about ${rounded(recorded)} km a week); missed sessions are not made up."
+                        else
+                            "Held at your rebuilt workload until recent runs support a change; missed sessions are not made up."
+                    val adjusted =
+                        workouts.map { workout ->
+                            val km = workout.distanceKm()
+                            val safeFactor =
+                                if (!rebuilding && km != null && km > 0 && heldRunKm > 0)
+                                    min(factor, heldRunKm / km)
+                                else factor
+                            if (km != null && safeFactor < 1.0) {
+                                scale(workout, safeFactor, note, roundDistanceDown = true).also {
+                                    if (it.distanceKm() != km) replacements += it
+                                }
+                            } else workout
+                        }
+                    if (rebuilding) {
+                        heldWeeklyKm = adjusted.sumOf { it.distanceKm() ?: 0.0 }
+                        heldRunKm = adjusted.maxOf { it.distanceKm() ?: 0.0 }
+                    }
+                }
             }
             if (replacements.isNotEmpty()) {
                 val recommendation =
-                    "Your recorded running over the last four weeks (about ${rounded(recorded)} km a week) is well below the next two planned weeks (about ${rounded(nextAverage)} km). Consider rebuilding gradually from what you are running now, rising about 5% a week for four weeks; your plan is then reviewed again."
+                    "Your recorded running over the last four weeks (about ${rounded(recorded)} km a week) is well below the next two planned weeks (about ${rounded(nextAverage)} km). Consider rebuilding gradually from what you are running now, building in small steps for four weeks. Later workouts stay at or below that workload until a review supports another change."
                 realism(version, replacements)?.let { observations += it }
                 return Result(
                     observations,
@@ -196,13 +226,16 @@ internal object BlockReassessment {
                     // A long run grows at most 10% beyond the longest recent recorded run.
                     if (w.category() == WorkoutCategory.LONG_RUN)
                         f = min(f, max(1.0, evidence.longestKm * 1.10 / km))
-                    if (f > 1.02)
-                        replacements +=
+                    if (f > 1.02) {
+                        val proposed =
                             scale(
                                 w,
                                 f,
                                 "Cautious progression after four weeks of completing every planned run and running more than planned; intensity is unchanged.",
+                                roundDistanceDown = true,
                             )
+                        if (proposed.distanceKm()!! > km) replacements += proposed
+                    }
                 }
             }
             if (replacements.isNotEmpty())
@@ -261,11 +294,20 @@ internal object BlockReassessment {
      * the easy parts (warm-up, cool-down, easy running) change. A session that would no longer fit
      * becomes an easy run.
      */
-    fun scale(w: PlannedWorkout, factor: Double, note: String): PlannedWorkout {
+    fun scale(
+        w: PlannedWorkout,
+        factor: Double,
+        note: String,
+        roundDistanceDown: Boolean = false,
+    ): PlannedWorkout {
         val km = w.distanceKm()
         val duration =
             w.duration()?.let { Durations.ofSeconds(max(60L, (it.getSeconds() * factor).toLong())) }
-        val newKm = km?.let { max(.1, round(it * factor * 10) / 10.0) }
+        val newKm =
+            km?.let {
+                val tenths = it * factor * 10
+                max(.1, (if (roundDistanceDown) floor(tenths + 1e-9) else round(tenths)) / 10.0)
+            }
         fun fixed(s: WorkoutSegment) =
             s.kind() == WorkoutSegment.Kind.RECOVERY ||
                 s.kind() == WorkoutSegment.Kind.RUN && (s.rpe() ?: 0.0) > 3.0
@@ -274,7 +316,8 @@ internal object BlockReassessment {
         val flexibleKm = flexible.sumOf { it.distanceKm()!! }
         val structured = w.segments().any(::fixed)
         val untimed = km != null && newKm != null
-        val remaining = if (untimed) newKm!! - (km!! - flexibleKm) else 0.0
+        val recoveryKm = QualityWorkouts.estimatedRecoveryKm(w.segments())
+        val remaining = if (untimed) newKm!! - fixedKm - recoveryKm else 0.0
         val minimum = if (AdaptiveCoaching.isQuality(w.category())) 2.0 else 1.0
         if (structured && untimed && (flexibleKm <= 0 || remaining < minimum))
             return PlannedWorkout(
@@ -297,14 +340,29 @@ internal object BlockReassessment {
                 ),
                 "$note This day is now an easy run. Original prescription is retained in plan history.",
             )
-        val flexFactor = if (structured && untimed) remaining / flexibleKm else factor
+        // Allocate tenths cumulatively so the independently displayed steps reconcile with
+        // the workout total, counting timed recovery only as an estimate, never a distance target.
+        var remainingTenths = if (untimed) round(remaining * 10).toInt() else 0
+        var remainingOriginalKm = flexibleKm
         val segments =
             w.segments().map { s ->
                 if (structured && fixed(s)) s
                 else
                     WorkoutSegment(
                         s.kind(),
-                        s.distanceKm()?.let { max(.1, round(it * flexFactor * 10) / 10.0) },
+                        s.distanceKm()?.let { original ->
+                            if (!untimed || remainingOriginalKm <= 0) {
+                                max(.1, round(original * factor * 10) / 10.0)
+                            } else {
+                                val tenths =
+                                    round(remainingTenths * original / remainingOriginalKm)
+                                        .toInt()
+                                        .coerceAtLeast(1)
+                                remainingTenths -= tenths
+                                remainingOriginalKm -= original
+                                tenths / 10.0
+                            }
+                        },
                         s.duration()?.let {
                             Durations.ofSeconds(max(1L, (it.getSeconds() * factor).toLong()))
                         },

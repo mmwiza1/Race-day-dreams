@@ -168,7 +168,7 @@ Relevant files:
 
 - **Reuse over new infrastructure:** no new persistence, schema migration or UI. The risk is low, but
   rebuild and progress are only as visible as the existing weekly review.
-- **Rolling four-week rebuild:** after a rebuild, week 5 returns to the original plan, and the next
+- **Original 5A behaviour (superseded in 5B):** after a rebuild, week 5 returned to the original plan, and the next
   weekly reviews reassess. This avoids silently re-planning the whole block, but a runner who stays
   low will see a rebuild offered again. That is intended: it is periodic, and one choice per weekly
   review.
@@ -314,3 +314,27 @@ All must hold, and the owner must then explicitly approve the merge:
 Lesson for 5B: `org.racedaydreams.domain.time.LocalDate` exposes only `getYear`, `getMonthValue`,
 `getDayOfMonth`, `toEpochDay`, `plusDays`, `plusWeeks`, `minusDays` and `getDayOfWeek` in common code.
 JVM tests compile against `java.time` and will not catch other calls; only the iOS compile does.
+
+
+## Piece 5B validation checkpoint
+
+- Started from PR #51 head `0bc2a4a0` and main `60b5201b`. GitHub's exact-head
+  [draft run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45473777369) passed
+  Android shared and Apple shared; Apple device was skipped for the draft.
+- The 5A week-five return was reproduced from 13 km of recorded weekly running and
+  26 km of planned weekly running. Accepting the rebuild now caps the later week
+  and each distance-based run by the final rebuilt week's distance and longest run.
+  Dates, past sessions and the race remain unchanged. Keeping the original plan
+  still applies nothing. The continuation is included in the approval preview.
+- Timed recoveries stay duration-only. The estimated recovery contribution to the
+  workout total is retained when scaling, and 90-second recoveries display as
+  1 min 30 sec in the workout detail. Added focused tests for both corrections.
+- Five canonical captures are required in addition to the existing 519: Limited
+  and Not supported readiness, a timed recovery, and the rebuild and progress previews.
+- Local verification includes 11 adaptive block tests, four successive reviews for each of six
+  generated runner profiles, 78 schema tests, all 20 shared/Android schema boundaries, 29
+  screenshot-contract checks and 12 release-note tests. The candidate's comparison with the
+  pre-change generator is in the programme plan. These results do not replace platform checks.
+- The release candidate bumps once to Android `0.16.0-test1` / 29 and iOS `0.16.0` / 29.
+  Full matrix, iOS simulator coverage, actual capture review, final upgrade and
+  publication verification are still pending. No post-merge audit is claimed here.

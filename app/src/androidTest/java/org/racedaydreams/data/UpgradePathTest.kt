@@ -11,9 +11,10 @@ import org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.domain.*
-import org.racedaydreams.domain.activity.Shoe
+import org.racedaydreams.domain.activity.*
 import org.racedaydreams.domain.baseline.*
 import org.racedaydreams.domain.climbing.*
+import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.storage.SqliteClimbing
 import org.racedaydreams.update.ApkVerifier
@@ -60,6 +61,18 @@ class UpgradePathTest {
         assertEquals(ClimbingGrade(GradeSystem.FONTAINEBLEAU, "6C+"), climb.problems.first().grade)
         assertEquals(GradeSystem.FONTAINEBLEAU, SqliteClimbing(AndroidSqlConnection.forApplication(context)).gradeSystem())
         assertEquals("Upgrade test shoe", FeatureStore(context).shoes().single { it.id() == "upgrade-shoe" }.brand())
+        val coaching = CoachingStore(context)
+        assertEquals("upgrade-active", coaching.current()!!.id())
+        assertEquals(setOf("upgrade-original", "upgrade-active"), coaching.versions().map { it.id() }.toSet())
+        assertEquals("upgrade-completed", coaching.responses().single().plannedWorkoutId())
+        assertEquals("upgrade-original", coaching.responses().single().planVersionId())
+        val development = DevelopmentStore(context)
+        assertEquals("keep", development.reviewDecision("upgrade-legacy-decided"))
+        assertTrue(development.reviewKnown("upgrade-legacy-open"))
+        assertEquals(WorkoutDecision.Kind.SKIPPED, development.sessionDecisions().single().kind())
+        assertEquals("upgrade-strength", coaching.strength().single().id())
+        assertNotNull(GymProgrammeStore(context).current())
+        assertTrue(SupportStore.exportData(ProfileDatabase.get(context).readableDatabase).toString().contains("upgrade-running"))
         assertNotNull(SqliteUserPreferencesRepository(context).load())
         assertEquals(
             args.getString("installedVersionCode")?.toLong(),
@@ -148,6 +161,7 @@ class UpgradePathTest {
                 "Synthetic upgrade fixture",
             )
         )
+        seedTrainingHistory(today, store, evidence)
         val climbing = SqliteClimbing(AndroidSqlConnection.forApplication(context))
         climbing.saveNew(
             ClimbingSession(
@@ -170,6 +184,44 @@ class UpgradePathTest {
             .edit()
             .putBoolean(org.racedaydreams.coach.theme.DYNAMIC_COLOUR, false)
             .commit()
+    }
+
+    private fun seedTrainingHistory(today: LocalDate, store: FeatureStore, development: DevelopmentStore) {
+        val profile = SqliteUserPreferencesRepository(context).load().orElseThrow()
+        val at = today.atTime(12, 0).toInstant(ZoneOffset.UTC)
+        val done = PlannedWorkout("upgrade-completed", today.minusDays(3), WorkoutCategory.EASY_RUN, 7.0, null, emptyList(), "Completed prescription")
+        val skipped = PlannedWorkout("upgrade-skipped", today.minusDays(1), WorkoutCategory.EASY_RUN, 5.0, null, emptyList(), "Skipped prescription")
+        val next = PlannedWorkout("upgrade-future", today.plusDays(2), WorkoutCategory.LONG_RUN, 9.0, null, emptyList(), "Current prescription")
+        val original = TrainingPlan("upgrade-plan", today.minusWeeks(1), today.plusWeeks(12), emptyList(), listOf(done, skipped, next))
+        val coaching = CoachingStore(context)
+        coaching.saveCurrent(PlanVersion("upgrade-original", original.id(), 1, at.minusSeconds(86400), "Original", profile, "Fixture", original))
+        coaching.saveCurrent(PlanVersion("upgrade-active", original.id(), 2, at, "Edited future workout", profile, "Fixture",
+            TrainingPlan(original.id(), original.startDate(), original.endDate(), emptyList(), listOf(done, next.copy(distanceKm = 8.0)))))
+        development.saveSessionDecision(WorkoutDecision("upgrade-skip", skipped.id(), "upgrade-active", skipped.date(), null, WorkoutDecision.Kind.SKIPPED, at))
+        val start = done.date().atTime(9, 0).toInstant(ZoneOffset.UTC)
+        val runId = "upgrade-running"
+        store.upsertManualActivity(ActivityRecord(
+            runId, SourceIdentity("manual", runId, null), start, start.plusSeconds(2700), ZoneOffset.UTC, ZoneOffset.UTC,
+            7000.0, null, null, null, null, null, 3.0, "Synthetic upgrade run", emptyList(), emptyList(), done.id(), null,
+        ))
+        coaching.saveResponse(RunExecution(runId, done.id(), "upgrade-original", null, null, "Retained response"))
+        SupportStore(context).dream(runId, 7000.0)
+        for (id in listOf("upgrade-legacy-decided", "upgrade-legacy-open")) {
+            val review = WeeklyCoaching.Review(id, "upgrade-active", today.minusDays(7), 2, 1, 7.0, 0, 7.0,
+                emptyList(), emptyList(), "Legacy recommendation", listOf(WeeklyCoaching.Choice("keep", "Keep original plan", emptyList())))
+            development.saveReview(review)
+            if (id == "upgrade-legacy-decided") development.decide(review, "keep", coaching, emptySet())
+        }
+        val exercise = StrengthExercise.starters().first()
+        coaching.saveStrength(StrengthSession("upgrade-strength", at, ZoneOffset.UTC, Duration.ofMinutes(45), 6.0, "Retained gym session",
+            listOf(StrengthSession.ExerciseSets(exercise, listOf(StrengthSession.SetEntry("upgrade-set", 5, 40.0, 6.0, false))))))
+        val gymSettings = GymProgramme.Settings(
+            GymProgramme.Goal.SUPPORT_RUNNING, GymProgramme.Priority.RUNNING_FIRST,
+            GymProgramme.Experience.INTERMEDIATE, setOf(DayOfWeek.TUESDAY, DayOfWeek.FRIDAY), 2,
+            setOf("full gym"), 45, GymProgramme.Effort.RPE,
+        )
+        GymProgrammeStore(context).save(GymProgrammeGenerator().generate("upgrade-gym", 1, at, "Upgrade fixture",
+            gymSettings, today, original.workouts(), emptyList()))
     }
 
     private fun tables(): List<String> =

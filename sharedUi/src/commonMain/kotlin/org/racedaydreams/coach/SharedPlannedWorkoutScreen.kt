@@ -77,6 +77,16 @@ fun SharedPlannedWorkoutScreen(
                     ?: workout.duration()?.let { "${it.getSeconds() / 60} min" }
                     ?: "Runner-owned race"
             )
+            if (
+                workout.distanceKm() != null &&
+                    workout.segments().any {
+                        it.kind() == WorkoutSegment.Kind.RECOVERY &&
+                            it.distanceKm() == null &&
+                            it.duration() != null
+                    }
+            ) {
+                Text("The total includes an estimate for timed recoveries. Recover by time.")
+            }
             val briefing =
                 org.racedaydreams.domain.coaching.WorkoutContext.briefing(
                     workout,
@@ -136,7 +146,18 @@ fun SharedPlannedWorkoutScreen(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     segment.distanceKm()?.let { Text(presentation.distance(it * 1000)) }
-                    segment.duration()?.let { Text("${it.getSeconds() / 60} min") }
+                    segment.duration()?.let {
+                        val seconds = it.getSeconds()
+                        val minutes = seconds / 60
+                        val remainder = seconds % 60
+                        Text(
+                            when {
+                                minutes == 0L -> "$seconds sec"
+                                remainder == 0L -> "$minutes min"
+                                else -> "$minutes min $remainder sec"
+                            }
+                        )
+                    }
                     segment.rpe()?.let {
                         Text(
                             "How hard it should feel: ${org.racedaydreams.domain.presentation.StrengthPrescriptionText.effortDescription(it)}."

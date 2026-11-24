@@ -4,6 +4,7 @@ import android.test.AndroidTestCase
 import java.io.*
 import java.time.*
 import org.json.JSONObject
+import org.racedaydreams.domain.WorkoutSegment
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
 import org.racedaydreams.domain.support.RunningRoutines
@@ -169,7 +170,7 @@ class LiveCoachStoreTest : AndroidTestCase() {
         }
     }
 
-    private fun prescription(): JSONObject {
+    private fun prescription(intervalsWithRecovery: Boolean = false): JSONObject {
         val today = LocalDate.now()
         val days = java.util.EnumSet.allOf(java.time.DayOfWeek::class.java)
         val profile =
@@ -195,7 +196,7 @@ class LiveCoachStoreTest : AndroidTestCase() {
         val segment =
             org.racedaydreams.domain.WorkoutSegment(
                 org.racedaydreams.domain.WorkoutSegment.Kind.RUN,
-                .3,
+                if (intervalsWithRecovery) .06 else .3,
                 null,
                 295.0,
                 305.0,
@@ -208,9 +209,24 @@ class LiveCoachStoreTest : AndroidTestCase() {
                 "work",
                 today,
                 org.racedaydreams.domain.WorkoutCategory.INTERVALS,
-                .3,
+                if (intervalsWithRecovery) .18 else .3,
                 null,
-                listOf(segment),
+                if (intervalsWithRecovery)
+                    listOf(
+                        segment,
+                        WorkoutSegment(
+                            WorkoutSegment.Kind.RECOVERY,
+                            null,
+                            Duration.ofSeconds(20),
+                            null,
+                            null,
+                            null,
+                            2.0,
+                            "Easy jog by time",
+                        ),
+                        segment,
+                    )
+                else listOf(segment),
                 "Original",
             )
         val plan =
@@ -247,6 +263,32 @@ class LiveCoachStoreTest : AndroidTestCase() {
         assertEquals(1, response.steps().size)
         assertTrue(response.steps().first().reliablePace())
         assertEquals(300.0, response.steps().first().metres(), .001)
+    }
+
+    fun testTimedRecoveryBetweenRepetitionsSurvivesNativeRunLinkAndCompleteBackup() {
+        val spec = prescription(intervalsWithRecovery = true)
+        val recovery = SupportStore.steps(spec)[1]
+        assertEquals(WorkoutSegment.Kind.RECOVERY, recovery.kind())
+        assertNull(recovery.metres())
+        assertEquals(20000L, recovery.millis())
+        val id = native(spec = spec)
+        val response = CoachingStore(context).responses().single()
+        assertEquals(id, response.activityId())
+        assertEquals("work", response.plannedWorkoutId())
+        assertEquals("version", response.planVersionId())
+        assertEquals(2, response.completedReps())
+        assertEquals(true, response.recoveriesCompleted())
+        val actualRecovery = response.steps().single { it.kind() == WorkoutSegment.Kind.RECOVERY }
+        assertTrue(actualRecovery.completed())
+        assertTrue(actualRecovery.activeMillis() >= 20000)
+        val bytes = ByteArrayOutputStream()
+        CompleteBackup(context).exportTo(bytes)
+        SqliteUserPreferencesRepository(context).clear()
+        CompleteBackup(context).restoreFrom(ByteArrayInputStream(bytes.toByteArray()))
+        assertEquals(response, CoachingStore(context).responses().single())
+        val retained = CoachingStore(context).current()!!.plan().workouts().single().segments()[1]
+        assertNull(retained.distanceKm())
+        assertEquals(Duration.ofSeconds(20), retained.duration())
     }
 
     fun testCompleteBackupPreservesPrescriptionAndStepEvidence() {

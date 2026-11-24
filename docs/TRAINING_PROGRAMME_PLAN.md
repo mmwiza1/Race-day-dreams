@@ -20,7 +20,7 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 | 2 | Strength dashboard usability | Small–medium | **Approved at `f9318590`** (one known UI-test failure deferred, see below) |
 | 3 | Running progression engine | Major | **Approved at `f723eeec`** |
 | 4 | Race-specific workout engine | Major | **Approved at `fe216621`** (iOS test compile fixed in `35d5b20f`; final CI shows only the known failure) |
-| 5A | Adaptive coaching (Claude) | Major | **Implemented on draft PR #51; awaiting owner approval.** Handover: `docs/HANDOFF_5A_TO_5B.md` |
+| 5A | Adaptive coaching (Claude) | Major | **Implemented and approved for 5B validation on PR #51.** Handover: `docs/HANDOFF_5A_TO_5B.md` |
 | 5B | Comprehensive validation, full-app audit, release preparation (Codex) | Major | **Next.** Not started; begins only after owner approval of 5A |
 
 ## Testing policy (Pieces 1–4)
@@ -30,6 +30,35 @@ safety-critical behaviour, compile checks where a change could break compilation
 emulator or simulator runs, screenshots or full platform builds unless one is needed to verify a
 specific change. Never defer safety, compilation or data-integrity checks. GitHub Actions still runs
 on each push; keep pushes to a minimum and trigger nothing manually.
+
+## Piece 5B — release candidate
+
+The runner previews and explicitly accepts the four-week rebuild and its continuation. Subsequent
+weeks and individual distance sessions stay within the last rebuilt week's workload pending fresh
+evidence and another decision. This supersedes the original week-five return described during 5A.
+Timed recoveries retain their active-time targets and use an estimated distance allowance for budget
+reconciliation. See the [5B checkpoint](HANDOFF_5A_TO_5B.md#piece-5b-validation-checkpoint)
+for verification status.
+
+### Candidate comparison against the previous generator
+
+These deterministic inputs use the same availability and recent baseline on both versions.
+Peak weeks exclude the event. They test behaviour and explain changed snapshots; they do not
+predict race results or prescribe a plan for an individual.
+
+| Fixture | Previous peak week / longest | 5B peak week / longest |
+| --- | --- | --- |
+| 5K with no recorded base | No distance target; up to 23 min | No distance target; up to 27 min |
+| Established 5K, 28 km/wk, three days | 21.0 / 7.0 km | 30.0 / 10.0 km |
+| 10K, 24 km/wk, two days | 22.0 / 11.0 km | 28.0 / 14.0 km |
+| 10K, 32 km/wk, four days | 32.0 / 11.0 km | 41.6 / 14.0 km |
+| Half, 19.6 km/wk, Monday/Thursday/Friday | 30.7 / 14.7 km | 34.0 / 17.0 km |
+| Marathon, 45 km/wk, four days | 60.1 / 27.1 km | 58.7 / 29.3 km |
+
+In the fixed-weekday half-marathon case, week 23 becomes a 17.0 km long run, 8.5 km easy run
+and 8.5 km session including half-marathon effort. The candidate does not derive a pace from the
+two-hour target alone. In the flexible-weekday counterpart the long run moves when recent
+demanding work would make Monday a poor fit.
 
 ## Piece 1 — what changed
 

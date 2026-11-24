@@ -105,22 +105,22 @@ jobs:
       - name: Prepare named test APKs
         run: |
           mkdir -p build/distributions
-          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.15.5-test1-debug.apk
-          cp app/build/outputs/apk/release/app-release-unsigned.apk build/distributions/Race-Day-Dreams-0.15.5-test1-release-unsigned.apk
+          cp app/build/outputs/apk/debug/app-debug.apk build/distributions/Race-Day-Dreams-0.16.0-test1-debug.apk
+          cp app/build/outputs/apk/release/app-release-unsigned.apk build/distributions/Race-Day-Dreams-0.16.0-test1-release-unsigned.apk
           stat --format='APK_BYTES=%s' app/build/outputs/apk/debug/app-debug.apk
           stat --format='RELEASE_APK_BYTES=%s' app/build/outputs/apk/release/app-release-unsigned.apk
       - name: Upload verified debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.15.5-test1-debug-api-${{ matrix.api-level }}
-          path: build/distributions/Race-Day-Dreams-0.15.5-test1-debug.apk
+          name: Race-Day-Dreams-0.16.0-test1-debug-api-${{ matrix.api-level }}
+          path: build/distributions/Race-Day-Dreams-0.16.0-test1-debug.apk
       - name: Upload non-debuggable distribution APK
         # Built from the same checkout as the gated debug APK in this job; only API 35's is published.
         if: matrix.api-level == 35
         uses: actions/upload-artifact@v4
         with:
-          name: Race-Day-Dreams-0.15.5-test1-release-api-35
-          path: build/distributions/Race-Day-Dreams-0.15.5-test1-release-unsigned.apk
+          name: Race-Day-Dreams-0.16.0-test1-release-api-35
+          path: build/distributions/Race-Day-Dreams-0.16.0-test1-release-unsigned.apk
           if-no-files-found: error
       - name: Upload actual-build screenshots
         uses: actions/upload-artifact@v4
@@ -308,7 +308,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           # The non-debuggable release build from the gated API 35 job (audit D-3), never the debug APK.
-          name: Race-Day-Dreams-0.15.5-test1-release-api-35
+          name: Race-Day-Dreams-0.16.0-test1-release-api-35
           path: build/verified-apk
       - uses: actions/download-artifact@v4
         with:
