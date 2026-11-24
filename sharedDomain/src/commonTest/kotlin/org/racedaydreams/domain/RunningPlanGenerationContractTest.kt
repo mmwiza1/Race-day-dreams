@@ -89,7 +89,15 @@ class RunningPlanGenerationContractTest {
             listOf(empty, established(Instants.ofEpochSecond(at.getEpochSecond() - 365 * 86400)))) {
             val plan = generate(b = b)
             assertTrue(plan.workouts().all { it.distanceKm() == null && it.duration() != null })
-            assertTrue(plan.workouts().all { it.duration()!! <= Durations.ofMinutes(30) })
+            // Everyday run/walk sessions stay within 30 minutes; since Piece 3 the weekly longer
+            // session may grow gently beyond that, up to 35 minutes for a 5K goal.
+            assertTrue(
+                plan
+                    .workouts()
+                    .filter { it.category() != WorkoutCategory.LONG_RUN }
+                    .all { it.duration()!! <= Durations.ofMinutes(30) }
+            )
+            assertTrue(plan.workouts().all { it.duration()!! <= Durations.ofMinutes(35) })
             assertEquals(
                 listOf(
                     WorkoutSegment.Kind.WARM_UP,

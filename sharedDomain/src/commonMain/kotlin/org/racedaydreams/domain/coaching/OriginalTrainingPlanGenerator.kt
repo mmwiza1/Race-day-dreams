@@ -71,34 +71,68 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
         val previousFrequency = baseline.runsPerWeek()
         if (established && previousFrequency != null && previousFrequency > frequency)
             base *= frequency / previousFrequency
-        val longBase = if (established) min(longestEvidence!!, base * .48) else 0.0
+        // Piece 3: the long run's share of the week is contextual guidance that depends on how
+        // many days the runner runs (fewer runs concentrate more of the week in the long run),
+        // not one universal 48% rule.
+        val longShare =
+            when {
+                frequency <= 2 -> .6
+                frequency == 3 -> .5
+                frequency == 4 -> .45
+                else -> .4
+            } + (if (goal.distance() == RaceDistance.MARATHON) .05 else .0)
+        val longBase = if (established) min(longestEvidence!!, base * longShare) else 0.0
         val distance = goal.distance().kilometres()
         var taperDays =
             if (race == null) 0
-            else if (goal.distance() == RaceDistance.MARATHON) {
-                if (base >= 45) 21 else 14
-            } else if (goal.distance() == RaceDistance.HALF_MARATHON) 10 else 6
+            else
+                when (goal.distance()) {
+                    RaceDistance.MARATHON -> if (base >= 45) 21 else 14
+                    RaceDistance.HALF_MARATHON -> 14
+                    RaceDistance.TEN_K -> 10
+                    else -> 7
+                }
         taperDays = min(taperDays, max(0, days(start, end).toInt()))
         val taperStart = end.minusDays(taperDays.toLong())
         val phases = phases(start, end, race, taperStart, established, weeks)
         val workouts = mutableListOf<PlannedWorkout>()
         val heavy = StrengthAnalytics.hardLowerBodyDates(request.strengthSessions())
-        var volumeCap =
+        // Piece 3: an individual target for the busiest week. It starts from a reference for the
+        // distance, scaled by running days, and is limited by the runner's own starting volume
+        // (at most about 80% more, or 10 km for small volumes). It is never below what the runner
+        // already does, so established runners are not cut back. Growth towards it is bounded
+        // week by week below; once reached, the week is held rather than pushed further.
+        val referencePeak =
             when (goal.distance()) {
-                RaceDistance.MARATHON -> max(base, 60.0)
-                RaceDistance.HALF_MARATHON -> max(base, 42.0)
-                RaceDistance.TEN_K -> max(base, 32.0)
-                else -> max(base, 26.0)
-            }
-        if (goal.distance() == RaceDistance.GENERAL_FITNESS) volumeCap = max(base, 30.0)
+                RaceDistance.MARATHON -> 55.0
+                RaceDistance.HALF_MARATHON -> 40.0
+                RaceDistance.TEN_K -> 35.0
+                RaceDistance.FIVE_K -> 28.0
+                else -> 30.0
+            } *
+                when {
+                    frequency <= 2 -> .7
+                    frequency == 3 -> .85
+                    frequency == 4 -> 1.0
+                    else -> 1.15
+                }
+        val volumeCap =
+            if (goal.distance() == RaceDistance.GENERAL_FITNESS)
+                max(base, min(30.0, base * 1.3 + 2))
+            else max(base, min(referencePeak, max(base * 1.8, base + 10)))
+        // The long-run ceiling is the usual peak for the distance, but never below the longest run
+        // the runner already does: established 5K and 10K runners keep their tolerated long runs.
         val longCap =
-            when (goal.distance()) {
-                RaceDistance.MARATHON -> 30.0
-                RaceDistance.HALF_MARATHON -> 18.0
-                RaceDistance.TEN_K -> 11.0
-                RaceDistance.FIVE_K -> 7.0
-                else -> 12.0
-            }
+            max(
+                when (goal.distance()) {
+                    RaceDistance.MARATHON -> 32.0
+                    RaceDistance.HALF_MARATHON -> if (base >= 40) 21.0 else 19.0
+                    RaceDistance.TEN_K -> 14.0
+                    RaceDistance.FIVE_K -> 10.0
+                    else -> 14.0
+                },
+                if (established) longestEvidence!! else 0.0,
+            )
         val caution =
             if (
                 race != null &&
@@ -109,6 +143,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 " Your current history gives less preparation time than normally recommended for this distance. This plan does not accelerate mileage to catch up. Consider changing the date/distance or keeping a conservative completion focus."
             else ""
         var previousDemanding: LocalDate? = null
+        // Piece 3 progression state, carried from week to week.
+        var level = base
+        var lastFullLong = longBase
+        val plannedLongs = mutableListOf<Pair<LocalDate, Double>>()
         val initialMonday = monday(start)
         var week = initialMonday
         while (!after(week, end)) {
@@ -116,7 +154,9 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             val to = if (after(week.plusDays(6), end)) end else week.plusDays(6)
             val index = (days(initialMonday, week) / 7).toInt()
             val phase = phaseAt(phases, from)
-            val taper = race != null && !before(to, taperStart)
+            // Taper is decided from the week's own distance to race day, by race distance
+            // (Piece 3), not by whether any day of the week touches the taper window.
+            val taper = race != null && days(from, race) < taperDays
             val wantsQuality =
                 qualitySupported &&
                     !taper &&
@@ -145,39 +185,40 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                 quality != null && previousDemanding != null && days(previousDemanding, quality) < 2
             )
                 quality = null
-            val step = min(2.0, max(.5, base / 30))
-            val foundationWeeks =
-                if (race == null) 0 else max(0, days(start, race.minusDays(196)).toInt()) / 7
             val distantFoundation = race != null && days(from, race) > 196
-            val buildIndex = if (foundationWeeks > 0) max(0, index - foundationWeeks) else index
-            val foundationVolume =
-                if (foundationWeeks > 0)
-                    min(6.0, max(0, foundationWeeks - foundationWeeks / 4) * step)
-                else 0.0
-            var build =
-                if (distantFoundation)
-                    min(volumeCap, min(base + 6, base + max(0, index - index / 4) * step))
-                else
-                    min(
-                        volumeCap,
-                        base + foundationVolume + max(0, buildIndex - buildIndex / 4) * step,
-                    )
-            if (index % 4 == 3) build *= .8
+            // Every fourth week is lighter, relative to the current level, and never on top of a
+            // taper (the two reductions no longer stack).
+            val cutback = index % 4 == 3 && !taper
+            if (index > 0 && !cutback && !taper) {
+                // Bounded growth from the current level (about 7% a week, 0.5–3 km), slower while
+                // a race is still more than 28 weeks away, and held once the target is reached.
+                val step = (level * .07).coerceIn(.5, 3.0) * (if (distantFoundation) .5 else 1.0)
+                level = min(volumeCap, level + step)
+            }
+            val build = if (cutback) level * .8 else level
+            val raceWeek = race != null && days(from, race) < 7
             val taperFactor =
-                if (taper) {
-                    if (days(from, end) <= 7) .5 else .7
-                } else 1.0
+                if (!taper) 1.0
+                else if (raceWeek) (if (distance > 10) .5 else .6)
+                else if (goal.distance() == RaceDistance.MARATHON && days(from, race!!) >= 14) .85
+                else .75
             val weekly = build * taperFactor * selectedDays.size / frequency
-            val longProgress =
-                if (distantFoundation) min(3.0, max(0, index - index / 4) * .5)
-                else
-                    (if (foundationWeeks > 0)
-                        min(3.0, max(0, foundationWeeks - foundationWeeks / 4) * .5)
-                    else 0.0) + max(0, buildIndex - buildIndex / 4) * .5
-            var longKm = min(longCap, min(longBase + longProgress, weekly * .48))
-            if (index % 4 == 3) longKm = min(longKm, longBase * .8 + index * .15)
+            // The long run follows its own track: no more than about 10% (and 1.5 km) beyond the
+            // longest run of the last 30 days, a risk signal from research rather than a target;
+            // within the week's share for the runner's running days; and within the distance's
+            // usual ceiling, which is never below the runner's own longest run.
+            val windowStart = from.minusDays(30)
+            val recentLong =
+                max(
+                    if (established && days(start, from) < 30) longestEvidence!! else 0.0,
+                    plannedLongs.filter { after(it.first, windowStart) }.maxOfOrNull { it.second }
+                        ?: 0.0,
+                )
+            val progressionLimit =
+                if (recentLong > 0) min(recentLong * 1.10, recentLong + 1.5) else longBase
+            var longKm = min(longCap, min(progressionLimit, weekly * longShare))
+            if (cutback) longKm = min(longKm, lastFullLong * .8)
             if (request.distribution() == "MORE_SHORTER") longKm *= .85
-            longKm *= taperFactor
             val n = selectedDays.size
             // Each day's role is settled before any distance is allocated (Piece 1). A long run
             // that would follow a demanding day too closely, including one at the end of the
@@ -189,10 +230,13 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             var effectiveQuality: LocalDate? = null
             var effectiveLong: LocalDate? = null
             var longDemoted = false
+            // In a half or marathon taper, a shorter long run is kept until 10 days out.
+            fun longAllowed(day: LocalDate) =
+                !taper || distance > 10 && race != null && days(day, race) >= 10
             run {
                 var last = demandingBefore
                 for (day in ordered) {
-                    val wantsLong = n >= 2 && day == schedule.longRun() && !taper
+                    val wantsLong = n >= 2 && day == schedule.longRun() && longAllowed(day)
                     val wantsQuality = day == quality
                     if (last != null && days(last, day) < 2) {
                         if (wantsLong) longDemoted = true
@@ -205,11 +249,19 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             }
             var longMoved = false
             if (longDemoted) {
-                effectiveLong = relocatedLongDay(ordered, effectiveQuality, demandingBefore, heavy)
+                effectiveLong =
+                    relocatedLongDay(
+                        ordered.filter { longAllowed(it) },
+                        effectiveQuality,
+                        demandingBefore,
+                        heavy,
+                    )
                 longMoved = effectiveLong != null
             }
             val hasLong = effectiveLong != null
-            val sessionCap = min(longCap, longBase + max(0, index - index / 4) * .5)
+            // Everyday runs are never longer than the week's long run (or, with no long run, the
+            // distance's long-run ceiling, itself never below the runner's own longest run).
+            val sessionCap = if (hasLong) max(rounded(longKm), .1) else longCap
             val maximumMinutesBudget = request.maximumMinutes()
             val easyPace = baseline.easyPaceSecondsPerKm()
             // With a pace estimate, the usual session budget becomes a real limit for everyday
@@ -243,7 +295,8 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                                 }
                         )
                             "everyday runs are kept within your usual ${maximumMinutesBudget}-minute session budget"
-                        else "a single run is limited to ${rounded(sessionCap)} km at this stage") +
+                        else
+                            "everyday runs are kept no longer than ${if (hasLong) "this week's long run" else "the usual long run for this distance"} (${rounded(sessionCap)} km)") +
                         "; the difference is not added elsewhere. "
                 else ""
             val relocationNote =
@@ -278,8 +331,34 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     }
                 }
                 val maximumMinutes = request.maximumMinutes()
+                // Run/walk without distance evidence: everyday sessions stay short (up to 30
+                // minutes or the usual budget). Piece 3: the weekly longer session grows gently
+                // (about 3 minutes a fortnight) towards a ceiling suited to the race distance, so
+                // beginners can progress beyond 30 minutes; it is shortened in the taper.
+                val walkLongCap =
+                    when (goal.distance()) {
+                        RaceDistance.MARATHON -> 90
+                        RaceDistance.HALF_MARATHON -> 70
+                        RaceDistance.TEN_K -> 50
+                        RaceDistance.FIVE_K -> 35
+                        else -> 40
+                    }
                 val duration =
                     if (established) null
+                    else if (isLong)
+                    // The runner's usual time budget, when set, still applies (athlete choice).
+                    Durations.ofMinutes(
+                            max(
+                                    15,
+                                    (min(
+                                            maximumMinutes ?: walkLongCap,
+                                            min(walkLongCap, 15 + index / 2 * 3),
+                                        ) * taperFactor)
+                                        .toInt(),
+                                )
+                                .let { if (maximumMinutes != null) min(it, maximumMinutes) else it }
+                                .toLong()
+                        )
                     else
                         Durations.ofMinutes(
                             min(
@@ -377,13 +456,13 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     )
                 var reason =
                     (if (isLong)
-                        "Develop endurance for ${goal.distance().label()}. Long-run starting evidence: ${rounded(longBase)} km; progression is limited by the weekly budget. "
+                        "Develop endurance for ${goal.distance().label()}. Long runs build gradually from your recent longest run (${rounded(longBase)} km): at most about 10% beyond the longest of the last 30 days, and about ${(longShare * 100).toInt()}% of the week for $frequency running days. "
                     else if (isQuality)
                         "Develop controlled race-specific endurance alongside easy training; recent volume and consistency support one quality session this week. "
                     else
                         "Build aerobic endurance while keeping effort controlled to leave room for recovery. ") +
                         (if (established)
-                            "Starting availability-adjusted weekly evidence: ${rounded(base)} km. This week's budget: ${rounded(weekly)} km. "
+                            "Starting availability-adjusted weekly evidence: ${rounded(base)} km. This week's budget: ${rounded(weekly)} km. Busiest week this plan builds towards: about ${rounded(volumeCap)} km, reached gradually and then held. "
                         else
                             "Current workload evidence is missing, low or stale, so this is a short run/walk session rather than a mileage prescription. ") +
                         "Phase: $phase. " +
@@ -414,6 +493,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     PlannedWorkout("$id:$day", day, category, km, duration, segments, reason)
                 )
                 if (isLong || isQuality) previousDemanding = day
+                if (isLong && km != null) {
+                    plannedLongs += day to km
+                    if (!cutback && !taper) lastFullLong = km
+                }
             }
             week = week.plusWeeks(1)
         }

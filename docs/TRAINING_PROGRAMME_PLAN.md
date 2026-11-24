@@ -17,8 +17,8 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 | Piece | Scope | Class | Status |
 | --- | --- | --- | --- |
 | 1 | Training safety, correctness and transparency | Medium | **Approved at `067bf228`** |
-| 2 | Strength dashboard usability | Small–medium | **Implemented (draft PR #51); awaiting owner approval** |
-| 3 | Running progression engine | Major | Not started |
+| 2 | Strength dashboard usability | Small–medium | **Approved at `f9318590`** (one known UI-test failure deferred, see below) |
+| 3 | Running progression engine | Major | **Implemented (draft PR #51); awaiting owner approval** |
 | 4 | Race-specific workout engine | Major | Not started |
 | 5 | Adaptive coaching and comprehensive validation | Major | Not started |
 
@@ -133,6 +133,69 @@ on each push; keep pushes to a minimum and trigger nothing manually.
   - The three `strength-volume-*` captures are removed from `CoachingScreenshotTest`, the screenshot
     verifier and its test (required captures 522 → 519), and their stale images are deleted.
 
+## Piece 3 — what changed
+
+All changes are in `OriginalTrainingPlanGenerator`. They take effect only when a plan is generated or
+rebuilt; saved plan versions and training history are untouched.
+
+- **An individual busiest-week target, replacing the fixed slope.**
+  - It starts from a reference for the distance (5K 28, 10K 35, half 40, marathon 55 km), scaled by
+    running days (2: ×0.7, 3: ×0.85, 4: ×1.0, 5+: ×1.15).
+  - It is capped at about +80% (or +10 km) of the runner's own starting volume, and is never below it.
+  - Weeks grow from the *current* level by about 7% (0.5–3 km a week), half as fast while the race is
+    still more than 28 weeks away. Once the target is reached the week is held, not pushed further.
+- **A separate long-run track.**
+  - Each long run is at most about 10% (and 1.5 km) beyond the longest run of the previous 30 days,
+    using the Frandsen 2025 risk signal as a guide.
+  - The long run's share of the week depends on running days, replacing the universal 48%: 2 days 60%,
+    3 days 50%, 4 days 45%, 5+ days 40%, plus 5 points for the marathon.
+  - The usual ceilings are 5K 10, 10K 14, half 19 (21 from 40 km a week) and marathon 32 km. A ceiling
+    is never below the runner's own longest run.
+- **No 5K/10K caps on established runners.** Everyday runs are capped only at that week's long run.
+  Established runners keep their tolerated long runs and volume: 50 km a week with 20 km long runs
+  stays 50 / 20, where it was previously cut to 35 / 7.
+- **Cutbacks are relative to the current week.** Every 4th week is about 80% of the current level, and
+  its long run about 80% of the last full long run. A cutback never stacks with the taper.
+- **The taper follows the race date and distance.**
+  - Taper length is 7 days for a 5K, 10 for a 10K, 14 for a half, and 14 or 21 for a marathon
+    (21 from 45 km a week).
+  - Taper weeks run at 75% (85% three weeks out for a marathon). The race week is at 50% for a half
+    or marathon and 60% for a 5K or 10K.
+  - For a half or marathon, a shorter long run is kept until 10 days out, and a moved long run follows
+    the same rule.
+- **Beginners (run/walk).** Everyday sessions stay at 30 minutes or less. The weekly longer session
+  grows by about 3 minutes a fortnight towards a ceiling for the distance (5K 35, 10K 50, half 70,
+  marathon 90, general fitness 40 minutes), and is shortened in the taper. The runner's usual time
+  budget, when set, still caps every session.
+- **General fitness** progresses gently, by at most about 30% and to no more than 30 km a week, and
+  never below the current volume.
+- **Before and after, for the reported half marathon** (19.6 km/week, 3 runs, 25 weeks): the busiest
+  week goes from 30.7 to 34 km and the longest run from 14.7 to 17 km. A 12.8 km long run is now
+  kept 13 days out (previously no long run in the last 20 days), and the rating goes from Limited to
+  Supported. With the 2-hour target and no recent race time, it is still Limited, for the target only.
+- **Focused tests:**
+  - New `RunningProgressionTest` (7 tests) covers:
+    - the reported half: gradual build, usual long-run range and taper shape;
+    - the 30-day long-run guide for a half and a marathon;
+    - 5K/10K established runners keeping their volume and long runs;
+    - cutbacks that follow the current week and don't stack with the taper;
+    - taper length by distance;
+    - beginner run/walk progression and time budget;
+    - gentle general-fitness progression.
+  - Updated, because the behaviour deliberately changed:
+    - `TrainingPlanSafetyTest`: the reported week is now 17 / 8.5 / 8.5, the 5K is uncapped,
+      beginners' longer session can exceed 30 minutes, and the reported target-time rating is updated.
+    - `RunningPlanGenerationContractTest`: everyday run/walk sessions ≤ 30 minutes, the weekly longer
+      one ≤ 35 minutes for a 5K.
+  - Focused run: 91 tests, 0 failures. Android app, shared UI and Android test compilation and the
+    format check pass.
+
+## Known failing tests (tracked separately from new regressions)
+
+| Test | First seen | Status |
+| --- | --- | --- |
+| `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Known, deferred to Piece 5 by the owner.** Do not investigate, fix, disable or weaken it before Piece 5. Any other failing test is a new regression and must be reported separately. |
+
 ## Deferred to Piece 5
 
 - Full shared-domain suite, Android API 28/35/36 matrix, iOS compilation and tests. iOS was not
@@ -140,10 +203,10 @@ on each push; keep pushes to a minimum and trigger nothing manually.
 - An instrumented test and screenshots of `PlanFeasibilityCard`. Existing Plan-screen tests use a
   general-fitness plan, which shows no card.
 - Before/after programme comparisons across distances.
+- Fix the known failing dashboard test above, and the optional wording change "Top set" → "Heaviest set".
 
 ## Known limitations after Piece 1
 
-- **Plan shape is unchanged:** progression rates, the 48% long-run share, the 5K/10K caps, cutbacks
-  and taper are Piece 3. Your reported half marathon still peaks at 14.7 km, but is now labelled
-  Limited, with reasons.
+- **Plan shape:** progression rates, the long-run share, the 5K/10K caps, cutbacks and taper are
+  addressed in Piece 3 (see above).
 - **Feasibility is shown on the Plan screen only.** It is not on Home or during onboarding.

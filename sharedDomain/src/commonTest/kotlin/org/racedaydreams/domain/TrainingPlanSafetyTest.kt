@@ -157,25 +157,21 @@ class TrainingPlanSafetyTest {
                 profile(RaceDistance.HALF_MARATHON, 25, monThuFri, DayOfWeek.MONDAY),
                 baseline(19.6, 9.0),
             )
-        // The reported half-marathon week 23 is unchanged: 14.7 km long and 8.0 km easy runs.
+        // The reported half marathon: since Piece 3, every week's runs add up to its budget, so no
+        // week needs a shortfall explanation. (Session-budget shortfalls are covered below.)
+        assertTrue(plan.workouts().none { it.note()!!.contains("below the") })
         val week23 =
             plan.workouts().filter { weekOf(it.date()) == 22L }.sortedBy { it.date().toEpochDay() }
-        assertEquals(listOf(14.7, 8.0, 8.0), week23.map { it.distanceKm() })
-        assertTrue(week23.none { it.note()!!.contains("below the") })
-        // Where single-run limits cut a week, the notes say so instead of hiding it.
-        val capped =
+        assertEquals(listOf(17.0, 8.5, 8.5), week23.map { it.distanceKm() })
+        // An experienced runner's 5K plan is no longer cut by a 7 km single-run limit.
+        val experienced =
             generate(
                 profile(RaceDistance.FIVE_K, 8, monThuFri, DayOfWeek.MONDAY),
                 baseline(50.0, 20.0),
             )
-        val first = capped.workouts().filter { weekOf(it.date()) == 0L }
-        assertTrue(first.all { it.distanceKm()!! <= 7.0 })
-        assertTrue(
-            first.all {
-                it.note()!!.contains("below the 50.0 km budget") &&
-                    it.note()!!.contains("limited to 7.0 km")
-            }
-        )
+        val first = experienced.workouts().filter { weekOf(it.date()) == 0L }
+        assertTrue(first.none { it.note()!!.contains("below the") })
+        assertEquals(50.0, first.sumOf { it.distanceKm()!! }, 0.5)
     }
 
     @Test
@@ -194,7 +190,7 @@ class TrainingPlanSafetyTest {
             "Your plan can't prepare you to run a Marathon by race day.",
             result.headline(),
         )
-        assertTrue(result.reasons().first().contains("run/walk of up to 30 minutes"))
+        assertTrue(result.reasons().first().contains("run/walk of up to"))
         assertTrue(result.alternatives().any { it.startsWith("Add your recent running") })
         assertTrue(result.alternatives().any { it.contains("Half Marathon first") })
         assertTrue(
@@ -203,7 +199,12 @@ class TrainingPlanSafetyTest {
         assertTrue(result.alternatives().any { it.contains("qualified coach") })
         // The plan itself is not made more aggressive to satisfy the date.
         assertTrue(
-            plan.workouts().mapNotNull { it.duration()?.getSeconds()?.div(60) }.all { it <= 30 }
+            plan
+                .workouts()
+                .filter { it.category() != WorkoutCategory.LONG_RUN }
+                .mapNotNull { it.duration()?.getSeconds()?.div(60) }
+                .all { it <= 30 } &&
+                plan.workouts().mapNotNull { it.duration()?.getSeconds()?.div(60) }.all { it <= 90 }
         )
     }
 
@@ -221,8 +222,7 @@ class TrainingPlanSafetyTest {
 
     @Test
     fun feasibilityExplainsEachDistanceWithoutChangingThePlan() {
-        // The reported half marathon: 14.7 km peak is below the usual 16–19 km range, and with no
-        // recent race time the 2-hour target cannot be judged.
+        // The reported half marathon with a 2-hour target.
         val reported =
             assess(
                 RaceDistance.HALF_MARATHON,
@@ -230,9 +230,14 @@ class TrainingPlanSafetyTest {
                 baseline(19.6, 9.0),
                 mode = GoalMode.TARGET_TIME,
             )!!
+        // Since Piece 3 it builds to a 17 km long run and 34 km weeks, so preparation is no
+        // longer the limit; with no recent race time the 2-hour target still can't be judged.
         assertEquals(PlanFeasibility.Level.LIMITED, reported.level())
-        assertTrue(reported.reasons().first().contains("14.7 km"))
-        assertTrue(reported.reasons().any { it.contains("no recent race time") })
+        assertTrue(reported.reasons().single().contains("no recent race time"))
+        assertEquals(
+            "Your plan prepares you to finish a Half Marathon, but your target time isn't backed by recent results.",
+            reported.headline(),
+        )
         assertTrue(reported.alternatives().any { it.contains("completion goal") })
         // An established half-marathon runner with time and four running days follows the usual
         // build-up; even then the rating carries the not-a-guarantee caveat.
