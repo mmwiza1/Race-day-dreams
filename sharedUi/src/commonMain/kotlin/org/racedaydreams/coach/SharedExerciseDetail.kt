@@ -212,7 +212,11 @@ fun SharedExerciseDetail(
                     Panel(contentPadding = PaddingValues(16.dp)) {
                         Text(
                             org.racedaydreams.domain.presentation.AthleteLanguage.recordLabel(
-                                requireNotNull(r.category())
+                                // A loaded hold or carry's key names its kg load (B-05).
+                                org.racedaydreams.domain.presentation.MassText.category(
+                                    requireNotNull(r.category()),
+                                    state.massUnit,
+                                )
                             ),
                             style = MaterialTheme.typography.titleMedium,
                         )

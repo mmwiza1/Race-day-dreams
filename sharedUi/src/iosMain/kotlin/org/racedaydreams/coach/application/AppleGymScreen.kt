@@ -54,7 +54,7 @@ internal fun AppleGymScreen(
                         KotlinxReminderCalendar.at(it, TimeZone.currentSystemDefault().id).date
                     )
                 },
-                ::appleGymTarget,
+                { slot -> appleGymTarget(slot, state.massUnit) },
                 // The shared entry screen provides explicit Back controls on iOS.
                 plannedDate = plannedDate,
                 backHandler = { _, _ -> },
@@ -66,7 +66,7 @@ internal fun AppleGymScreen(
                 workout,
                 entry,
                 { it.name() },
-                ::appleGymTarget,
+                { slot -> appleGymTarget(slot, state.massUnit) },
                 ::number,
             )
         GymPage.WORKOUT -> {
@@ -85,9 +85,9 @@ internal fun AppleGymScreen(
                 state,
                 entry,
                 { PaceCalculator.formatTime(Durations.ofMillis(it)) },
-                ::actual,
+                { set, exercise -> actual(set, exercise, state.massUnit) },
                 { it.name() },
-                ::appleGymTarget,
+                { slot -> appleGymTarget(slot, state.massUnit) },
                 AppleCalendarDates::label,
                 restControls = { slot, enabled ->
                     GymRestControls(
@@ -138,6 +138,7 @@ internal fun AppleGymScreen(
                         enabled = enabled,
                         formatKilograms = ::number,
                         onPrepare = model::prepareWarmup,
+                        massUnit = state.massUnit,
                     )
                 },
             )
@@ -145,20 +146,29 @@ internal fun AppleGymScreen(
     }
 }
 
-internal fun appleGymTarget(slot: GymWorkoutDefinition.Slot): String = buildString {
+internal fun appleGymTarget(
+    slot: GymWorkoutDefinition.Slot,
+    unit: org.racedaydreams.domain.body.MassUnit = org.racedaydreams.domain.body.MassUnit.KG,
+): String = buildString {
     append(StrengthPrescriptionText.instructions(slot).joinToString(" "))
     slot.target()?.effort()?.let { append(" ").append(StrengthPrescriptionText.effortDetails(it)) }
     slot.target()?.referenceLoadKg()?.let {
-        append(" Optional reference: ").append(number(it)).append(" kg.")
+        append(" Optional reference: ")
+            .append(org.racedaydreams.domain.presentation.MassText.label(it, unit))
+            .append(".")
     }
 }
 
-private fun actual(set: StrengthSession.SetEntry, exercise: StrengthExercise): String {
+private fun actual(
+    set: StrengthSession.SetEntry,
+    exercise: StrengthExercise,
+    unit: org.racedaydreams.domain.body.MassUnit,
+): String {
     val load =
         if (
             exercise.measurement().usesLoad() && exercise.mode() != StrengthExercise.Mode.BODYWEIGHT
         )
-            "${number(set.kilograms())} kg · "
+            "${org.racedaydreams.domain.presentation.MassText.label(set.kilograms(), unit)} · "
         else ""
     val task =
         when {

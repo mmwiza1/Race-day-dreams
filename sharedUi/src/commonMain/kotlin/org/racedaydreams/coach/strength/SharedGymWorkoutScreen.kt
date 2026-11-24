@@ -325,7 +325,7 @@ fun SharedGymWorkoutScreen(
                         GymActualField(
                             state.form.kilograms,
                             { value -> model.updateForm { it.copy(kilograms = value) } },
-                            "Actual load · kg",
+                            "Actual load · ${org.racedaydreams.domain.presentation.MassText.symbol(state.massUnit)}",
                             KeyboardType.Decimal,
                             enabled && active,
                         )

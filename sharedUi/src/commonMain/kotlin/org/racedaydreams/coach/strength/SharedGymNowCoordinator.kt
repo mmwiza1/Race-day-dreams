@@ -5,7 +5,9 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.racedaydreams.coach.application.applicationIoDispatcher
+import org.racedaydreams.domain.body.MassUnit
 import org.racedaydreams.domain.coaching.CoachingRepository
+import org.racedaydreams.domain.presentation.MassText
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.*
 import org.racedaydreams.storage.*
@@ -70,6 +72,11 @@ data class GymNowState(
     val substitution: GymSwapState? = null,
     val association: GymAssociationCoordinator.View? = null,
     val nativeRecentIds: Set<String> = emptySet(),
+    /**
+     * The user's mass unit setting. Loads are typed and shown in it; [GymSetDraft.kilograms] holds
+     * the typed text in this unit and is converted to kilograms only when a set is saved (B-05).
+     */
+    val massUnit: MassUnit = MassUnit.KG,
 )
 
 /** Original Gym Now feature operations over one execution coordinator and one database pool. */
@@ -100,6 +107,7 @@ class SharedGymNowCoordinator(
 
     private var savedRest: GymRestTimer? = null
     private val tools = SqliteGymTools(database)
+    private val settings = SqliteSettings(database)
     private val userChoices = SqliteStrengthChoices(database)
     private val exclusions = SqliteExerciseExclusions(database)
     private val associations =
@@ -138,6 +146,7 @@ class SharedGymNowCoordinator(
         val archivedIds: Set<String>,
         val excludedIds: Set<String>,
         val nativeRecentIds: Set<String>,
+        val massUnit: MassUnit,
     )
 
     private fun panel(page: Int): Panel {
@@ -174,6 +183,8 @@ class SharedGymNowCoordinator(
             choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
             exclusions.exclusions().map { it.exerciseId() }.toSet(),
             finishedActualIds(recent.map { it.id() }),
+            runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
+                .getOrDefault(MassUnit.KG),
         )
     }
 
@@ -269,6 +280,7 @@ class SharedGymNowCoordinator(
                         view = snapshot,
                         association = associations.view(),
                         nativeRecentIds = fresh?.nativeRecentIds ?: previous.nativeRecentIds,
+                        massUnit = fresh?.massUnit ?: previous.massUnit,
                     )
                 }
                 syncFormToSelection()
@@ -704,7 +716,13 @@ class SharedGymNowCoordinator(
     fun prepareWarmup(ramp: GymWarmup.Ramp?) = updateForm {
         it.copy(
             warmUp = true,
-            kilograms = ramp?.kilograms()?.toString() ?: it.kilograms,
+            // In the user's unit, rounded down to a loadable plate step (B-05, B-R8).
+            kilograms =
+                ramp?.let { r ->
+                    MassText.warmup(r.kilograms(), mutable.value.massUnit).let { value ->
+                        if (value % 1.0 == 0.0) value.toLong().toString() else value.toString()
+                    }
+                } ?: it.kilograms,
             repetitions = ramp?.repetitions()?.toString() ?: it.repetitions,
         )
     }
@@ -733,6 +751,7 @@ class SharedGymNowCoordinator(
         if (mutable.value.busy || mutable.value.view?.pending() != null) return
         val slot = selectedSlot() ?: return
         val draft = mutable.value.form
+        val unit = mutable.value.massUnit
         val formKey = formKey(slot.id())
         afterAcknowledgement = {
             val clean = newForm()
@@ -756,7 +775,7 @@ class SharedGymNowCoordinator(
                         profile.usesLoad() &&
                             slot.exercise().mode() != StrengthExercise.Mode.BODYWEIGHT
                     )
-                        number(draft.kilograms, "load")
+                        gymLoadKilograms(draft.kilograms, unit)
                     else 0.0,
                     if (useRir) null else effort,
                     draft.warmUp,

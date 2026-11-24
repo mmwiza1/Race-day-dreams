@@ -8,6 +8,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.*
+import org.racedaydreams.domain.body.MassUnit
+import org.racedaydreams.domain.presentation.MassText
 import org.racedaydreams.domain.strength.GymWarmup
 
 /** Existing production preparation UI; callbacks only stage the editable warm-up form. */
@@ -19,6 +21,8 @@ fun GymWarmupGuidanceCard(
     enabled: Boolean,
     formatKilograms: (Double) -> String,
     onPrepare: (GymWarmup.Ramp?) -> Unit,
+    /** Ramps are shown in this unit, rounded down to a loadable plate step (B-05, B-R8). */
+    massUnit: MassUnit = MassUnit.KG,
 ) {
     var open by rememberSaveable(slotId, exerciseId) { mutableStateOf(false) }
     var evidence by rememberSaveable(slotId, exerciseId) { mutableStateOf(false) }
@@ -41,7 +45,7 @@ fun GymWarmupGuidanceCard(
             suggestion.ramps().forEach { ramp ->
                 OutlinedButton(onClick = { onPrepare(ramp) }, enabled = enabled) {
                     Text(
-                        "Review ${formatKilograms(ramp.kilograms())} kg × ${ramp.repetitions()} practice repetitions"
+                        "Review ${formatKilograms(MassText.warmup(ramp.kilograms(), massUnit))} ${MassText.symbol(massUnit)} × ${ramp.repetitions()} practice repetitions"
                     )
                 }
             }

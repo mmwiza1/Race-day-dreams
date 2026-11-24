@@ -15,7 +15,7 @@ fun GymWorkoutBuilderScreen(model: GymNowViewModel, onWorkout: () -> Unit, onBac
         onWorkout,
         onBack,
         ::gymExerciseContext,
-        ::gymTargetDescription,
+        { slot -> gymTargetDescription(slot, state.massUnit) },
         ::gymNumber,
     )
 }
@@ -56,7 +56,11 @@ internal fun gymExerciseContext(exercise: StrengthExercise): String =
     ExerciseCatalog.definition(exercise.id())?.let { "${it.category()} · ${it.equipment()}" }
         ?: "Custom exercise · ${exercise.measurement().name.lowercase(Locale.UK).replace('_', ' ')}"
 
-internal fun gymTargetDescription(slot: GymWorkoutDefinition.Slot): String {
+@JvmOverloads
+internal fun gymTargetDescription(
+    slot: GymWorkoutDefinition.Slot,
+    unit: org.racedaydreams.domain.body.MassUnit = org.racedaydreams.domain.body.MassUnit.KG,
+): String {
     val target = slot.target() ?: return "Open · record the sets you choose"
     val measurement =
         target.minimumReps()?.let { minimum ->
@@ -71,7 +75,12 @@ internal fun gymTargetDescription(slot: GymWorkoutDefinition.Slot): String {
             " · ${it.scale().name} ${gymNumber(it.minimum())}–${gymNumber(it.maximum())}"
         } ?: ""
     val rest = target.restSeconds()?.let { " · ${it}s rest" } ?: ""
-    val reference = target.referenceLoadKg()?.let { " · ${gymNumber(it)} kg reference" } ?: ""
+    val reference =
+        target.referenceLoadKg()?.let {
+            if (unit == org.racedaydreams.domain.body.MassUnit.KG)
+                " · ${gymNumber(it)} kg reference"
+            else " · ${org.racedaydreams.domain.presentation.MassText.label(it, unit)} reference"
+        } ?: ""
     return "${target.sets()} × $measurement$effort$rest$reference"
 }
 

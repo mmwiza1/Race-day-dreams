@@ -1,6 +1,8 @@
 package org.racedaydreams.domain.presentation
 
+import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
+import org.racedaydreams.domain.body.MassUnit
 import org.racedaydreams.domain.coaching.Immutable
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
@@ -57,10 +59,13 @@ object StrengthPrescriptionText {
             "RIR (repetitions in reserve): ${range(effort.minimum(),effort.maximum())} repetitions left before failure. This counts repetitions, not perceived effort."
     }
 
+    /** Weight reference text; loads are stored in kg and shown in [unit] (audit B-05). */
     @JvmStatic
+    @JvmOverloads
     fun weight(
         slot: GymWorkoutDefinition.Slot,
         proposed: GymWorkoutDefinition.Target?,
+        unit: MassUnit = MassUnit.KG,
     ): List<String> {
         if (
             !slot.exercise().measurement().usesLoad() ||
@@ -76,15 +81,15 @@ object StrengthPrescriptionText {
             else "weight reference"
         lines.add(
             if (current == null) "Your current target has no $label."
-            else "Your current $label is ${number(current)} kg."
+            else "Your current $label is ${mass(current, unit)}."
         )
         if (next != null && current != null && number(next) == number(current))
             lines.add("Your $label is unchanged in this suggestion.")
         else if (next != null)
             lines.add(
-                "The suggested new $label is ${number(next)} kg." +
+                "The suggested new $label is ${mass(next, unit)}." +
                     if (current != null)
-                        " That is ${prescriptionDifference(next,current)} kg ${if(next>=current) "more" else "less"} than your current reference."
+                        " That is ${difference(next, current, unit)} ${if(next>=current) "more" else "less"} than your current reference."
                     else ""
             )
         lines.add(
@@ -116,9 +121,11 @@ object StrengthPrescriptionText {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun comparisons(
         slot: GymWorkoutDefinition.Slot,
         proposed: GymWorkoutDefinition.Target?,
+        unit: MassUnit = MassUnit.KG,
     ): List<TargetComparison> {
         val current = slot.target()
         val next = proposed ?: current
@@ -170,8 +177,8 @@ object StrengthPrescriptionText {
                 if (slot.exercise().mode() == StrengthExercise.Mode.WEIGHTED_BODYWEIGHT)
                     "Added weight reference"
                 else "Weight reference",
-                current?.referenceLoadKg()?.let { "${number(it)} kg" },
-                next?.referenceLoadKg()?.let { "${number(it)} kg" },
+                current?.referenceLoadKg()?.let { mass(it, unit) },
+                next?.referenceLoadKg()?.let { mass(it, unit) },
             )
         return Immutable.copyList(rows)
     }
@@ -187,6 +194,14 @@ object StrengthPrescriptionText {
         val after = next ?: "Not set"
         rows.add(TargetComparison(key, label, before, after, before != after))
     }
+
+    /** Kilograms keep their exact decimal text; other units are rounded to 0.01. */
+    private fun mass(kilograms: Double, unit: MassUnit): String =
+        if (unit == MassUnit.KG) "${number(kilograms)} kg" else MassText.label(kilograms, unit)
+
+    private fun difference(next: Double, current: Double, unit: MassUnit): String =
+        if (unit == MassUnit.KG) "${prescriptionDifference(next, current)} kg"
+        else MassText.label(kotlin.math.abs(next - current), unit)
 
     private fun reps(target: GymWorkoutDefinition.Target?): String? =
         target?.minimumReps()?.let { range(it.toDouble(), target.maximumReps()!!.toDouble()) }

@@ -50,6 +50,8 @@ import org.racedaydreams.coach.SectionLabel
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.coach.accent
+import org.racedaydreams.domain.body.MassUnit
+import org.racedaydreams.domain.presentation.MassText
 import org.racedaydreams.domain.strength.ExerciseSearch
 import org.racedaydreams.domain.strength.GymWorkoutDefinition
 import org.racedaydreams.domain.strength.StrengthExercise
@@ -290,6 +292,7 @@ fun SharedGymWorkoutBuilderScreen(
         SharedGymSlotEditor(
             formatExercise = formatExercise,
             formatNumber = formatNumber,
+            massUnit = state.massUnit,
             slot = draft.slots.firstOrNull { it.id() == editingSlotId },
             exercises = state.exercises,
             favourites = state.favouriteExerciseIds,
@@ -351,6 +354,8 @@ fun SharedGymSlotEditor(
     allowReferenceLoad: Boolean = true,
     onDismiss: () -> Unit,
     onSave: (StrengthExercise, GymSlotInput) -> Unit,
+    /** The reference load is entered in this unit and saved in kg (audit B-05). */
+    massUnit: MassUnit = MassUnit.KG,
 ) {
     val identity = slot?.id() ?: "new"
     val target = slot?.target()
@@ -383,7 +388,11 @@ fun SharedGymSlotEditor(
         rememberSaveable(identity) { mutableStateOf(target?.restSeconds()?.toString() ?: "") }
     var reference by
         rememberSaveable(identity) {
-            mutableStateOf(target?.referenceLoadKg()?.let(formatNumber) ?: "")
+            mutableStateOf(
+                target?.referenceLoadKg()?.let {
+                    if (massUnit == MassUnit.KG) formatNumber(it) else MassText.entry(it, massUnit)
+                } ?: ""
+            )
         }
     val selected =
         exercises.firstOrNull { it.id() == selectedId }
@@ -593,7 +602,7 @@ fun SharedGymSlotEditor(
                             GymBuilderField(
                                 reference,
                                 { reference = it },
-                                "Reference load · kg, optional",
+                                "Reference load · ${MassText.symbol(massUnit)}, optional",
                                 KeyboardType.Decimal,
                             )
                             Text(
@@ -618,7 +627,7 @@ fun SharedGymSlotEditor(
                                     maximumEffort,
                                     rir && selected.measurement().usesReps(),
                                     rest,
-                                    reference,
+                                    referenceKilogramsText(reference, massUnit),
                                 ),
                             )
                         },
