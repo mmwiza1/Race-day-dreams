@@ -77,8 +77,8 @@ Physical-device measurements in Section 11 (scenarios B–F) remain **unperforme
 
 Overall, the app is **energy-conscious by design**:
 
-- **No idle background work:** there is no networking, analytics, polling service, periodic sync or
-  WorkManager job.
+- **No idle background work:** there is no analytics, polling service, periodic sync or
+  WorkManager job; the only network use is the optional update check (at most once a day, when the app is opened, never in the background) and downloading an update you choose (updated after audit A-R8, November 2026).
 - **Recording only while recording:** GPS, Bluetooth and the foreground service run only during a
   recording.
 - **Gym timers use OS scheduling:** rest timers use operating-system alarms and notifications rather
@@ -251,7 +251,9 @@ Neither should be traded for battery; both are listed so they are not lost.
 ### A-9 — No forced screen-on, no network, no periodic jobs (Efficient — preserve)
 
 - No `FLAG_KEEP_SCREEN_ON` / `keepScreenOn` exists anywhere.
-- There is no `INTERNET` permission, no WorkManager or JobScheduler, and no polling service.
+- There is no WorkManager or JobScheduler and no polling service. The `INTERNET` permission was added
+  later for the optional update check only: at most once a day, when the app is opened, never as
+  background work (updated after audit A-R8, November 2026).
 - The foreground service declares `location|connectedDevice` and exists only during a recording.
 
 ---
@@ -480,7 +482,7 @@ platforms. None of the recommendations reduces those, by design.
 - Rest timers and reminders use OS alarms and notifications, never a service.
 - The gym display clock stops when hidden (Android).
 - Recording staging is incremental and transactional; cursors advance only on acknowledgement.
-- There is no network, analytics, account, WorkManager, periodic sync or forced screen-on.
+- There is no analytics, account, WorkManager, periodic sync or forced screen-on; the only network use is the optional update check (at most once a day, when the app is opened, never in the background) and downloading an update you choose.
 - Health imports are on demand and paginated with a hard cap.
 
 ---
