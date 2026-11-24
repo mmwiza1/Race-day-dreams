@@ -105,6 +105,14 @@ class CoachOnboardingTest {
 
         scenario!!.recreate()
         waitForText("Review running baseline")
+        // C-R02: "5K" is Home's "Current goal" panel after recreation. The node can exist before
+        // the asynchronous refresh has settled its layout, so let layout go idle and scroll it
+        // into view until it is actually displayed, then assert exactly as before.
+        compose.waitForIdle()
+        awaitCondition("the current goal '5K' to be scrolled into view and displayed") {
+            runCatching { compose.onNodeWithText("5K").performScrollTo().assertIsDisplayed() }
+                .isSuccess
+        }
         compose.onNodeWithText("5K").performScrollTo().assertIsDisplayed()
         assertEquals(profile, SqliteUserPreferencesRepository(context).load().get())
     }
