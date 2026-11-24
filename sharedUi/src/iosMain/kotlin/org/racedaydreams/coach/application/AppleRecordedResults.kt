@@ -14,8 +14,6 @@ import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.activity.PerformanceDistance
 import org.racedaydreams.domain.activity.PersonalBestCalculator
 import org.racedaydreams.domain.activity.ResultSource
-import org.racedaydreams.domain.time.CalendarDates
-import org.racedaydreams.domain.time.Offsets
 import platform.Foundation.NSUUID
 
 @Composable
@@ -77,10 +75,7 @@ internal fun AppleRecordedResults(
                 },
                 describeActivity = {
                     AppleCalendarDates.label(
-                        CalendarDates.atOffset(
-                            it.start(),
-                            it.startOffset() ?: Offsets.ofTotalSeconds(0),
-                        )
+                        org.racedaydreams.domain.activity.ActivityDates.localDate(it)
                     )
                 },
                 formatDistance = { distanceLabel(it, imperial) },

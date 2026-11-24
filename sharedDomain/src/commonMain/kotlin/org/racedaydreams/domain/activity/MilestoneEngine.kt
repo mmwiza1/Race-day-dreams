@@ -36,11 +36,7 @@ object MilestoneEngine {
                             SampleSeries(activity).quality == SampleQuality.REJECTED
                 )
                     continue
-                val date =
-                    CalendarDates.atOffset(
-                        activity.start(),
-                        activity.startOffset() ?: Offsets.ofTotalSeconds(0),
-                    )
+                val date = ActivityDates.localDate(activity)
                 val candidate =
                     Milestone(
                         "first_" + distance.code(),

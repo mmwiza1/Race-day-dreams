@@ -158,10 +158,9 @@ fun StructuredRunSection(state: CoachUiState, model: CoachViewModel, activity: A
                                         java.util.UUID.randomUUID().toString(),
                                         distance,
                                         PaceCalculator.parseTime(time),
-                                        activity
-                                            .start()
-                                            .atOffset(activity.startOffset() ?: ZoneOffset.UTC)
-                                            .toLocalDate(),
+                                        org.racedaydreams.domain.activity.ActivityDates.localDate(
+                                            activity
+                                        ),
                                         j.optString("raceName"),
                                         ResultSource.OFFICIAL_CHIP,
                                         activity.id(),

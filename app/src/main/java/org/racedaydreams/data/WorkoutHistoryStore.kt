@@ -5,6 +5,7 @@ import android.os.Looper
 import org.json.JSONObject
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.WorkoutCategory
+import org.racedaydreams.domain.activity.ActivityDates
 import org.racedaydreams.domain.activity.WorkoutHistoryQuery.Kind
 import org.racedaydreams.domain.strength.ExerciseSearch
 import java.time.*
@@ -42,7 +43,8 @@ class WorkoutHistoryStore(context:Context) {
                     count++;val cursor=Cursor(c.getLong(2),c.getString(0),c.getInt(1));scanned=cursor
                     val j=JSONObject(c.getString(3));val run=cursor.kind==0
                     val start=Instant.parse(j.getString(if(run)"start"else"startedAt"))
-                    val offset=if(run)j.optString("startOffset").takeIf{it.isNotBlank()&&it!="null"}?.let(ZoneOffset::of)?:ZoneOffset.UTC else ZoneOffset.of(j.getString("offset"))
+                    // Runs share one dating rule (audit B-01): source offset, else the device zone.
+                    val offset=if(run)ActivityDates.offsetAt(start,ActivityDates.recordedOffset(j.getJSONObject("source").getString("provider"),j.optString("startOffset").takeIf{it.isNotBlank()&&it!="null"}?.let(ZoneOffset::of))) else ZoneOffset.of(j.getString("offset"))
                     val date=start.atOffset(offset).toLocalDate()
                     if(from!=null&&date<from||through!=null&&date>through)continue
                     val workoutId=if(c.isNull(4))j.optString("plannedWorkoutId")else c.getString(4)

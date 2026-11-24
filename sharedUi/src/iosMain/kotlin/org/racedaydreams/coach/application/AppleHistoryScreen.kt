@@ -66,7 +66,7 @@ fun AppleHistoryScreen(
                 session.activities.activitySummaryPage(time, id, limit)
             }
         },
-        activityDate = { dateLabel(it.start(), it.startOffset()) },
+        activityDate = { dateLabel(it) },
         strengthDate = ::dateLabel,
         distance = { distanceLabel(it, imperial) },
         elapsedPace = { activity, miles ->
@@ -169,7 +169,7 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                 // The shared summary, heart-rate and route sections carry their own labelled
                 // panels.
                 Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(dateLabel(run.start(), run.startOffset()))
+                    Text(dateLabel(run))
                     SharedRecordedRunSummary(
                         run,
                         { distanceLabel(it, imperial) },
@@ -379,7 +379,7 @@ private fun AppleRunComparisonAndFeedback(
         state.activities,
         prescriptions,
         imperial,
-        { dateLabel(it.start(), it.startOffset()) },
+        { dateLabel(it) },
         { distanceLabel(it, imperial) },
         ::paceLabel,
         ::oneDecimal,
@@ -416,8 +416,14 @@ private fun oneDecimal(value: Double): String {
     return (tenths / 10).toString() + "." + kotlin.math.abs(tenths % 10)
 }
 
-private fun dateLabel(instant: Instant, offset: ZoneOffset?): String {
-    val date = CalendarDates.atOffset(instant, offset ?: Offsets.ofTotalSeconds(0))
+/** Runs use the shared dating rule: the source's offset, else the device zone (audit B-01). */
+private fun dateLabel(run: ActivityRecord): String =
+    dateText(org.racedaydreams.domain.activity.ActivityDates.localDate(run))
+
+private fun dateLabel(instant: Instant, offset: ZoneOffset?): String =
+    dateText(org.racedaydreams.domain.activity.ActivityDates.localDate(instant, offset))
+
+private fun dateText(date: LocalDate): String {
     val day = date.getDayOfMonth().toString().padStart(2, '0')
     val month = date.getMonthValue().toString().padStart(2, '0')
     return "$day/$month/${date.getYear()}"

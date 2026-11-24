@@ -262,7 +262,7 @@ object CalendarData {
     }
 
     private fun runDate(a: ActivityRecord): LocalDate =
-        CalendarDates.atOffset(a.start(), a.startOffset() ?: Offsets.ofTotalSeconds(0))
+        org.racedaydreams.domain.activity.ActivityDates.localDate(a)
 
     private fun strengthDate(s: StrengthSession): LocalDate =
         CalendarDates.atOffset(s.startedAt(), s.offset())
