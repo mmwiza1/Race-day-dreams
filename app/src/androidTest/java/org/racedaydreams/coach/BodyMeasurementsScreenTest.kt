@@ -79,6 +79,8 @@ class BodyMeasurementsScreenTest {
                 }
             }
         }
+        // C-04: the Android shell's app bar has the only Back for this route.
+        compose.onAllNodesWithText("Back").assertCountEquals(0)
         compose
             .onNodeWithText("A general daily range is about 120–175 grams of protein.")
             .performScrollTo()

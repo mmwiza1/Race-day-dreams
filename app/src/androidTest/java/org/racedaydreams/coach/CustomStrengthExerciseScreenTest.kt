@@ -303,6 +303,8 @@ class CustomStrengthExerciseScreenTest {
             }
         }
         await { true }
+        // C-04: the Android shell's app bar has the only Back for this route.
+        compose.onAllNodesWithText("Back").assertCountEquals(0)
     }
 
     private fun factory(create: () -> ViewModel) =

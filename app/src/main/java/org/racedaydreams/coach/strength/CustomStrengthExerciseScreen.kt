@@ -11,5 +11,5 @@ fun CustomStrengthExerciseScreen(
     onSaved: (String) -> Unit,
 ) {
     val state by model.state.collectAsStateWithLifecycle()
-    SharedCustomStrengthExerciseScreen(model.shared, state, onBack, onSaved)
+    SharedCustomStrengthExerciseScreen(model.shared, state, onBack, onSaved, appBarBack = true)
 }

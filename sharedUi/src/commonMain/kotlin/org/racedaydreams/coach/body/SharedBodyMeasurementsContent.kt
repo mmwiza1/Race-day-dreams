@@ -41,6 +41,7 @@ fun SharedBodyMeasurementsContent(
     onMoreHeights: () -> Unit,
     presentation: BodyMeasurementsPresentation,
     providerControls: @Composable () -> Unit,
+    appBarBack: Boolean = false,
 ) {
     var measurements by rememberSaveable { mutableStateOf(false) }
     var height by rememberSaveable { mutableStateOf("") }
@@ -49,7 +50,10 @@ fun SharedBodyMeasurementsContent(
     var weightCount by rememberSaveable { mutableIntStateOf(10) }
     val heightUnit = state.preferences.heightUnit()
     CoachPage {
-        TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
+        // Android hosts pass appBarBack = true: the shell's app bar already has Back for this
+        // route (audit C-04). iOS has no app bar Back, so it keeps this in-content control.
+        if (!appBarBack)
+            TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
         ScreenHeader(Discipline.RECOVERY, Glyph.BODY, "Body", "Body & protein guidance")
         QuietNote(
             "Optional measurements and general adult nutrition guidance. Your programme works without them."

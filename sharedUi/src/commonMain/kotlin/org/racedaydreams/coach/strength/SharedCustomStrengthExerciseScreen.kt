@@ -22,6 +22,7 @@ fun SharedCustomStrengthExerciseScreen(
     state: ProgrammeAuthoringState,
     onBack: () -> Unit,
     onSaved: (String) -> Unit,
+    appBarBack: Boolean = false,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var area by rememberSaveable { mutableStateOf<String?>(null) }
@@ -34,7 +35,9 @@ fun SharedCustomStrengthExerciseScreen(
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     val enabled = !state.loading && !state.busy
     CoachPage {
-        TextButton(onClick = onBack, enabled = !state.busy) { Text("Back") }
+        // Android hosts pass appBarBack = true: the shell's app bar already has Back for this
+        // route (audit C-04). iOS has no app bar Back, so it keeps this in-content control.
+        if (!appBarBack) TextButton(onClick = onBack, enabled = !state.busy) { Text("Back") }
         CoachHeading("Custom exercise")
         Text(
             "Define the movement you want to log or add to your own programme. Existing exercises and history are unchanged."

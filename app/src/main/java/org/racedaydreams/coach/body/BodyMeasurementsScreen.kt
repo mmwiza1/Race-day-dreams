@@ -117,6 +117,7 @@ fun BodyMeasurementsContent(
                 }
             }
         },
+        appBarBack = true,
     )
 }
 
