@@ -4,8 +4,9 @@ Owner-approved on 24 November 2026. One integration branch and one draft PR for 
 programme. Pieces are approval milestones within that branch, done strictly one at a time.
 
 - **Integration branch:** `ccr-60f602a7-tfmok3-training`, created from `main` `60b5201b`.
-- **Draft PR:** see the "Status" table. Do not merge until Piece 5's comprehensive validation passes
-  **and** the owner explicitly approves the merge.
+- **Integration PR:** [#51](https://github.com/mmwiza1/Race-day-dreams/pull/51), squash-merged as
+  [`7823372c`](https://github.com/mmwiza1/Race-day-dreams/commit/7823372c81d3fe09c9485ed6de5ee461d546f593)
+  after owner approval and green exact-head release checks.
 - **Version bump:** once, at final integration (Piece 5). Not per piece.
 - **Session rules:** AGENTS.md, "AI development sessions — permanent owner rules". One session, no
   agents, stop after each piece for explicit approval. Documentation PR #50 stays parked.
@@ -21,7 +22,7 @@ programme. Pieces are approval milestones within that branch, done strictly one 
 | 3 | Running progression engine | Major | **Approved at `f723eeec`** |
 | 4 | Race-specific workout engine | Major | **Approved at `fe216621`** (iOS test compile fixed in `35d5b20f`; final CI shows only the known failure) |
 | 5A | Adaptive coaching (Claude) | Major | **Implemented and approved for 5B validation on PR #51.** Handover: `docs/HANDOFF_5A_TO_5B.md` |
-| 5B | Comprehensive validation, full-app audit, release preparation (Codex) | Major | **Next.** Not started; begins only after owner approval of 5A |
+| 5B | Comprehensive validation and development release preparation | Major | **Merged at `7823372c`.** Final Android matrix, iOS shared/Simulator and visual checks passed. The independent [running](AUDIT_2026-11_RUNNING_PROGRAMMES.md), [gym](AUDIT_2026-11_GYM_PROGRAMMES.md) and [full-app](AUDIT_2026-11_FULL_APP.md) audits follow the merge. |
 
 ## Testing policy (Pieces 1–4)
 
@@ -31,7 +32,7 @@ emulator or simulator runs, screenshots or full platform builds unless one is ne
 specific change. Never defer safety, compilation or data-integrity checks. GitHub Actions still runs
 on each push; keep pushes to a minimum and trigger nothing manually.
 
-## Piece 5B — release candidate
+## Piece 5B — merged development release
 
 The runner previews and explicitly accepts the four-week rebuild and its continuation. Subsequent
 weeks and individual distance sessions stay within the last rebuilt week's workload pending fresh
@@ -350,7 +351,7 @@ See `docs/HANDOFF_5A_TO_5B.md` for the full rules, limitations and the Piece 5B 
 | --- | --- | --- |
 | `SharedDashboardScreenTest.strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage` (Android, draft gate) | Piece 2, `f9318590` | **Fix attempted at the owner's request** (test measured positions at different scroll offsets; see `docs/HANDOFF_5A_TO_5B.md`, section 7). **Fixed: passes in CI at `be7029f7`.** Any other failing test is a new regression and must be reported separately. |
 
-## Deferred to Piece 5B (full list: `docs/HANDOFF_5A_TO_5B.md`, section 8)
+## Work handed to Piece 5B (historical; see its completed verification above)
 
 - Full shared-domain suite, Android API 28/35/36 matrix, iOS compilation and tests. iOS was not
   compiled locally; the changes are in shared code only.
