@@ -100,7 +100,7 @@ class GymNowScreenTest {
                 "Start planned workout",
                 "Quick workout",
                 "Build a workout",
-                "Generate one for me",
+                "Design a workout for me",
                 "Favourite workouts",
                 "Repeat previous workout",
             )
@@ -168,13 +168,52 @@ class GymNowScreenTest {
     }
 
     @Test
+    fun multiGroupPreviewCanReplaceAnExerciseBeforeStarting() {
+        install()
+        click("Design a workout for me")
+        click("Full gym")
+        click("Chest")
+        click("Shoulders")
+        click("Arms")
+        click("Review suggested workout")
+        await { model.state.value.generated != null }
+        val original = model.state.value.generated!!.definition()
+        compose.onNodeWithText("Chest + Shoulders + Arms").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-multi-group-preview")
+        var swapped = false
+        for (slot in original.slots()) {
+            click("Find alternative to ${slot.exercise().name()}")
+            await { model.state.value.generatedSwap?.slotId == slot.id() }
+            val candidate = model.state.value.generatedSwap!!.choices.firstOrNull()
+            if (candidate == null) {
+                click("Keep original exercise")
+                continue
+            }
+            click("Use ${candidate.exercise().name()}")
+            await { model.state.value.generatedSwap == null }
+            val revised = model.state.value.generated!!.definition().slots().first { it.id() == slot.id() }
+            assertEquals(candidate.exercise(), revised.exercise())
+            assertEquals(slot.target(), revised.target())
+            swapped = true
+            break
+        }
+        assertTrue("At least one compatible preview alternative was exercised", swapped)
+        assertNull(execution())
+        click("Start generated workout")
+        await { execution()?.origin() == GymExecution.Origin.GENERATED }
+        assertTrue(execution()!!.actualSets().isEmpty())
+        assertNull(execution()!!.source())
+        assertTrue(io { DevelopmentStore(application).gymLinks().isEmpty() })
+    }
+
+    @Test
     fun quickAndGeneratedEntryFlowsReviewIntentionsAndStartWithDistinctOrigins() {
         install()
         for ((entry, start, origin) in
             listOf(
                 Triple("Quick workout", "Start quick workout", GymExecution.Origin.QUICK),
                 Triple(
-                    "Generate one for me",
+                    "Design a workout for me",
                     "Start generated workout",
                     GymExecution.Origin.GENERATED,
                 ),

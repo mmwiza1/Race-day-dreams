@@ -53,9 +53,15 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   checkpoint, and a killed process may leave no final interruption event. App backup formats
   exclude these diagnostics. See [GPS investigation](docs/GPS_ISSUE_54_INVESTIGATION.md).
 - A verification is in progress. Two common JVM cases passed for delayed batches, rejection,
-  missing acknowledgement and bounded timelines. Debug app and test APKs built. The focused API 28
-  storage batch is running; see `/workspace/scratch/rdd-part3-diagnostic-instrument.log`. Apple
-  simulator execution needs macOS. Next implementation task is B. Tasks B–E are pending.
+  missing acknowledgement and bounded timelines. Debug app and test APKs built. API 28 passed all
+  seven focused diagnostic export/store and staging checks. See
+  `/workspace/scratch/rdd-part3-diagnostic-instrument.log`. Apple simulator execution needs macOS.
+  Task A is committed locally as `0ab53804`. The live Android emulator service also saved a
+  coordinate-free report with 36 callbacks, 35 accepted and disk-acknowledged points, and
+  manual pause/resume events. This used injected emulator locations, not physical S24 evidence.
+- B implements a shared multi-group review and equipment-aware alternatives using the original
+  planner's target and substitution rules. Two focused JVM cases passed. The Android build and
+  focused Compose validation are in progress. Tasks C–E remain pending.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

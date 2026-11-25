@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,6 +44,8 @@ import org.racedaydreams.coach.SectionLabel
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.coach.chartAccent
+import org.racedaydreams.domain.strength.ExerciseCatalog
+import org.racedaydreams.domain.strength.ExerciseMetadataCatalog
 import org.racedaydreams.domain.strength.GymNowWorkouts
 import org.racedaydreams.domain.strength.GymProgramme
 import org.racedaydreams.domain.time.Instant
@@ -195,12 +198,12 @@ fun SharedGymNowScreen(
                         onBuild()
                     }
                     GymOptionTile(
-                        "Generate one for me",
+                        "Design a workout for me",
                         "Choose your focus and review a suggested workout",
                         Glyph.SPARK,
                         mutable,
                     ) {
-                        section = "Generate one for me"
+                        section = "Design a workout for me"
                     }
                 }
                 SectionLabel("Saved and recent", Glyph.FLAG, ChartHue.PLUM)
@@ -397,7 +400,7 @@ fun SharedGymNowScreen(
                 }
             }
             "Quick workout",
-            "Generate one for me" ->
+            "Design a workout for me" ->
                 OneOffWorkoutPicker(
                     state = state,
                     model = model,
@@ -559,6 +562,8 @@ private fun OneOffWorkoutPicker(
     var minutes by rememberSaveable(quick) { mutableStateOf(30) }
     var equipment by rememberSaveable(quick) { mutableStateOf(listOf("bodyweight")) }
     var focus by rememberSaveable(quick) { mutableStateOf(GymNowWorkouts.Focus.FULL_BODY.name) }
+    var groups by rememberSaveable(quick) { mutableStateOf(emptyList<String>()) }
+    var variant by rememberSaveable(quick) { mutableIntStateOf(0) }
     var goal by rememberSaveable(quick) { mutableStateOf(GymProgramme.Goal.GENERAL.name) }
     var experience by
         rememberSaveable(quick) { mutableStateOf(GymProgramme.Experience.BEGINNER.name) }
@@ -589,6 +594,18 @@ private fun OneOffWorkoutPicker(
         }
     }
     Text("Equipment available", style = MaterialTheme.typography.titleMedium)
+    OutlinedButton(
+        onClick = {
+            equipment = listOf("bodyweight")
+            showPreview = false
+        },
+        enabled = enabled,
+    ) {
+        Text(
+            if (equipment == listOf("bodyweight")) "Bodyweight only selected"
+            else "No equipment / Bodyweight only"
+        )
+    }
     FlowRow(
         horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
         verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
@@ -612,9 +629,10 @@ private fun OneOffWorkoutPicker(
     ) {
         GymNowWorkouts.Focus.values().forEach { value ->
             CoachFilterChip(
-                selected = focus == value.name,
+                selected = groups.isEmpty() && focus == value.name,
                 onClick = {
                     focus = value.name
+                    groups = emptyList()
                     showPreview = false
                 },
                 enabled = enabled,
@@ -623,6 +641,24 @@ private fun OneOffWorkoutPicker(
         }
     }
     if (!quick) {
+        Text("Or choose one or more muscle groups", style = MaterialTheme.typography.titleMedium)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
+            GymNowWorkouts.MuscleGroup.entries.forEach { group ->
+                CoachFilterChip(
+                    selected = group.name in groups,
+                    onClick = {
+                        groups =
+                            if (group.name in groups) groups - group.name else groups + group.name
+                        showPreview = false
+                    },
+                    enabled = enabled,
+                    label = { Text(group.label) },
+                )
+            }
+        }
         Text("Goal", style = MaterialTheme.typography.titleMedium)
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
@@ -693,7 +729,7 @@ private fun OneOffWorkoutPicker(
         }
     } else
         Text(
-            "Quick workouts use general fitness, beginner experience and conservative RPE guidance. Use Generate one for me to choose a different goal or experience."
+            "Quick workouts use general fitness, beginner experience and conservative RPE guidance. Use Design a workout for me to choose a different goal or experience."
         )
     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
     Button(
@@ -708,7 +744,10 @@ private fun OneOffWorkoutPicker(
                         GymProgramme.Experience.valueOf(experience),
                         GymProgramme.Priority.valueOf(priority),
                         GymProgramme.Effort.valueOf(effort),
+                        groups.map(GymNowWorkouts.MuscleGroup::valueOf).toSet(),
+                        variant,
                     )
+                variant++
                 error = null
                 showPreview = true
                 model.generate(request)
@@ -720,7 +759,10 @@ private fun OneOffWorkoutPicker(
         enabled = enabled,
         modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
     ) {
-        Text("Review suggested workout")
+        Text(
+            if (showPreview && groups.isNotEmpty()) "Regenerate suggested workout"
+            else "Review suggested workout"
+        )
     }
     if (showPreview && !state.busy)
         state.generated?.let { suggestion ->
@@ -740,6 +782,46 @@ private fun OneOffWorkoutPicker(
                         fontWeight = FontWeight.SemiBold,
                     )
                     SharedPlainWorkoutTarget(slot, formatTarget)
+                    val requirements =
+                        ExerciseMetadataCatalog.find(slot.exercise().id())?.equipment()
+                    val capabilities = GymNowWorkouts.capabilities(equipment.toSet())
+                    val setup =
+                        requirements?.alternatives()?.firstOrNull { capabilities.containsAll(it) }
+                    val equipmentText =
+                        setup?.joinToString { gymEnumLabel(it.name) }?.ifEmpty { "Bodyweight" }
+                            ?: ExerciseCatalog.definition(slot.exercise().id())?.equipment()
+                    equipmentText?.let { Text("Equipment: $it") }
+                    TextButton(
+                        onClick = { model.openGeneratedAlternatives(slot.id()) },
+                        enabled = enabled,
+                    ) {
+                        Text("Find alternative to ${slot.exercise().name()}")
+                    }
+                    state.generatedSwap
+                        ?.takeIf { it.slotId == slot.id() }
+                        ?.let { review ->
+                            if (review.choices.isEmpty())
+                                Text(
+                                    "No compatible alternative fits the chosen equipment and target."
+                                )
+                            review.choices.forEach { alternative ->
+                                TextButton(
+                                    onClick = {
+                                        model.replaceGenerated(slot.id(), alternative.exercise())
+                                    },
+                                    enabled = enabled,
+                                ) {
+                                    Text("Use ${alternative.exercise().name()}")
+                                }
+                                Text(
+                                    alternative.explanation(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
+                            TextButton(onClick = model::closeGeneratedAlternatives) {
+                                Text("Keep original exercise")
+                            }
+                        }
                 }
                 suggestion.limitations().forEach { limitation -> Text(limitation) }
                 Text(
@@ -795,7 +877,7 @@ private data class PlannedSessionDisplay(
 private fun sectionGlyph(section: String) =
     when (section) {
         "Planned workouts" -> Glyph.CALENDAR
-        "Generate one for me" -> Glyph.SPARK
+        "Design a workout for me" -> Glyph.SPARK
         "Favourite workouts" -> Glyph.FLAG
         "Repeat previous workout" -> Glyph.TREND
         else -> Glyph.DUMBBELL

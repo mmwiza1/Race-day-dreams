@@ -411,6 +411,16 @@ class GymProgrammeGenerator {
                         "dead-bug",
                     )
                 )
+            return prescriptionsForIds(settings, ids, favourites)
+        }
+
+        /** The same target and time budget also serve an explicitly focused one-off workout. */
+        internal fun prescriptionsForIds(
+            settings: GymProgramme.Settings,
+            ids: List<String>,
+            favourites: Set<String>,
+            conservativeTimeBudget: Boolean = false,
+        ): List<GymProgramme.Prescription> {
             var sets =
                 if (
                     settings.experience() == GymProgramme.Experience.BEGINNER ||
@@ -449,7 +459,9 @@ class GymProgrammeGenerator {
             val out = mutableListOf<GymProgramme.Prescription>()
             var budget = settings.minutes() - 6
             for (id in ids.toSet()) {
-                val cost = sets * (rest / 60 + 1) + 1
+                val cost =
+                    if (conservativeTimeBudget) (sets * (rest + 60) + 119) / 60
+                    else sets * (rest / 60 + 1) + 1
                 if (budget < cost && out.isNotEmpty()) break
                 budget -= cost
                 val profile = ExerciseCatalog.definition(id)!!.exercise().measurement()
