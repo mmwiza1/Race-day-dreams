@@ -173,35 +173,18 @@ class SharedDashboardScreenTest {
         }
         compose.onNodeWithTag("selected-one-rep-max").assert(hasText("80.0 kg × 5"))
 
-        // Training volume: load × reps by week, with the selected week's workouts to open.
-        compose.onNodeWithTag("volume-chart").performScrollTo().assertIsDisplayed()
-        compose.onNodeWithTag("volume-period").assert(hasText("4 weeks:", substring = true))
-        compose
-            .onNode(
-                hasText("Back Squat, Overhead Press, My machine") and
-                    hasAnyAncestor(hasTestTag("volume-week-workouts"))
-            )
-            .performScrollTo()
-            .performClick()
-        assertEquals("today", workouts.last())
-        compose.onNodeWithTag("volume-by-exercise").performScrollTo().assert(
-            hasAnyDescendant(hasText("Back Squat"))
-        )
+        // Piece 2: no tonnage headline or volume chart on the dashboard.
+        compose.onNodeWithTag("volume-chart").assertDoesNotExist()
+        compose.onNodeWithText("Training volume").assertDoesNotExist()
 
         // Muscle workload keeps unclassified and secondary involvement visible and separate,
         // and a group opens the exercises that contributed.
         compose.onNodeWithText("not assigned to a group", substring = true).performScrollTo().assertExists()
         compose.onNodeWithTag("muscle-CHEST").performScrollTo().performClick()
         compose.onNodeWithTag("muscle-CHEST-exercises", useUnmergedTree = true).assert(hasText("Bench Press", substring = true))
-        // Volume is labelled as accumulated load × reps, grouped by thousands, so it cannot be
-        // read as a lifted weight, a PB or an estimated 1RM.
-        org.junit.Assert.assertTrue(
-            compose
-                .onAllNodesWithText("Training volume (load × reps)")
-                .fetchSemanticsNodes()
-                .isNotEmpty()
-        )
-        compose.onAllNodesWithText("load × reps").assertCountEquals(0)
+        // Recent workouts show what was done (exercises, date, working sets), never a load ×
+        // repetitions tonnage that could be read as a lifted weight or a sign of strength.
+        compose.onAllNodesWithText("Training volume (load × reps)").assertCountEquals(0)
         compose
             .onAllNodes(
                 SemanticsMatcher("thousands-grouped volume") { node ->
@@ -210,8 +193,7 @@ class SharedDashboardScreenTest {
                     }
                 }
             )
-            .fetchSemanticsNodes()
-            .let { org.junit.Assert.assertTrue("A grouped volume is shown", it.isNotEmpty()) }
+            .assertCountEquals(0)
         compose
             .onNodeWithText("Recorded workload only — not a measure of muscle growth or recovery.", substring = true)
             .performScrollTo()
@@ -233,23 +215,31 @@ class SharedDashboardScreenTest {
     }
 
     @Test
-    fun volumeOpensOnTheLatestRecordedWeekAndReturnsToThisWeek() {
-        // Nothing recorded this week yet: the chart opens on last week, says so, and one tap
-        // returns to the (empty) current week.
-        strength(
-            CoachUiState(
-                loading = false,
-                strengthSessions = sessions.filter { it.id() in setOf("year-ago", "last-week") },
-            )
+    fun strengthDashboardLeadsWithProgressAndAccomplishmentsNotTonnage() {
+        // Piece 2: progression, then the figures (workouts first), recent workouts and sets by
+        // muscle group. No volume chart, and no tonnage anywhere on the dashboard.
+        strength(CoachUiState(loading = false, strengthSessions = sessions))
+        // The page is one scrolling column, so every card is laid out even when off screen.
+        // Positions are read in one pass without scrolling: scrolling to each node before reading
+        // it would measure each at a different scroll offset, and the order would be meaningless.
+        fun y(node: androidx.compose.ui.test.SemanticsNodeInteraction) =
+            node.fetchSemanticsNode().positionInRoot.y
+        val progression = y(compose.onNodeWithText("Exercise progression"))
+        val workouts = y(compose.onNodeWithTag("kpi-Workouts"))
+        val records = y(compose.onNodeWithTag("kpi-New records"))
+        val recent = y(compose.onNodeWithText("Recent workouts"))
+        val muscles = y(compose.onNodeWithText("Muscle-group workload"))
+        val order = "progression=$progression workouts=$workouts records=$records " +
+            "recent=$recent muscles=$muscles"
+        org.junit.Assert.assertTrue(order, progression < workouts && workouts <= records)
+        org.junit.Assert.assertTrue(order, records < recent && recent < muscles)
+        compose.onNodeWithTag("volume-chart").assertDoesNotExist()
+        compose.onAllNodesWithText("load × rep", substring = true).assertCountEquals(0)
+        compose.onAllNodesWithText("By exercise", substring = true).assertCountEquals(0)
+        // Recent workouts show an actual set lifted instead of a tonnage total.
+        assertTrue(
+            compose.onAllNodesWithText("Top set:", substring = true).fetchSemanticsNodes().isNotEmpty()
         )
-        compose.onNodeWithTag("volume-chart").performScrollTo()
-        compose.onNodeWithTag("volume-selected-week").assert(hasText("Week of", substring = true))
-        compose.onNodeWithText("Latest week with workouts", substring = true).assertExists()
-        compose.onNodeWithTag("volume-this-week").performScrollTo().performClick()
-        compose.onNodeWithTag("volume-selected-week").assert(hasText("This week"))
-        compose.onNodeWithTag("volume-readout").assert(hasText("No workouts"))
-        compose.onNodeWithTag("volume-this-week").assertDoesNotExist()
-        compose.onNodeWithText("Latest week with workouts", substring = true).assertDoesNotExist()
     }
 
     @Test
@@ -432,7 +422,7 @@ class SharedDashboardScreenTest {
         )
         compose.onNodeWithText("Recent workouts").assertExists()
         compose.onNodeWithText("Exercise progression").assertExists()
-        compose.onNodeWithText("Training volume").assertExists()
+        compose.onNodeWithText("Training volume").assertDoesNotExist()
         compose.onNodeWithText("Muscle-group workload").assertExists()
         compose.onNodeWithText("Distance this week").assertDoesNotExist()
         compose.onNodeWithTag("kpi-Distance").assertDoesNotExist()

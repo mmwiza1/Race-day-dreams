@@ -452,6 +452,238 @@ class CoachingScreenshotTest {
         SqliteUserPreferencesRepository(context).clear()
     }
 
+    /** Real repositories and routes with a controlled four-week history for the review choices. */
+    private fun seedTrainingReview(distance: RaceDistance, completedShare: Double): LocalDate {
+        SqliteUserPreferencesRepository(context).clear()
+        val monday =
+            LocalDate.now()
+                .with(java.time.temporal.TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+        val race = monday.plusWeeks(12).minusDays(1)
+        val goal = RaceGoal(distance, "Review fixture", race, GoalMode.FINISH, null)
+        val profile =
+            UserProfile(
+                goal,
+                TrainingPreferences(
+                    TrainingStrategy.BALANCED,
+                    setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY, DayOfWeek.SATURDAY),
+                    3,
+                    DayOfWeek.SATURDAY,
+                    emptySet(),
+                    ScheduleType.FIXED,
+                    UnitSystem.METRIC,
+                ),
+                false,
+            )
+        SqliteUserPreferencesRepository(context).save(profile)
+        val feature = FeatureStore(context)
+        feature.putSetting("baseline.reviewed", "true")
+        val start = monday.minusWeeks(4)
+        val workouts =
+            (-4..6).flatMap { offset ->
+                val week = monday.plusWeeks(offset.toLong())
+                listOf(0L, 2L, 5L).map { day ->
+                    val date = week.plusDays(day)
+                    val quality = offset >= 0 && day == 0L
+                    val category =
+                        when {
+                            quality -> WorkoutCategory.INTERVALS
+                            day == 5L -> WorkoutCategory.LONG_RUN
+                            else -> WorkoutCategory.EASY_RUN
+                        }
+                    val km = if (quality) 7.7 else if (day == 5L) 12.0 else 6.0
+                    val segments =
+                        if (quality)
+                            listOf(
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.WARM_UP,
+                                    2.0,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    3.0,
+                                    "Easy warm-up",
+                                ),
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.RUN,
+                                    2.0,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    6.0,
+                                    "Repetition 1 of 2",
+                                ),
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.RECOVERY,
+                                    null,
+                                    Duration.ofSeconds(90),
+                                    null,
+                                    null,
+                                    null,
+                                    2.0,
+                                    "Jog or walk gently",
+                                ),
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.RUN,
+                                    2.0,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    6.0,
+                                    "Repetition 2 of 2",
+                                ),
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.COOL_DOWN,
+                                    1.4,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    2.0,
+                                    "Easy cool-down",
+                                ),
+                            )
+                        else
+                            listOf(
+                                WorkoutSegment(
+                                    WorkoutSegment.Kind.RUN,
+                                    km,
+                                    null,
+                                    null,
+                                    null,
+                                    null,
+                                    3.0,
+                                    "Easy running",
+                                )
+                            )
+                    PlannedWorkout(
+                        "piece5b-workout-$date",
+                        date,
+                        category,
+                        km,
+                        null,
+                        segments,
+                        "Screenshot fixture",
+                    )
+                }
+            }
+        val plan = TrainingPlan("piece5b-plan", start, race, emptyList(), workouts)
+        val version =
+            PlanVersion(
+                "piece5b-v1",
+                plan.id(),
+                1,
+                start.atStartOfDay().toInstant(ZoneOffset.UTC),
+                "Test fixture",
+                profile,
+                "Synthetic recorded history",
+                plan,
+            )
+        val coaching = CoachingStore(context)
+        coaching.saveCurrent(version)
+        workouts
+            .filter { it.date() < monday }
+            .forEach { workout ->
+                val date = workout.date().atTime(10, 0).toInstant(ZoneOffset.UTC)
+                val id = "piece5b-run-${workout.date()}"
+                val record =
+                    ActivityRecord(
+                        id,
+                        SourceIdentity("manual", id, null),
+                        date,
+                        date.plusSeconds(2400),
+                        ZoneOffset.UTC,
+                        ZoneOffset.UTC,
+                        workout.distanceKm()!! * completedShare * 1000,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        3.0,
+                        "Test-only running history",
+                        emptyList(),
+                        emptyList(),
+                        workout.id(),
+                        null,
+                    )
+                feature.upsertManualActivity(record)
+                coaching.saveResponse(
+                    RunExecution(id, workout.id(), version.id(), null, null, "Test fixture")
+                )
+            }
+        return monday
+    }
+
+    @Test
+    fun capturesLimitedReadinessTimedRecoveryAndRebuildPreview() {
+        val monday = seedTrainingReview(RaceDistance.HALF_MARATHON, .5)
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        await("Today")
+        click("Plan")
+        await("This week")
+        val readiness = "Your plan gives limited preparation for a Half marathon."
+        compose.onNodeWithTag("plan-feasibility").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText(readiness, ignoreCase = true).assertExists()
+        capture("plan-readiness-limited")
+        compose.onNodeWithText("Why and your options").performScrollTo().performClick()
+        compose.onNodeWithText("Review goal and routine").performScrollTo().assertIsDisplayed()
+        compose
+            .onNode(
+                hasContentDescription("View workout and purpose") and
+                    hasAnyAncestor(hasTestTag("plan-day-$monday"))
+            )
+            .performScrollTo()
+            .performClick()
+        await("Workout structure")
+        compose
+            .onNodeWithText("The total includes an estimate for timed recoveries. Recover by time.")
+            .assertExists()
+        compose.onNodeWithText("1 min 30 sec").performScrollTo().assertIsDisplayed()
+        alignHeading("3. Recovery")
+        compose.onNodeWithText("1 min 30 sec").assertIsDisplayed()
+        capture("planned-workout-timed-recovery")
+        back()
+        clickOriginalNavigationTab("Home")
+        await("Today")
+        captureAdaptivePreview("Rebuild from my recent running", "weekly-review-rebuild-preview")
+    }
+
+    @Test
+    fun capturesUnsupportedReadinessAndProgressPreview() {
+        seedTrainingReview(RaceDistance.MARATHON, 1.3)
+        scenario = ActivityScenario.launch(CoachActivity::class.java)
+        await("Today")
+        click("Plan")
+        await("This week")
+        compose.onNodeWithTag("plan-feasibility").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Race readiness").assertIsDisplayed()
+        capture("plan-readiness-not-supported")
+        clickOriginalNavigationTab("Home")
+        await("Today")
+        captureAdaptivePreview(
+            "Progress cautiously for two weeks",
+            "weekly-review-progress-preview",
+        )
+    }
+
+    private fun captureAdaptivePreview(choice: String, name: String) {
+        compose.onNodeWithText("Weekly coaching review").performScrollTo().performClick()
+        await("Recommendation")
+        compose.onNodeWithText(choice).performScrollTo().performClick()
+        compose.onNodeWithText("Preview plan change").assertIsDisplayed()
+        compose
+            .onAllNodes(hasText("Proposed:", substring = true))[0]
+            .performScrollTo()
+            .assertIsDisplayed()
+        capture(name)
+        compose.onNode(hasText("Keep original plan") and hasAnyAncestor(isDialog())).performClick()
+        compose.onNodeWithText("Preview plan change").assertDoesNotExist()
+        Assert.assertEquals("piece5b-v1", CoachingStore(context).current()!!.id())
+    }
+
     @Test
     fun capturesCurrentBuildScreensAndVerifiesCoachingNavigation() {
         scenario = ActivityScenario.launch(CoachActivity::class.java)
@@ -4258,13 +4490,7 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("period-ONE_YEAR").performScrollTo().performClick()
             alignHeading("Exercise progression")
             capture("strength-progression-1-year")
-            compose.onNodeWithTag("volume-chart").performScrollTo()
-            alignHeading("Training volume")
-            capture("strength-volume-1-year")
-            // The volume card opens on the latest week with workouts ("this" or "that" week).
-            compose.onNodeWithTag("volume-week-workouts").performScrollTo()
-            compose.waitForIdle()
-            capture("strength-volume-workouts")
+            // Piece 2: the training-volume chart is no longer on the dashboard.
             compose.onNodeWithTag("muscle-LEGS").performScrollTo().performClick()
             alignHeading("Muscle-group workload")
             capture("strength-muscle-workload")
@@ -4276,9 +4502,6 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("period-TWELVE_WEEKS").performScrollTo().performClick()
             alignHeading("Exercise progression")
             capture("strength-progression-dark")
-            compose.onNodeWithTag("volume-chart").performScrollTo()
-            alignHeading("Training volume")
-            capture("strength-volume-dark")
             closeScenario()
             scenario = null
 
@@ -5133,6 +5356,7 @@ class CoachingScreenshotTest {
             if (
                 name == "gym-equipment-alternatives" ||
                     name.startsWith("live-material-finish-") ||
+                    name.startsWith("weekly-review-") ||
                     name.startsWith("storage-confirmation") ||
                     name.startsWith("strength-programme-alternatives") ||
                     name.startsWith("strength-programme-progression") ||

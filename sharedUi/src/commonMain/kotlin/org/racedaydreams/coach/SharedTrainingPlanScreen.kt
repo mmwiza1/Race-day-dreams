@@ -116,6 +116,16 @@ fun SharedTrainingPlanScreen(
                     ?.let { "Race day · ${dates.label(it)}" }
                     ?: "Programme ends · ${dates.label(plan.endDate())}",
             )
+            val feasibility =
+                remember(plan, goal, state.baseline) {
+                    PlanFeasibility.assess(
+                        plan,
+                        goal,
+                        version.goalSnapshot().preferences(),
+                        state.baseline,
+                    )
+                }
+            feasibility?.let { PlanFeasibilityCard(it, editGoal) }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 SectionLabel(
                     "This week",

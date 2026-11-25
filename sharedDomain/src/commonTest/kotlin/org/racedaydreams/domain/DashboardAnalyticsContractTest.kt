@@ -329,6 +329,12 @@ class DashboardAnalyticsContractTest {
 
         assertEquals(listOf("mixed", "now", "last"), overview.recentWorkouts.map { it.sessionId })
         assertEquals(375.0, overview.recentWorkouts[2].loadVolumeKg)
+        // Piece 2: each recent workout carries its heaviest actual working set (warm-ups
+        // excluded) — a real weight and repetitions, not an aggregate.
+        assertEquals(
+            listOf(100.0 to 5, 82.5 to 3, 75.0 to 5),
+            overview.recentWorkouts.map { it.topSet!!.kilograms to it.topSet!!.reps },
+        )
     }
 
     @Test

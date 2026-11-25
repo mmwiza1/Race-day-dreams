@@ -458,6 +458,27 @@ object WeeklyCoaching {
                 Choice("return", "Use a three-week return bridge", bridge(version, today, gap))
             )
         }
+        // Piece 5A: reassess the coming block from actual recorded running. Holding, reducing and
+        // the return bridge above take priority; otherwise one rebuild or cautious progression
+        // may be offered, and nothing changes unless the runner accepts it.
+        val block =
+            BlockReassessment.assess(
+                version,
+                BlockReassessment.evidence(
+                    reviewedWorkouts,
+                    actual,
+                    org.racedaydreams.domain.activity.PhysicalRunSessions.counted(runs),
+                    end,
+                ),
+                end,
+                strain || rising || hard >= 3 || faded >= 2 || gap >= 14,
+                difficult.values.any { it.size >= 3 },
+            )
+        observations.addAll(block.observations)
+        if (block.choice != null) {
+            recommendation = requireNotNull(block.recommendation)
+            choices.add(block.choice)
+        }
         if (major) {
             observations.add(
                 "Recent performance may support reviewing quality paces. Easy/recovery effort and your race target remain unchanged."
@@ -518,7 +539,7 @@ object WeeklyCoaching {
                     coachingBefore(w.date(), to) &&
                     w.category() != WorkoutCategory.RACE
             )
-                out.add(resize(w, factor, false))
+                out.add(BlockReassessment.scale(w, factor, "Runner-selected reduced workload."))
         }
         return out
     }

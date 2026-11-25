@@ -140,6 +140,65 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         verifySavedRoute(in: app)
     }
 
+    func testLiveCoachAdvancesATimedRecoveryWithoutGPSDistance() {
+        let app = XCUIApplication()
+        app.launch()
+        if control("Record my runs", in: app).exists {
+            tap("Record my runs", in: app)
+        } else {
+            tap("Record", in: app)
+        }
+
+        let permissionAction = control("Allow location access", in: app)
+        if permissionAction.exists {
+            permissionAction.tap()
+            let allow = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+                .buttons["Allow While Using App"]
+            XCTAssertTrue(allow.waitForExistence(timeout: 60))
+            allow.tap()
+        }
+        tap("Create custom workout", in: app)
+        tap("Add new group", in: app)
+        tap("Save step", in: app)
+        tap("Add step to group", in: app)
+        tap("Recovery", in: app)
+        // Compose opens the decimal keypad but does not expose native text-field focus to XCTest.
+        tap("Time (seconds)", in: app)
+        let keypad = app.keyboards.firstMatch
+        let three = keypad.keys["3"]
+        let zero = keypad.keys["0"]
+        guard three.waitForExistence(timeout: 15), zero.exists else {
+            XCTFail("The recovery time field did not open the numeric keypad.")
+            return
+        }
+        three.tap()
+        zero.tap()
+        tap("Save step", in: app)
+        tap("Add step to group", in: app)
+        tap("Save step", in: app)
+        tap("Start custom workout", in: app)
+        XCTAssertTrue(control("Step 1 of 3", in: app).waitForExistence(timeout: 20))
+        tap("Workout details / controls", in: app)
+        tap("Complete open step", in: app)
+        let recoveryStep = control("Step 2 of 3", in: app)
+        // The step heading is at the top of the scrollable panel, above the expanded controls.
+        for _ in 0..<4 where !recoveryStep.exists {
+            app.swipeDown()
+        }
+        XCTAssertTrue(recoveryStep.waitForExistence(timeout: 15), app.debugDescription)
+        // With no simulated movement, advancing to the third step requires the active-time target.
+        XCTAssertTrue(control("Step 3 of 3", in: app).waitForExistence(timeout: 60), app.debugDescription)
+        tap("Pause", in: app)
+        XCTAssertTrue(control("Resume", in: app).waitForExistence(timeout: 15))
+        app.terminate()
+        app.launch()
+        tap("Record", in: app)
+        XCTAssertTrue(control("Interrupted recording", in: app).waitForExistence(timeout: 20))
+        tap("Discard interrupted recording", in: app)
+        tap("Discard", in: app)
+        XCTAssertTrue(control("Create custom workout", in: app).waitForExistence(timeout: 15))
+    }
+
     private func verifySavedRoute(in app: XCUIApplication) {
         tap("Start recording", in: app)
         XCTAssertTrue(control("Pause", in: app).waitForExistence(timeout: 20))

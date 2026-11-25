@@ -15,6 +15,64 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
+## Active task — Piece 5B (training programme, PR #51)
+
+- Continue [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51) on
+  `ccr-60f602a7-tfmok3-training` in `/workspace/scratch/rdd-piece5b`. The primary
+  checkout contains unrelated experimental history. Do not change it or parked PR #50.
+- Owner authorised squash merge only after every software release gate and visual review.
+  Base inspected at `60b5201b`; initial head `0bc2a4a0` passed its
+  [draft shared run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45473777369).
+  The draft skips the unfiltered Android matrix and unsigned iPhone build.
+- Piece 5B release candidate is `0.16.0-test1` / 29 (iOS `0.16.0` / 29).
+  Database and backup formats are unchanged; keep the published signing identity.
+- Changes: runner-approved rebuilds cap later weeks and individual sessions at the
+  rebuilt workload until further review; timed recoveries keep active-time targets,
+  with estimated distance budgeted separately. Workout details display recovery seconds.
+  Added multi-runner review, Android recording/backup/upgrade, iOS live and five
+  canonical capture scenarios. See [handover](docs/HANDOFF_5A_TO_5B.md).
+- PR #51 is ready for review. API 28 local checks passed the in-place upgrade
+  from the published 0.15.5 source with a temporary test key (identical database
+  fingerprint), timed recovery link and complete backup, and dark 200% readiness.
+  Both capture tests passed after correcting their navigation selector to Home
+  and all five captures were reviewed. The replacement Android full gate is
+  required on the new head; the earlier Android run was cancelled for the
+  reproduced test defect. See the PR body for the active CI links.
+- The first full gate on `813e6c15` passed API 35/36 and the unsigned iPhone
+  build. API 35 verified 524 original captures and the signing/upgrade guard.
+  API 28 stopped at a process crash without a stack in the existing Gym Now
+  capture; that test and three preceding captures passed in a focused API 28
+  reproduction. Only the failed API 28 job was retried on that head.
+- [Android on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117903)
+  passed 857 tests and 524 valid captures on each API 28/35/36. Canonical screenshots
+  have source fingerprint `e200244d13df7e525375a78dc4dc3680c17af4b9500e3057fc844dcf7baaba0f`.
+- [Apple on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117924)
+  passed shared Native, simulator startup, unsigned device and four existing
+  UI cases. The new case failed before recording. Focusing the Compose label
+  opened the native keypad, as shown in the failed test's accessibility tree,
+  while XCTest's `typeText` could not find native text-field focus. The next
+  candidate taps digits on the actual keypad and retains all playback assertions.
+- Exact head `eb1bb928` passed [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070892)
+  with 857 tests and 524 valid captures per API and no skipped tests. Rechecked the
+  five new exact-head captures against the canonical images; only status bar
+  pixels differ. [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070662)
+  passed Native/shared, startup, unsigned builds and four existing UI cases. The
+  new case entered 30 seconds, saved the workout and displayed Step 1 of 3,
+  then failed to find Complete open step while the workout control disclosure
+  was closed. Open it in XCTest before completing the step. All runtime,
+  pause and interruption assertions still apply.
+- The additional 13-profile probe passed 65 generated reviews and 324 assertions,
+  including duplicate watch evidence, a missed recurring day, incomplete sync
+  and actual heavy lower-body training. The PR body records the evidence.
+- Extra API 28 probes passed actual foreground interval execution with a timed
+  pause and retained run linkage, and a real old weekly review was actionable
+  after upgrade. The rebuild proposal survived complete export and restore.
+- Exact next steps: obtain green unfiltered API 28/35/36 and Apple shared/UI/device
+  jobs, verify the canonical screenshot commit and source fingerprint, then
+  merge if all required gates pass. Verify development publication before
+  claiming release completion. Create the separate audit documentation PR only
+  after the confirmed merge. Physical-device checks remain separate.
+
 ## Current verified baseline (20 November 2026)
 
 - **Latest: `main` = `e46d884d` (0.15.2-test1 / 25, iOS 0.15.2 / 25), PR #30 merged (checkpoint

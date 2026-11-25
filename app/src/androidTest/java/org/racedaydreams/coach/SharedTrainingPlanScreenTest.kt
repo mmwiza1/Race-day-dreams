@@ -161,6 +161,43 @@ class SharedTrainingPlanScreenTest {
         }
     }
 
+    @Test
+    fun unsupportedRaceReadinessRemainsActionableAt200PercentInDarkTheme() {
+        val base = state()
+        val plan = base.currentPlan!!
+        val race = day.plusWeeks(2)
+        val profile =
+            UserProfile(
+                RaceGoal(RaceDistance.MARATHON, "", race, GoalMode.FINISH, null),
+                plan.goalSnapshot().preferences(),
+                false,
+            )
+        val version =
+            PlanVersion(
+                plan.id(),
+                plan.planId(),
+                plan.version(),
+                plan.createdAt(),
+                plan.reason(),
+                profile,
+                plan.evidenceSnapshot(),
+                plan.plan(),
+            )
+        show(
+            base.copy(profile = profile, currentPlan = version, planVersions = listOf(version)),
+            large = true,
+        )
+        compose.onNodeWithText("Race readiness").performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithText("Why and your options")
+            .assert(hasAnyAncestor(hasTestTag("plan-feasibility")))
+            .performScrollTo()
+            .performClick()
+        compose.onNodeWithText("What you can do").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Review goal and routine").performScrollTo().performClick()
+        compose.runOnIdle { assertEquals(listOf("goal"), actions) }
+    }
+
     /** The base plan with two phases, a long run on Thursday and a gym session on Wednesday. */
     private fun journeyState(): CoachUiState {
         val base = state()

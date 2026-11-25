@@ -85,8 +85,6 @@ fun SharedProgressDashboard(
     val unit = state.massUnit
     fun mass(kilograms: Double) =
         "${presentation.decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
-    fun volume(kilograms: Double) =
-        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
 
     val sameDays = overview.sameDaysLastWeek
     val sameDaysDistance = sameDays.distanceMetres
@@ -246,17 +244,11 @@ fun SharedProgressDashboard(
                 { exerciseId = it },
                 openWorkout ?: {},
             )
-            TrainingVolumeCard(
-                strength,
-                ::volume,
-                presentation.shortDate,
-                presentation.friendlyDate,
-                openWorkout,
-            )
-            MuscleWorkloadCard(strength, presentation.decimal)
+            // Piece 2: accomplishments and progress first; no tonnage headline or volume chart.
             SectionLabel("At a glance", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
-            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
+            MuscleWorkloadCard(strength, presentation.decimal)
         }
         // Hybrid: one split summary, then the running chart, then both sets of figures.
         ProgressTab.OVERVIEW -> {
@@ -270,7 +262,7 @@ fun SharedProgressDashboard(
             runningKpis()
             SectionLabel("Strength", Glyph.DUMBBELL, ChartHue.PLUM, "${period.label} · recorded")
             StrengthKpis(strength, strengthRecords)
-            RecentWorkoutsCard(strength, presentation.friendlyDate, ::volume, null, openWorkout)
+            RecentWorkoutsCard(strength, presentation.friendlyDate, ::mass, null, openWorkout)
         }
         // Running: chart first, with the week's runs as its drill-down, then the figures.
         ProgressTab.RUNNING -> {
@@ -497,8 +489,10 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
     val overview = data.overview
     val period = data.period
     val programme = data.programme
+    // Piece 2: plain answers first — what was done, what improved — then the programme.
     KpiGrid(
         listOf(
+            Kpi("Workouts", overview.workouts.toString(), "Recorded · ${period.label}"),
             Kpi(
                 "Working sets",
                 overview.workingSets.toString(),
@@ -506,7 +500,12 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
                     "${signed(overview.workingSets - it)} vs previous ${period.label}"
                 } ?: "No earlier ${period.label} to compare",
             ),
-            Kpi("Workouts", overview.workouts.toString(), "Recorded · ${period.label}"),
+            Kpi(
+                "New records",
+                overview.recordImprovements.toString(),
+                "Recorded bests improved",
+                openRecords,
+            ),
             Kpi(
                 "Programme",
                 when {
@@ -517,12 +516,6 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
                 if (programme == null) "No gym programme scheduled"
                 else "Scheduled sessions completed",
             ),
-            Kpi(
-                "New records",
-                overview.recordImprovements.toString(),
-                "Recorded bests improved",
-                openRecords,
-            ),
         )
     )
 }
@@ -531,7 +524,7 @@ internal fun StrengthKpis(data: StrengthPeriod, openRecords: (() -> Unit)?) {
 internal fun RecentWorkoutsCard(
     data: StrengthPeriod,
     friendlyDate: (LocalDate) -> String,
-    volume: (Double) -> String,
+    mass: (Double) -> String,
     seeAll: (() -> Unit)?,
     openWorkout: ((String) -> Unit)?,
 ) =
@@ -550,11 +543,12 @@ internal fun RecentWorkoutsCard(
                         else "",
                 detail =
                     "${friendlyDate(workout.date)} · ${plural(workout.workingSets, "working set")}",
-                // Accumulated load × repetitions, labelled so it is never read as a weight lifted,
-                // a personal best or an estimated one-rep maximum.
-                value = workout.loadVolumeKg?.let(volume) ?: "",
+                // Piece 2: an actual set lifted (weight × reps), never a load × repetitions total.
+                value = "",
                 secondary =
-                    if (workout.loadVolumeKg != null) "Training volume (load × reps)" else null,
+                    workout.topSet?.let {
+                        "Top set: ${it.exerciseName} · ${mass(it.kilograms)} × ${it.reps}"
+                    },
                 onClick = openWorkout?.let { open -> { open(workout.sessionId) } },
             )
         }
@@ -583,8 +577,6 @@ fun SharedStrengthDashboard(
     val unit = state.massUnit
     fun mass(kilograms: Double) =
         "${decimal(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
-    fun volume(kilograms: Double) =
-        "${groupedWhole(unit.fromKilograms(kilograms))} ${unit.name.lowercase()}"
     // Hero: the tab's identity, one line of context from recorded workouts, Gym now as the
     // primary action and the two other frequent jobs as quieter secondary actions.
     ScreenHero(
@@ -608,12 +600,20 @@ fun SharedStrengthDashboard(
 
     PeriodSelector(period, Discipline.STRENGTH) { periodName = it.name }
 
-    // V3 hierarchy: exercise progression (with actual lifts), volume, workload, then figures.
+    // Piece 2 hierarchy: am I improving (exercise progression with actual lifts), what did I
+    // do (figures and recent workouts), then where the work went (sets by muscle group). Total
+    // load × repetitions tonnage is no longer shown by default; it is not a measure of strength.
     ExerciseProgressionCard(data, ::mass, shortDate, friendlyDate, { exerciseId = it }, openWorkout)
-    TrainingVolumeCard(data, ::volume, shortDate, friendlyDate, openWorkout)
-    MuscleWorkloadCard(data, decimal)
     SectionLabel("At a glance", Glyph.DUMBBELL, ChartHue.PLUM, "${data.period.label} · recorded")
     StrengthKpis(data, if (StrengthLink.PBS in links) ({ open(StrengthLink.PBS) }) else null)
+    RecentWorkoutsCard(
+        data,
+        friendlyDate,
+        ::mass,
+        if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
+        openWorkout,
+    )
+    MuscleWorkloadCard(data, decimal)
 
     // Bouldering stays separate from lifting metrics; shown only to people who climb.
     if (StrengthLink.BOULDERING in links && (climbing.isNotEmpty() || climbingDraft)) {
@@ -648,13 +648,6 @@ fun SharedStrengthDashboard(
         }
     }
 
-    RecentWorkoutsCard(
-        data,
-        friendlyDate,
-        ::volume,
-        if (StrengthLink.HISTORY in links) ({ open(StrengthLink.HISTORY) }) else null,
-        openWorkout,
-    )
     MoreDetail(
         listOf(
                 "Train" to listOf(StrengthLink.EXERCISES, StrengthLink.BOULDERING),
@@ -667,13 +660,6 @@ fun SharedStrengthDashboard(
         { it.summary },
         open,
     )
-}
-
-/** A whole number with thousands separators, e.g. 2100.0 → "2,100". */
-internal fun groupedWhole(value: Double): String {
-    val digits = kotlin.math.abs(kotlin.math.round(value)).toLong().toString()
-    val grouped = digits.reversed().chunked(3).joinToString(",").reversed()
-    return if (value < -0.5) "−$grouped" else grouped
 }
 
 internal fun plural(count: Int, noun: String) = "$count $noun${if (count == 1) "" else "s"}"
