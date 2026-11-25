@@ -77,13 +77,38 @@ Preserve the original activity; do not edit or recalculate it. Then provide eith
      There are roughly 300–700 points in total rather than about 1,980.
    - **No callbacks:** one or a few long holes, of minutes, with no points.
    - **Weak signal:** irregular holes in an urban or covered setting, with no regular rhythm.
-2. **A full app backup** (Settings → Backup). It holds the recording's event log
-   (`recording_events`). Regular `GPS_FIX_STALE` → `GPS_LOST` → `GPS_RETURNED` cycles confirm the
-   hypothesis. `GPS_FIX_ACCURACY`, `GPS_FIX_JUMP` or `AUTO_PAUSE` events point to the alternatives.
+2. **The raw recording archive** (Record a run → "Back up raw recordings", or "Complete backup
+   (app + recordings)"). It holds the recording's points and event log. Regular `GPS_FIX_STALE` →
+   `GPS_LOST` → `GPS_RETURNED` cycles confirm the hypothesis. `GPS_FIX_ACCURACY` or `GPS_FIX_JUMP`
+   events point to the alternatives. The ordinary JSON backup in Settings does **not** contain raw
+   GPS points or events.
+
+The GPX export is under Record a run → "Export <date>".
 
 Also useful: a screenshot of the route, the battery setting for the app, whether auto-pause was on,
 and whether the notification stayed visible. If needed, one controlled 10-minute test on a known
 route: phone locked in a pocket, compared with the same route in the foreground.
+
+## Files received from the owner (25 November 2026)
+
+Two files were received: a diagnostic report and the ordinary JSON backup. They were analysed
+locally and are not committed.
+
+- **Device:** SM-S921B (Galaxy S24) on Android API 37, running 0.16.0-test1 / 29. Fine location and
+  notifications are granted.
+- **The activity** was recorded on the phone (`rdd`) and finished normally as a saved activity:
+  - start 11:55:22.549Z, end 12:28:20.183Z, so 32:57.634 elapsed;
+  - moving time 32:57.634, identical to elapsed;
+  - 1,511.6 m;
+  - no heart rate, cadence or samples in the backup.
+- **Ruled out:**
+  - manual pause and auto-pause, because moving time equals elapsed time;
+  - a missing location permission, because precise (fine) location was granted.
+- **Not decided:** the ordinary backup has no raw points or events (by design), so it cannot
+  distinguish late batched delivery, absent callbacks, weak signal or speed rejections. The raw
+  recording archive, or the run's GPX export, is still required.
+- **New context:** API 37 is a very recent Android release. Its background location-delivery
+  behaviour on Samsung has not been tested with this app.
 
 ## Proposed correction, if confirmed (not implemented)
 
