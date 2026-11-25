@@ -29,7 +29,7 @@ object DiagnosticReport {
             .put("versionCode", info.longVersionCode)
             .put("schema", ProfileDatabase.VERSION)
             .put("backupEnvelope", BackupManager.VERSION)
-            .put("recordingArchive", 2)
+            .put("recordingArchive", RecordingArchive.VERSION)
             .put("completePackage", 1)
             .put("androidApi", Build.VERSION.SDK_INT)
             .put("androidVersion", Build.VERSION.RELEASE)

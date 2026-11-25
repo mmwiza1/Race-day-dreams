@@ -17,6 +17,7 @@ class RecordingArchive(private val context: Context) {
     private val helper = ProfileDatabase.get(context)
 
     companion object {
+        const val VERSION = 3
         const val MAX_BYTES = 512L * 1024 * 1024
         const val MAX_LINE = 8 * 1024 * 1024
 
@@ -161,7 +162,7 @@ class RecordingArchive(private val context: Context) {
             val manifest =
                 JSONObject()
                     .put("format", "rdd-owned-recordings")
-                    .put("version", 3)
+                    .put("version", VERSION)
                     .put("bytes", file.length())
                     .put("sha256", digest(file))
                     .toString()
@@ -225,7 +226,7 @@ class RecordingArchive(private val context: Context) {
                 data &&
                     m.getString("format") == "rdd-owned-recordings" &&
                     m.get("version") is Int &&
-                    m.getInt("version") in 1..3 &&
+                    m.getInt("version") in 1..VERSION &&
                     m.getLong("bytes") == file.length() &&
                     m.getString("sha256") == digest(file)
             ) {
