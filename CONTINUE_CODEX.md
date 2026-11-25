@@ -43,13 +43,19 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   `historical-entry-light-review.png`, `historical-entry-dark.png`, and `gym-early-final-light.png`.
   The Android historical form was updated. The shared scheduling/storage changes build on Android;
   iOS runtime verification is outside this checkpoint.
-- Stop after Part 2 review. Wait for the owner to authorise Part 3 before exercise
-  library expansion, multi-muscle Gym Now generation, substitutions, duplicate-run
-  handling, treadmill support or diagnostic implementation. Keep the same branch and
-  use the eventual single draft integration PR. GPS calculation changes remain
-  deferred pending usable real-world evidence.
-- No version change, release, push of Part 2 or full platform matrix is part of this
-  checkpoint. Local development screenshots do not update the canonical gallery.
+- Part 3 is authorised on this same branch, starting from local `dcde902c` and remote
+  `58cf94c4`. Complete A (diagnostics), B (Gym Now), C (catalogue), D (duplicate runs), then
+  E (treadmill). Stop for explicit Part 4 approval. Keep the GPS acceptance/distance rules pending
+  a fresh real-world trace. No push, additional PR, version change, release or full matrix.
+- A: Android records parallel coordinate-free delivery, loss, pause and staging evidence. Each
+  report is a bounded snapshot, local to the installation, reviewed in Settings before manual
+  export. Apple captures into the same report format. Report counts reflect the last written
+  checkpoint, and a killed process may leave no final interruption event. App backup formats
+  exclude these diagnostics. See [GPS investigation](docs/GPS_ISSUE_54_INVESTIGATION.md).
+- A verification is in progress. Two common JVM cases passed for delayed batches, rejection,
+  missing acknowledgement and bounded timelines. Debug app and test APKs built. The focused API 28
+  storage batch is running; see `/workspace/scratch/rdd-part3-diagnostic-instrument.log`. Apple
+  simulator execution needs macOS. Next implementation task is B. Tasks B–E are pending.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

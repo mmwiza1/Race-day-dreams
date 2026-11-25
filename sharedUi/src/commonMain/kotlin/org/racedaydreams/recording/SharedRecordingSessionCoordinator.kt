@@ -54,6 +54,8 @@ class SharedRecordingSessionCoordinator(
     private val flushLock = Mutex()
     private var pointIndex = 0
     private var eventIndex = 0
+    val acknowledgedPointCount: Int
+        get() = pointIndex
 
     suspend fun flush() =
         flushLock.withLock {

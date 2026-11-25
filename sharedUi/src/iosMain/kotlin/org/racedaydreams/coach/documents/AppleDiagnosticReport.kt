@@ -1,5 +1,6 @@
 package org.racedaydreams.coach.documents
 
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import org.racedaydreams.health.HealthAvailability
@@ -13,10 +14,13 @@ internal fun appleDiagnosticReport(
     systemVersion: String,
     healthAvailability: HealthAvailability,
     locationGranted: Boolean,
+    deviceModel: String? = null,
+    preciseLocationGranted: Boolean? = null,
+    recording: JsonObject? = null,
 ): ByteArray =
     buildJsonObject {
             put("format", "rdd-diagnostic")
-            put("version", 1)
+            put("version", 2)
             put("platform", "iOS")
             appVersion?.let { put("appVersion", it) }
             buildNumber?.let { put("versionCode", it) }
@@ -25,6 +29,9 @@ internal fun appleDiagnosticReport(
             put("iosVersion", systemVersion)
             put("appleHealthAvailability", healthAvailability.name)
             put("locationGranted", locationGranted)
+            deviceModel?.let { put("deviceModel", it) }
+            put("preciseLocationGranted", preciseLocationGranted)
+            recording?.let { put("recording", it) }
         }
         .toString()
         .encodeToByteArray()

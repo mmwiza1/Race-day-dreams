@@ -7,6 +7,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
+import kotlinx.serialization.json.JsonObject
 import org.racedaydreams.domain.portability.RecordedGpxWriter
 import org.racedaydreams.domain.storage.DetailRetention
 import org.racedaydreams.health.HealthAvailability
@@ -62,24 +63,36 @@ class AppleBackupDocuments(
         }
     }
 
-    suspend fun exportDiagnostics(
+    fun diagnosticPreview(
         availability: HealthAvailability,
         locationGranted: Boolean,
-        presenter: UIViewController,
-        complete: (Outcome) -> Unit,
-    ) {
+        preciseLocationGranted: Boolean?,
+        recording: JsonObject? = null,
+    ): String {
         check(NSThread.isMainThread)
         val bundle = NSBundle.mainBundle
-        val report =
-            appleDiagnosticReport(
+        return appleDiagnosticReport(
                 bundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String,
                 bundle.objectForInfoDictionaryKey("CFBundleVersion") as? String,
                 UIDevice.currentDevice.systemVersion,
                 availability,
                 locationGranted,
+                UIDevice.currentDevice.model,
+                preciseLocationGranted,
+                recording,
             )
+            .decodeToString()
+    }
+
+    suspend fun exportDiagnostics(
+        reviewedReport: String,
+        presenter: UIViewController,
+        complete: (Outcome) -> Unit,
+    ) {
         exportDocument(presenter, complete) {
-            stage("Race-Day-Dreams-diagnostic.json") { _, write -> write(report) }
+            stage("Race-Day-Dreams-diagnostic.json") { _, write ->
+                write(reviewedReport.encodeToByteArray())
+            }
         }
     }
 

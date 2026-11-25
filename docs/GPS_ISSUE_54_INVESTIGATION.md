@@ -148,3 +148,26 @@ recalculated.
 `PhysicalRunSessions` prefers a plan-linked or native `rdd` record over an overlapping Health Connect
 copy, whichever has the more credible distance. If the Fitbit run is imported, the counted session
 for 25 November may stay the 1.5 km recording. This is not changed here.
+
+## Instrumented follow-up build
+
+Open Settings, then review a recording troubleshooting report under Diagnostics (Android) or the
+backup and diagnostics section (iOS). Select the attempt by its start time. Review the exact JSON
+before exporting. Only attempts recorded with the added instrumentation can have a report.
+
+- `delivery.callbacks` counts provider deliveries. `callbackObservations` counts locations carried
+  by those callbacks, and `processedFixes` counts observations processed through qualification.
+  Compare callback gaps, batch sizes and receipt delays to distinguish sparse delivery from a
+  backlog of fixes delivered together.
+- `routeEvidence.rejectedOrDeferred` counts reasons even when the metrics engine suppresses
+  repeated UI events. Paused observations are identified separately. `stagedInMemory` and
+  `acknowledgedOnDisk` distinguish in-memory route evidence from successful staging.
+- Timeline times are monotonic offsets in milliseconds from recording start. The first 32 and last
+  224 sampled events are retained. Counters cover the full captured period through the last
+  checkpoint. A service kill can leave an unfinished report and an unrecorded tail.
+- Reports stay local and are limited to 12 recent attempts. They contain a session identifier,
+  start time, timing and event categories. They exclude precise coordinates, workout notes and
+  health measurements. The surrounding basic device and permission fields describe export time.
+  Ordinary app and recording backups do not include the diagnostic reports.
+
+A new outdoor locked-screen run is still required to test the late-batch hypothesis on the S24.

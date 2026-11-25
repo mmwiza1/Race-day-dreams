@@ -24,6 +24,7 @@ class AppleDiagnosticReportTest {
                 "iosVersion",
                 "appleHealthAvailability",
                 "locationGranted",
+                "preciseLocationGranted",
             ),
             keys,
         )
