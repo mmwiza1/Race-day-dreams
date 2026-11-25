@@ -57,6 +57,44 @@ class PhysicalRunSessionsTest {
         run("hc:c", "health-connect", samsung, 3 * 1440 + 7 * 60, 20, 3_000.0)
 
     @Test
+    fun runnerCanCountTheFitbitDistanceAndKeepTheNativePrescribedLink() {
+        val rdd = run("native", "rdd", null, 450, 33, 1500.0, planned = "long-run")
+        val fitbit = run("watch", "health-connect", "com.fitbit.FitbitMobile", 450, 33, 5100.0)
+        val undecided = listOf(rdd, fitbit)
+        assertEquals(1500.0, week(undecided).distanceMetres())
+        val choice =
+            listOf(
+                rdd.withDuplicateChoices(mapOf("watch" to DuplicateRunChoice.COUNT_OTHER)),
+                fitbit.withDuplicateChoices(mapOf("native" to DuplicateRunChoice.COUNT_THIS)),
+            )
+        val group = PhysicalRunSessions.sessions(choice).single()
+        assertEquals("watch", group.counted.id())
+        assertEquals("long-run", group.counted.plannedWorkoutId())
+        assertNull(choice.last().plannedWorkoutId())
+        assertEquals(listOf("native"), group.duplicates.map { it.id() })
+        assertEquals(5100.0, week(choice).distanceMetres())
+        assertEquals(1, week(choice).activityCount())
+        val separate =
+            listOf(
+                rdd.withDuplicateChoices(mapOf("watch" to DuplicateRunChoice.SEPARATE)),
+                fitbit.withDuplicateChoices(mapOf("native" to DuplicateRunChoice.SEPARATE)),
+            )
+        assertEquals(6600.0, week(separate).distanceMetres())
+        assertEquals(2, week(separate).activityCount())
+    }
+
+    @Test
+    fun closeSameWriterDuplicateCanBeReviewedWithoutChangingAutomaticGrouping() {
+        val first = run("manual-a", "manual", "local", 700, 20, 3300.0)
+        val second = run("manual-b", "manual", "local", 700, 20, 3400.0)
+        assertTrue(PhysicalRunSessions.possibleDuplicate(first, second))
+        assertEquals(2, week(listOf(first, second)).activityCount())
+        val reviewed =
+            first.withDuplicateChoices(mapOf(second.id() to DuplicateRunChoice.COUNT_OTHER))
+        assertEquals(3400.0, week(listOf(reviewed, second)).distanceMetres())
+    }
+
+    @Test
     fun theSameRunFromTwoAppsCountsOnceWithOneDistance() {
         val week = week(listOf(mondaySamsung, mondayStrava, thursdaySamsung))
         assertEquals(2, week.activityCount())

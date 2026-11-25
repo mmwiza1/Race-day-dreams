@@ -94,7 +94,7 @@ class RecordingStore(context:Context) {
             db.rawQuery("SELECT id,started_mono FROM recording_sessions WHERE activity_id=? AND state='FINISHED'",arrayOf(a.id())).use{c->if(c.moveToFirst()){id=c.getString(0);mono=c.getLong(1)}}
             val key=id?:return a;val samples=mutableListOf<DistanceSample>()
             db.rawQuery("SELECT payload FROM recording_points WHERE session_id=? ORDER BY sequence",arrayOf(key)).use{c->while(c.moveToNext()){val p=decode(JSONObject(c.getString(0)));samples.add(DistanceSample(Duration.ofMillis(p.fix().monotonicMillis()-mono),p.cumulativeMetres(),p.heartRate(),p.cadence(),p.fix().altitude(),p.discontinuity()))}}
-            return ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),samples,a.laps(),a.plannedWorkoutId(),a.shoeId())
+            return ActivityRecord(a.id(),a.source(),a.start(),a.end(),a.startOffset(),a.endOffset(),a.distanceMetres(),a.movingTime(),a.averageHeartRate(),a.maxHeartRate(),a.elevationGainMetres(),a.cadence(),a.rpe(),a.notes(),samples,a.laps(),a.plannedWorkoutId(),a.shoeId(),a.duplicateChoices())
         }
         /** Recompute qualified PB evidence after metadata and companion archive restore. */
         @JvmStatic fun restoreRetainedSamples(db:android.database.sqlite.SQLiteDatabase){

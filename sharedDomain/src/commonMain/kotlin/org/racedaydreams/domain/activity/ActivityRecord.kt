@@ -1,9 +1,13 @@
 package org.racedaydreams.domain.activity
 
+import kotlin.jvm.JvmOverloads
+import org.racedaydreams.domain.coaching.Immutable
 import org.racedaydreams.domain.time.*
 
 /** Original retained evidence model; missing values remain unknown and snapshots immutable. */
-data class ActivityRecord(
+data class ActivityRecord
+@JvmOverloads
+constructor(
     private var id: String?,
     private val source: SourceIdentity?,
     private val start: Instant?,
@@ -22,6 +26,7 @@ data class ActivityRecord(
     private var laps: List<ActivityLap>?,
     private val plannedWorkoutId: String?,
     private val shoeId: String?,
+    private var duplicateChoices: Map<String, DuplicateRunChoice> = emptyMap(),
 ) {
     init {
         id = ActivityChecks.required(id, "Activity ID")
@@ -46,6 +51,13 @@ data class ActivityRecord(
         require(rpe == null || rpe.isFinite() && rpe >= 0 && rpe <= 10) {
             "RPE must be between 0 and 10."
         }
+        require(
+            duplicateChoices.size <= 64 &&
+                duplicateChoices.keys.all { it != id && it.isNotBlank() && it.length <= 256 }
+        ) {
+            "Invalid run comparison choices."
+        }
+        duplicateChoices = Immutable.copyMap(duplicateChoices)
         samples = ActivityChecks.copy(samples)
         laps = ActivityChecks.copy(laps)
     }
@@ -86,8 +98,29 @@ data class ActivityRecord(
 
     fun shoeId(): String? = shoeId
 
+    fun duplicateChoices(): Map<String, DuplicateRunChoice> = duplicateChoices
+
+    fun withDuplicateChoices(value: Map<String, DuplicateRunChoice>): ActivityRecord =
+        copy(duplicateChoices = value)
+
     fun elapsedTime(): Duration = Durations.between(start(), end())
 
     override fun toString(): String =
         "ActivityRecord[id=$id, source=$source, start=$start, end=$end, startOffset=$startOffset, endOffset=$endOffset, distanceMetres=$distanceMetres, movingTime=$movingTime, averageHeartRate=$averageHeartRate, maxHeartRate=$maxHeartRate, elevationGainMetres=$elevationGainMetres, cadence=$cadence, rpe=$rpe, notes=$notes, samples=$samples, laps=$laps, plannedWorkoutId=$plannedWorkoutId, shoeId=$shoeId]"
+}
+
+/**
+ * Athlete decision relative to the record carrying it. Raw activities retain their own evidence.
+ */
+enum class DuplicateRunChoice {
+    COUNT_THIS,
+    COUNT_OTHER,
+    SEPARATE;
+
+    fun reciprocal(): DuplicateRunChoice =
+        when (this) {
+            COUNT_THIS -> COUNT_OTHER
+            COUNT_OTHER -> COUNT_THIS
+            SEPARATE -> SEPARATE
+        }
 }

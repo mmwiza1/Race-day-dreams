@@ -3,6 +3,7 @@ package org.racedaydreams.domain.coaching
 import kotlin.math.abs
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.strength.*
 import org.racedaydreams.domain.time.*
 
@@ -23,7 +24,7 @@ object AdaptiveCoaching {
         var lowAndHard = false
         val evidence = mutableListOf<String>()
         val evidenceIds = mutableListOf<String>()
-        for (run in actual) {
+        for (run in PhysicalRunSessions.reviewedEvidence(actual)) {
             val response = responses.firstOrNull { it.activityId() == run.id() }
             val linked =
                 if (response == null) run.plannedWorkoutId() else response.plannedWorkoutId()

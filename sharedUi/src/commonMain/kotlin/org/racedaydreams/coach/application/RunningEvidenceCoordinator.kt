@@ -2,6 +2,8 @@ package org.racedaydreams.coach.application
 
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivityRepository
+import org.racedaydreams.domain.activity.DuplicateRunChoice
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.ResultRepository
 import org.racedaydreams.domain.activity.Shoe
@@ -51,6 +53,16 @@ class RunningEvidenceCoordinator(
     fun saveNotes(id: String, notes: String, rpe: Double?) =
         operations.submit("Run notes saved.") { activities.saveActivityNotes(id, notes, rpe) }
 
+    fun reviewDuplicate(activityId: String, otherId: String, choice: DuplicateRunChoice?) =
+        operations.submit("Run counting choice saved.") {
+            activities.reviewDuplicateRun(activityId, otherId, choice)
+        }
+
+    fun removeLocalDuplicate(activityId: String, otherId: String) =
+        operations.submit("Local duplicate removed.") {
+            activities.deleteReviewedLocalDuplicate(activityId, otherId)
+        }
+
     fun shoeDiscomfort(activityId: String, noted: Boolean) =
         operations.submit("Shoe observation saved. No cause is inferred.") {
             require(
@@ -68,9 +80,13 @@ class RunningEvidenceCoordinator(
             require(coaching.responses().none { it.activityId() == activityId }) {
                 "This run is already linked; review its source before changing it."
             }
+            val retained = activities.activities()
             val activity =
-                activities.activities().firstOrNull { it.id() == activityId }
-                    ?: throw IllegalArgumentException("Run no longer available.")
+                PhysicalRunSessions.reviewedEvidence(retained).firstOrNull { it.id() == activityId }
+                    ?: throw IllegalArgumentException("Choose a counted run from your history.")
+            require(activity.plannedWorkoutId() == null) {
+                "This physical run already counts towards a scheduled workout."
+            }
             val version =
                 coaching.versions().firstOrNull { it.id() == versionId }
                     ?: throw IllegalArgumentException("Plan version no longer available.")
@@ -80,11 +96,7 @@ class RunningEvidenceCoordinator(
             require(workout.date().toEpochDay() <= today().toEpochDay()) {
                 "A future workout cannot be marked completed."
             }
-            require(
-                activities.activities().none {
-                    it.id() != activityId && it.plannedWorkoutId() == workoutId
-                }
-            ) {
+            require(retained.none { it.id() != activityId && it.plannedWorkoutId() == workoutId }) {
                 "Another run is linked to this workout. Review it before changing this link."
             }
             val response =

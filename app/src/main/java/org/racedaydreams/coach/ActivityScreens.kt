@@ -108,6 +108,15 @@ fun ActivityDetailScreen(state: CoachUiState, model: CoachViewModel, id: String?
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         RecordedRunSummary(activity, state)
+        SharedRunComparison(
+            activity,
+            state.activities,
+            imperial,
+            state.busy,
+            { localStartLabel(it.start(), context) },
+            model.runningEvidence::reviewDuplicate,
+            model.runningEvidence::removeLocalDuplicate,
+        )
         RecordedHeartRateSummary(activity)
         RecordedRouteCard(activity)
         SpontaneousAssociation(state, model, activity)

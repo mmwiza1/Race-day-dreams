@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.domain.activity.ActivityRepository
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.ResultRepository
 import org.racedaydreams.domain.activity.ShoeRepository
 import org.racedaydreams.domain.baseline.BaselineEngine
@@ -47,7 +48,10 @@ class SharedCoachSnapshotReader(
             withContext(ioDispatcher) {
                 val profile = sources.profile()
                 val activities = activitiesRepository.coachingActivities(today())
-                val results = resultsRepository.results()
+                val reviewed = PhysicalRunSessions.reviewedEvidence(activities)
+                val retainedIds = reviewed.map { it.id() }.toSet()
+                val ignoredIds = activities.map { it.id() }.toSet() - retainedIds
+                val results = resultsRepository.results().filter { it.activityId() !in ignoredIds }
                 val manual = baselineRepository.savedManualBaseline()
                 val now = now()
                 val healthWindow = sources.importWindow()

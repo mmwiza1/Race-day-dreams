@@ -83,11 +83,17 @@ final class FeatureJson {
         JSONArray samples = new JSONArray(), laps = new JSONArray();
         for (DistanceSample s : a.samples()) samples.put(json("elapsed", string(s.elapsed()), "distanceMetres", s.distanceMetres(), "heartRate", s.heartRate(), "cadence", s.cadence(), "elevationMetres", s.elevationMetres(), "discontinuity", s.discontinuity()));
         for (ActivityLap l : a.laps()) laps.put(json("id", l.id(), "start", string(l.start()), "end", string(l.end()), "distanceMetres", l.distanceMetres(), "label", l.label(), "plannedSegmentId", l.plannedSegmentId()));
-        return json("id", a.id(), "source", json("provider", a.source().provider(), "recordId", a.source().recordId(), "originPackage", a.source().originPackage()),
+        var choices = new java.util.LinkedHashMap<String, String>();
+        a.duplicateChoices().forEach((peer, choice) -> choices.put(peer, choice.name()));
+        JSONObject row = json("id", a.id(), "source", json("provider", a.source().provider(), "recordId", a.source().recordId(), "originPackage", a.source().originPackage()),
                 "start", string(a.start()), "end", string(a.end()), "startOffset", string(a.startOffset()), "endOffset", string(a.endOffset()),
                 "distanceMetres", a.distanceMetres(), "movingTime", string(a.movingTime()), "averageHeartRate", a.averageHeartRate(), "maxHeartRate", a.maxHeartRate(),
                 "elevationGainMetres", a.elevationGainMetres(), "cadence", a.cadence(), "rpe", a.rpe(), "notes", a.notes(), "samples", samples, "laps", laps,
                 "plannedWorkoutId", a.plannedWorkoutId(), "shoeId", a.shoeId());
+        if (!choices.isEmpty()) try {
+            row.put("duplicateChoices", new JSONObject(choices));
+        } catch (JSONException e) { throw invalid(e); }
+        return row;
     }
     static ActivityRecord activity(JSONObject j) {
         try {
@@ -106,10 +112,18 @@ final class FeatureJson {
                 JSONObject l = lapRows.getJSONObject(i);
                 laps.add(new ActivityLap(required(l,"id"), Instant.parse(l.getString("start")), Instant.parse(l.getString("end")), number(l,"distanceMetres"), text(l,"label"), text(l,"plannedSegmentId")));
             }
+            var choices = new java.util.LinkedHashMap<String, DuplicateRunChoice>();
+            if (j.has("duplicateChoices")) {
+                JSONObject object = j.getJSONObject("duplicateChoices");
+                for (var keys = object.keys(); keys.hasNext();) {
+                    String peer = keys.next();
+                    choices.put(peer, DuplicateRunChoice.valueOf(object.getString(peer)));
+                }
+            }
             return new ActivityRecord(required(j,"id"), new SourceIdentity(required(source,"provider"), required(source,"recordId"), text(source,"originPackage")),
                     Instant.parse(j.getString("start")), Instant.parse(j.getString("end")), text(j,"startOffset") == null ? null : ZoneOffset.of(j.getString("startOffset")),
                     text(j,"endOffset") == null ? null : ZoneOffset.of(j.getString("endOffset")), number(j,"distanceMetres"), duration(j,"movingTime"), number(j,"averageHeartRate"), number(j,"maxHeartRate"),
-                    number(j,"elevationGainMetres"), number(j,"cadence"), number(j,"rpe"), text(j,"notes"), samples, laps, text(j,"plannedWorkoutId"), text(j,"shoeId"));
+                    number(j,"elevationGainMetres"), number(j,"cadence"), number(j,"rpe"), text(j,"notes"), samples, laps, text(j,"plannedWorkoutId"), text(j,"shoeId"), choices);
         } catch (JSONException | DateTimeException e) { throw invalid(e); }
     }
     static JSONObject result(RecordedResult r) {

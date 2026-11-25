@@ -16,6 +16,8 @@ object ActivitySources {
                     "com.fitbit.FitbitMobile" -> "Fitbit"
                     else -> "Health Connect"
                 }
+            "apple-health",
+            "healthkit" -> "Apple Health"
             "rdd" -> "Recorded by Race Day Dreams"
             "gpx" -> "Imported GPX"
             "manual" -> "Manual entry"

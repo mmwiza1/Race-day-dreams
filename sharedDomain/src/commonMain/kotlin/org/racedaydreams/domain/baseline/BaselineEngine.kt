@@ -22,7 +22,15 @@ object BaselineEngine {
         val empty = RunnerBaseline.empty(from, to)
         val runs = mutableListOf<ActivityRecord>()
         val seen = mutableSetOf<String>()
-        for (run in activities) {
+        val reviewed = PhysicalRunSessions.reviewedEvidence(activities)
+        val retainedResultEvidence =
+            if (reviewed.size == activities.size) results
+            else {
+                val ignoredIds =
+                    activities.map { it.id() }.toSet() - reviewed.map { it.id() }.toSet()
+                results.filter { it.activityId() !in ignoredIds }
+            }
+        for (run in reviewed) {
             val identity = run.source().provider() + "\u0000" + run.source().recordId()
             if (!run.start().isBefore(from) && run.start().isBefore(to) && seen.add(identity))
                 runs.add(run)
@@ -100,11 +108,33 @@ object BaselineEngine {
         if (longest != null) provenance[RunnerBaseline.LONGEST_RUN] = origin
         if (typical != null) provenance[RunnerBaseline.TYPICAL_DURATION] = origin
         if (consistent != null) provenance[RunnerBaseline.CONSISTENT_WEEKS] = origin
-        val recent5k = resultTime(results, 5000.0, from, to, provenance, RunnerBaseline.RECENT_5K)
+        val recent5k =
+            resultTime(
+                retainedResultEvidence,
+                5000.0,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_5K,
+            )
         val recent10k =
-            resultTime(results, 10000.0, from, to, provenance, RunnerBaseline.RECENT_10K)
+            resultTime(
+                retainedResultEvidence,
+                10000.0,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_10K,
+            )
         val recentHalf =
-            resultTime(results, 21097.5, from, to, provenance, RunnerBaseline.RECENT_HALF)
+            resultTime(
+                retainedResultEvidence,
+                21097.5,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_HALF,
+            )
         val latest = runs.lastOrNull()?.start()
         val recent = latest != null && Durations.between(latest, to) <= Durations.ofHours(14 * 24)
         val distanceCoverage = if (runs.isEmpty()) 0.0 else measuredDistances.toDouble() / runs.size
@@ -267,6 +297,8 @@ object BaselineEngine {
                 val metres = candidate.distanceMetres()
                 if (
                     otherOrigin &&
+                        PhysicalRunSessions.decision(prior, candidate) !=
+                            DuplicateRunChoice.SEPARATE &&
                         prior.end() == candidate.end() &&
                         previousMetres != null &&
                         metres != null &&

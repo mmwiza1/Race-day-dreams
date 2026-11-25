@@ -178,6 +178,15 @@ fun AppleRunDetails(session: AppleCoachSession<*>, id: String, presenter: UIView
                             "${rounded / 60}:${(rounded % 60).toString().padStart(2, '0')}"
                         },
                     )
+                    SharedRunComparison(
+                        run,
+                        state.activities,
+                        imperial,
+                        state.busy,
+                        ::comparisonDate,
+                        session.services.runningEvidence::reviewDuplicate,
+                        session.services.runningEvidence::removeLocalDuplicate,
+                    )
                     SharedRecordedHeartRateSummary(run) { it.toString().removeSuffix(".0") }
                     AppleSavedDreamRoute(session, id)
                     if (run.source().provider() == "rdd") {
@@ -417,6 +426,15 @@ private fun oneDecimal(value: Double): String {
 }
 
 /** Runs use the shared dating rule: the source's offset, else the device zone (audit B-01). */
+private fun comparisonDate(run: ActivityRecord): String {
+    val offset = org.racedaydreams.domain.activity.ActivityDates.offsetOf(run)
+    val localSeconds = (run.start().getEpochSecond() + offset.getTotalSeconds()) % 86_400
+    val seconds = (localSeconds + 86_400) % 86_400
+    val h = (seconds / 3_600).toString().padStart(2, '0')
+    val m = (seconds / 60 % 60).toString().padStart(2, '0')
+    return "${dateLabel(run)} · $h:$m"
+}
+
 private fun dateLabel(run: ActivityRecord): String =
     dateText(org.racedaydreams.domain.activity.ActivityDates.localDate(run))
 

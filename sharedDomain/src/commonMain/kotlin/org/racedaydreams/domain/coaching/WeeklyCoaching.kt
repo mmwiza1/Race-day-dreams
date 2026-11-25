@@ -203,7 +203,7 @@ object WeeklyCoaching {
         // Local midnight, so a run finished late today west of UTC still counts (audit B-R5).
         val tomorrow =
             org.racedaydreams.domain.activity.ActivityDates.startOfDeviceDay(today.plusDays(1))
-        for (a in runs) {
+        for (a in org.racedaydreams.domain.activity.PhysicalRunSessions.reviewedEvidence(runs)) {
             val key = if (linked.containsKey(a.id())) linked[a.id()] else a.plannedWorkoutId()
             if (key != null && !a.end().isAfter(tomorrow)) actual[key] = a
         }

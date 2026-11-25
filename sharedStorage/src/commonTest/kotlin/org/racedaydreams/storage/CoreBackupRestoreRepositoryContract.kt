@@ -25,6 +25,70 @@ abstract class CoreBackupRestoreRepositoryContract {
         }
     }
 
+    @Test
+    fun runnerComparisonSurvivesProviderRefreshAndBackupWithoutLosingEitherRun() =
+        storage { source, target ->
+            val first =
+                ActivityRecord(
+                    "native",
+                    SourceIdentity("rdd", "native-record", "local"),
+                    at,
+                    Instants.ofEpochSecond(at.getEpochSecond() + 1_980, at.getNano().toLong()),
+                    Offsets.ofTotalSeconds(0),
+                    Offsets.ofTotalSeconds(0),
+                    1500.0,
+                    Durations.ofSeconds(1980),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "",
+                    emptyList(),
+                    emptyList(),
+                    null,
+                    null,
+                )
+            val watch =
+                first.copy(
+                    id = "watch",
+                    source =
+                        SourceIdentity("health-connect", "fitbit-id", "com.fitbit.FitbitMobile"),
+                    distanceMetres = 5100.0,
+                )
+            val activities = SqliteActivities(source) { at }
+            activities.upsertManualActivity(first)
+            activities.applyImport("health-connect", listOf(watch), emptyList(), "initial")
+            activities.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
+            activities.applyImport("health-connect", listOf(watch), emptyList(), "updated")
+            val reviewed = activities.activitySummaries()
+            assertEquals(setOf("native", "watch"), reviewed.map { it.id() }.toSet())
+            assertEquals(5100.0, PhysicalRunSessions.counted(reviewed).single().distanceMetres())
+            assertFails { activities.deleteReviewedLocalDuplicate("watch", "native") }
+            SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+            val restored = SqliteActivities(target) { at }
+            // Provider histories are intentionally omitted from the app backup. The locally owned
+            // record retains its choice, which takes effect when the same provider record is seen.
+            assertEquals(
+                reviewed.single { it.id() == "native" },
+                restored.activitySummaries().single(),
+            )
+            restored.applyImport("health-connect", listOf(watch), emptyList(), "resync")
+            assertEquals(
+                setOf("native", "watch"),
+                restored.activitySummaries().map { it.id() }.toSet(),
+            )
+            assertEquals(
+                5100.0,
+                PhysicalRunSessions.counted(restored.activitySummaries()).single().distanceMetres(),
+            )
+            restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.SEPARATE)
+            assertEquals(2, PhysicalRunSessions.counted(restored.activitySummaries()).size)
+            restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
+            restored.deleteReviewedLocalDuplicate("native", "watch")
+            assertEquals("watch", restored.activitySummaries().single().id())
+        }
+
     private fun seed(db: SqlDatabase): CoreBackupDataJson.Snapshot {
         SqliteAthleteProfile(db).save(CoachingArchiveFixtures.profile())
         db.execute(

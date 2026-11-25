@@ -7,6 +7,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.*
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.time.*
 
@@ -225,7 +226,8 @@ fun SharedPlannedWorkoutScreen(
             Text(
                 "You can run a different workout, take it easy or rest. Record what actually happened; your original prescription is retained. No session is blocked by a recommendation."
             )
-            val actual = state.activities.firstOrNull { it.plannedWorkoutId() == workout.id() }
+            val counted = PhysicalRunSessions.reviewedEvidence(state.activities)
+            val actual = counted.firstOrNull { it.plannedWorkoutId() == workout.id() }
             if (actual != null)
                 CoachButton("View completed run and feedback") { openActivity(actual.id()) }
             else if (workout.date().toEpochDay() <= dates.today().toEpochDay()) {
@@ -259,7 +261,7 @@ fun SharedPlannedWorkoutScreen(
                                 Modifier.heightIn(max = 320.dp)
                             ) {
                                 val candidates =
-                                    state.activities
+                                    counted
                                         .filter { a -> a.plannedWorkoutId() == null }
                                         .sortedByDescending { it.start() }
                                         .take(100)

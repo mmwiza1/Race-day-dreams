@@ -68,7 +68,14 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   strict visual guide coverage passed 246/246 exercises and 14/14 routines, and the legacy
   catalogue suite passed 240 checks. The first JVM batch required updating the frozen catalogue
   boundary assertion to retain the original boundary at index 219 and verify the new appended
-  entries. Soldier get-up awaits a confirmed definition. Tasks D–E remain pending.
+  entries. The revised focused JVM batch passed all 24 cases. Local commit `c6e99cb4`. Soldier
+  get-up awaits a confirmed definition.
+- D adds reversible duplicate-run comparison, including close same-source candidates. The exact
+  1.5/5.1 km fixture selects Fitbit for counted evidence while retaining native plan provenance.
+  Owned-record choices survive app backup and take effect again when the matching provider record
+  is reimported. App backup still excludes provider histories and therefore provider-only pair
+  choices. The first JVM domain batch passed 46 cases. Storage/Android verification is running
+  under `/workspace/scratch/rdd-part3-duplicate-recheck.log`. Next implementation task is E.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 
