@@ -50,6 +50,34 @@ class CoachingInteractionTest {
         await("Keep current plan");compose.onNodeWithText("Keep current plan").performClick()
         Assert.assertEquals(current,CoachingStore(context).current())
     }
+    @Test fun plannedTreadmillEntryKeepsItsPrescriptionAndNoRouteEvidence() {
+        seedToday()
+        launch()
+        compose.onNodeWithText("Plan").performClick()
+        compose.waitUntil(20_000) {
+            compose.onAllNodesWithContentDescription("View workout and purpose").fetchSemanticsNodes().isNotEmpty()
+        }
+        compose.onNodeWithContentDescription("View workout and purpose").performScrollTo().performClick()
+        await("Record actual run")
+        compose.onNodeWithText("Record actual run").performScrollTo().performClick()
+        compose.onNodeWithText("Indoor treadmill run").performScrollTo().performClick()
+        enter("Actual distance (km)", "5")
+        enter("Actual duration (mm:ss or h:mm:ss)", "31:20")
+        enter("Start time (HH:mm, local)", "00:01")
+        compose.onNodeWithText("Save treadmill run").performScrollTo().performClick()
+        compose.waitUntil(20_000) { FeatureStore(context).activitySummaries().size == 1 }
+        val result = FeatureStore(context).activitySummaries().single()
+        Assert.assertEquals(org.racedaydreams.domain.activity.RunEnvironment.TREADMILL, result.environment())
+        Assert.assertEquals("manual", result.source().provider())
+        Assert.assertEquals("today-workout", result.plannedWorkoutId())
+        Assert.assertEquals(Duration.ofSeconds(1880), result.elapsedTime())
+        Assert.assertTrue(result.samples().isEmpty())
+        Assert.assertTrue(result.laps().isEmpty())
+        Assert.assertNull(result.movingTime())
+        Assert.assertEquals(5.0, CoachingStore(context).current()!!.plan().workouts().single().distanceKm()!!, 0.0)
+        Assert.assertEquals("test-version", CoachingStore(context).responses().single().planVersionId())
+    }
+
     @Test fun actualRunFormPreservesPrescriptionAndShowsPurposeScore(){
         seedToday();recordActualRun("Actual distance (km)","5")
         await("10/10 — Good execution")

@@ -155,7 +155,8 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                                     a.laps(),
                                     cursor.getString(5),
                                     a.shoeId(),
-                                    a.duplicateChoices());
+                                    a.duplicateChoices(),
+                                    a.environment());
                 if (includeSamples) a = RecordingStore.withRetainedSamples(db, a);
                 out.add(a);
             }
@@ -184,7 +185,8 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                 a.laps(),
                 a.plannedWorkoutId(),
                 shoe,
-                a.duplicateChoices());
+                a.duplicateChoices(),
+                a.environment());
     }
 
     @Override
@@ -258,7 +260,7 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
         try (Cursor existing =
                 db.rawQuery(
                         "SELECT id,provider,record_id,payload FROM activities WHERE id=? OR"
-                            + " (provider=? AND record_id=?)",
+                                + " (provider=? AND record_id=?)",
                         new String[] {a.id(), a.source().provider(), a.source().recordId()})) {
             while (existing.moveToNext()) {
                 existed = true;
@@ -433,7 +435,8 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                 a.laps(),
                 a.plannedWorkoutId(),
                 a.shoeId(),
-                a.duplicateChoices());
+                a.duplicateChoices(),
+                a.environment());
     }
 
     static boolean isUserActivity(ActivityRecord a) {

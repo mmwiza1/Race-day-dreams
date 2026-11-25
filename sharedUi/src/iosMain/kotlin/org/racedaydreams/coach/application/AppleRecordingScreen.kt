@@ -230,6 +230,25 @@ fun AppleRecordingScreen(
                 )
             }
         } else if (!working) {
+            val plannedVersion = plannedId?.let { state.currentPlan?.id() }
+            if (
+                plannedId == null ||
+                    (plannedVersion != null &&
+                        (raceVersion == null || raceVersion == plannedVersion))
+            ) {
+                SharedTreadmillEntry(
+                    state,
+                    session.services.runningEvidence,
+                    AppleCalendarDates,
+                    { it.trim() },
+                    plannedVersion,
+                    plannedId,
+                    openSaved,
+                ) { label, value, change, decimal ->
+                    CoachTextInput(label, value, change, decimal)
+                }
+            }
+
             if (!authorized) {
                 Text("Allow location access to record your outdoor route.")
                 CoachButton("Allow location access") { recorder.requestLocationPermission() }

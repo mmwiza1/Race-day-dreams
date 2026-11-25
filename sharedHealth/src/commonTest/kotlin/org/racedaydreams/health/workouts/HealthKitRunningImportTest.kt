@@ -56,6 +56,19 @@ class HealthKitRunningImportTest {
     }
 
     @Test
+    fun indoorWorkoutMetadataIsRetainedWithoutInventingASpecificMachineOrRoute() {
+        val imported = batch(listOf(run().copy(indoor = true))).upserts().single()
+        assertEquals(
+            org.racedaydreams.domain.activity.RunEnvironment.INDOOR,
+            imported.environment(),
+        )
+        assertTrue(imported.samples().isEmpty())
+        assertNull(imported.movingTime())
+        val refreshed = batch(listOf(run()), listOf(imported)).upserts().single()
+        assertEquals(imported, refreshed)
+    }
+
+    @Test
     fun emptyOrHiddenReadNeverDeletesRetainedHistoryOrClearsACheckpoint() {
         val existing = batch(listOf(run())).upserts()
         var writes = 0

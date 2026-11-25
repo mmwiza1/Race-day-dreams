@@ -52,17 +52,19 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   export. Apple captures into the same report format. Report counts reflect the last written
   checkpoint, and a killed process may leave no final interruption event. App backup formats
   exclude these diagnostics. See [GPS investigation](docs/GPS_ISSUE_54_INVESTIGATION.md).
-- A verification is in progress. Two common JVM cases passed for delayed batches, rejection,
+- A verification: two common JVM cases passed for delayed batches, rejection,
   missing acknowledgement and bounded timelines. Debug app and test APKs built. API 28 passed all
   seven focused diagnostic export/store and staging checks. See
   `/workspace/scratch/rdd-part3-diagnostic-instrument.log`. Apple simulator execution needs macOS.
-  Task A is committed locally as `0ab53804`. The live Android emulator service also saved a
+  Task A is committed locally as `0ab53804` and `0f2899a1`. The live Android emulator service also saved a
   coordinate-free report with 36 callbacks, 35 accepted and disk-acknowledged points, and
-  manual pause/resume events. This used injected emulator locations, not physical S24 evidence.
+  manual pause/resume events. This used injected emulator locations. The physical S24 trace is
+  pending. Recording and persistence failures are covered; broader non-recording incident reporting
+  was left out of this checkpoint.
 - B implements a shared multi-group review and equipment-aware alternatives using the original
   planner's target and substitution rules. Local commit `1b13704c`. Two JVM and two API 28
   Compose cases passed, including actual replacement before Start with an empty set log.
-  Preview capture is `/workspace/scratch/rdd-part3-gym-multi-group-preview-light.png`.
+  Preview capture is `/workspace/scratch/rdd-part3-evidence/gym-multi-group-preview-light.png`.
 - C adds 26 catalogue entries (246 total), refreshed search aliases, and resistance bands
   plus secure anchors as separate equipment capabilities. Provenance passed for 247 assets,
   strict visual guide coverage passed 246/246 exercises and 14/14 routines, and the legacy
@@ -74,8 +76,21 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   1.5/5.1 km fixture selects Fitbit for counted evidence while retaining native plan provenance.
   Owned-record choices survive app backup and take effect again when the matching provider record
   is reimported. App backup still excludes provider histories and therefore provider-only pair
-  choices. The first JVM domain batch passed 46 cases. Storage/Android verification is running
-  under `/workspace/scratch/rdd-part3-duplicate-recheck.log`. Next implementation task is E.
+  choices. The first JVM domain batch passed 46 cases. Storage and Android comparison checks then
+  passed, including reimport after core backup. Local commits `963e539d` and `ace37c53`.
+- E reuses the actual-run form for explicit indoor treadmill entry, with optional planned-workout
+  association and optional historical start time. App-owned treadmill classifications are retained
+  in activity JSON. Health Connect's treadmill type and HealthKit's broader indoor flag are kept
+  separately from source identity. Matching imported records reuse the physical-session grouping.
+- Part 3 debug and instrumentation APKs built. Final focused JVM batch passed 55 cases (12 run
+  grouping, 10 HealthKit mapping, 33 SQLite/activity/backup). Formatting passed for 1040 Kotlin and
+  95 Java files. No database or backup version bump. API 28 passed 17 distinct focused cases:
+  seven diagnostics, two Gym Now, three run comparison and treadmill, and five catalogue/run
+  evidence regressions. See the logs and captures under `/workspace/scratch/rdd-part3-evidence`.
+  Native iOS, the full device matrix and a physical S24 run are separate checks.
+- Part 3 ends at the local treadmill and handoff commit. The branch remains unpushed and
+  unmerged. Wait for explicit owner approval to begin Part 4. Keep GPS calculation changes
+  deferred until a new outdoor diagnostic trace is available.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

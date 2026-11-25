@@ -27,6 +27,7 @@ constructor(
     private val plannedWorkoutId: String?,
     private val shoeId: String?,
     private var duplicateChoices: Map<String, DuplicateRunChoice> = emptyMap(),
+    private val environment: RunEnvironment? = null,
 ) {
     init {
         id = ActivityChecks.required(id, "Activity ID")
@@ -103,6 +104,8 @@ constructor(
     fun withDuplicateChoices(value: Map<String, DuplicateRunChoice>): ActivityRecord =
         copy(duplicateChoices = value)
 
+    fun environment(): RunEnvironment? = environment
+
     fun elapsedTime(): Duration = Durations.between(start(), end())
 
     override fun toString(): String =
@@ -123,4 +126,10 @@ enum class DuplicateRunChoice {
             COUNT_OTHER -> COUNT_THIS
             SEPARATE -> SEPARATE
         }
+}
+
+/** Explicit source evidence. Missing classification does not establish outdoor running. */
+enum class RunEnvironment {
+    TREADMILL,
+    INDOOR,
 }

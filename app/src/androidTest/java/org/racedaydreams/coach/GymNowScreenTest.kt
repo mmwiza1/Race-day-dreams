@@ -191,7 +191,8 @@ class GymNowScreenTest {
             }
             click("Use ${candidate.exercise().name()}")
             await { model.state.value.generatedSwap == null }
-            val revised = model.state.value.generated!!.definition().slots().first { it.id() == slot.id() }
+            val revised =
+                model.state.value.generated!!.definition().slots().first { it.id() == slot.id() }
             assertEquals(candidate.exercise(), revised.exercise())
             assertEquals(slot.target(), revised.target())
             swapped = true

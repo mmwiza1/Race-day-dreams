@@ -90,8 +90,9 @@ final class FeatureJson {
                 "distanceMetres", a.distanceMetres(), "movingTime", string(a.movingTime()), "averageHeartRate", a.averageHeartRate(), "maxHeartRate", a.maxHeartRate(),
                 "elevationGainMetres", a.elevationGainMetres(), "cadence", a.cadence(), "rpe", a.rpe(), "notes", a.notes(), "samples", samples, "laps", laps,
                 "plannedWorkoutId", a.plannedWorkoutId(), "shoeId", a.shoeId());
-        if (!choices.isEmpty()) try {
-            row.put("duplicateChoices", new JSONObject(choices));
+        try {
+            if (!choices.isEmpty()) row.put("duplicateChoices", new JSONObject(choices));
+            if (a.environment() != null) row.put("runEnvironment", a.environment().name());
         } catch (JSONException e) { throw invalid(e); }
         return row;
     }
@@ -123,7 +124,7 @@ final class FeatureJson {
             return new ActivityRecord(required(j,"id"), new SourceIdentity(required(source,"provider"), required(source,"recordId"), text(source,"originPackage")),
                     Instant.parse(j.getString("start")), Instant.parse(j.getString("end")), text(j,"startOffset") == null ? null : ZoneOffset.of(j.getString("startOffset")),
                     text(j,"endOffset") == null ? null : ZoneOffset.of(j.getString("endOffset")), number(j,"distanceMetres"), duration(j,"movingTime"), number(j,"averageHeartRate"), number(j,"maxHeartRate"),
-                    number(j,"elevationGainMetres"), number(j,"cadence"), number(j,"rpe"), text(j,"notes"), samples, laps, text(j,"plannedWorkoutId"), text(j,"shoeId"), choices);
+                    number(j,"elevationGainMetres"), number(j,"cadence"), number(j,"rpe"), text(j,"notes"), samples, laps, text(j,"plannedWorkoutId"), text(j,"shoeId"), choices, text(j,"runEnvironment") == null ? null : RunEnvironment.valueOf(j.getString("runEnvironment")));
         } catch (JSONException | DateTimeException e) { throw invalid(e); }
     }
     static JSONObject result(RecordedResult r) {

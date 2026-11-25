@@ -25,6 +25,11 @@ fun SharedRecordedRunSummary(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         SectionLabel("Recorded summary", Glyph.RUN, ChartHue.TEAL)
+        when (activity.environment()) {
+            org.racedaydreams.domain.activity.RunEnvironment.TREADMILL -> Text("Treadmill run")
+            org.racedaydreams.domain.activity.RunEnvironment.INDOOR -> Text("Indoor run")
+            null -> Unit
+        }
         Panel(contentPadding = PaddingValues(20.dp)) {
             MeasureFigure(
                 "Elapsed time",

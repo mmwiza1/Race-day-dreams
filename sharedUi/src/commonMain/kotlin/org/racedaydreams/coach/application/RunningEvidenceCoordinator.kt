@@ -1,11 +1,13 @@
 package org.racedaydreams.coach.application
 
+import org.racedaydreams.domain.activity.ActivityDates
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.ActivityRepository
 import org.racedaydreams.domain.activity.DuplicateRunChoice
 import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.RecordedResult
 import org.racedaydreams.domain.activity.ResultRepository
+import org.racedaydreams.domain.activity.RunEnvironment
 import org.racedaydreams.domain.activity.Shoe
 import org.racedaydreams.domain.activity.ShoeRepository
 import org.racedaydreams.domain.activity.SourceIdentity
@@ -133,6 +135,31 @@ class RunningEvidenceCoordinator(
         rpe: Double?,
         notes: String,
         onSuccess: (String) -> Unit,
+    ) =
+        completeRun(
+            versionId,
+            workoutId,
+            distanceKm,
+            duration,
+            date,
+            time,
+            rpe,
+            notes,
+            onSuccess,
+            treadmill = false,
+        )
+
+    internal fun completeRun(
+        versionId: String?,
+        workoutId: String?,
+        distanceKm: Double,
+        duration: Duration,
+        date: LocalDate?,
+        time: String?,
+        rpe: Double?,
+        notes: String,
+        onSuccess: (String) -> Unit,
+        treadmill: Boolean,
     ) {
         val id = newId()
         operations.submit(onSuccess = { onSuccess(id) }) {
@@ -144,22 +171,44 @@ class RunningEvidenceCoordinator(
             ) {
                 "Enter a positive actual duration of up to 48 hours."
             }
-            val timing = localTiming(date, time, duration)
-            require(!timing.end.isAfter(now())) {
+            require((versionId == null) == (workoutId == null) && (treadmill || workoutId != null))
+            val current = now()
+            val timing =
+                if (treadmill && date == null && time == null) {
+                    val start =
+                        Instants.ofEpochSecond(
+                            current.getEpochSecond() - duration.getSeconds(),
+                            current.getNano().toLong() - duration.getNano(),
+                        )
+                    Timing(
+                        start,
+                        current,
+                        ActivityDates.offsetAt(start, null),
+                        ActivityDates.offsetAt(current, null),
+                    )
+                } else localTiming(requireNotNull(date), requireNotNull(time), duration)
+            require(!timing.end.isAfter(current)) {
                 "A completed run must end before the current time."
             }
-            val version =
-                coaching.versions().firstOrNull { it.id() == versionId }
-                    ?: throw IllegalArgumentException("Plan version not found.")
             val workout =
-                version.plan().workouts().firstOrNull { it.id() == workoutId }
-                    ?: throw IllegalArgumentException("Workout not found.")
-            require(workout.date().toEpochDay() <= today().toEpochDay()) {
-                "A future prescription cannot be marked completed."
-            }
-            require(activities.activities().none { it.plannedWorkoutId() == workoutId }) {
-                "This workout already has a recorded run."
-            }
+                if (workoutId == null) null
+                else {
+                    val version =
+                        coaching.versions().firstOrNull { it.id() == versionId }
+                            ?: throw IllegalArgumentException("Plan version not found.")
+                    val planned =
+                        version.plan().workouts().firstOrNull { it.id() == workoutId }
+                            ?: throw IllegalArgumentException("Workout not found.")
+                    require(planned.date().toEpochDay() <= today().toEpochDay()) {
+                        "A future prescription cannot be marked completed."
+                    }
+                    require(
+                        activities.activitySummaries().none { it.plannedWorkoutId() == workoutId }
+                    ) {
+                        "This workout already has a recorded run."
+                    }
+                    planned
+                }
             val activity =
                 ActivityRecord(
                     id,
@@ -180,7 +229,12 @@ class RunningEvidenceCoordinator(
                     emptyList(),
                     workoutId,
                     shoes.shoes().firstOrNull { it.defaultShoe() }?.id(),
+                    environment = RunEnvironment.TREADMILL.takeIf { treadmill },
                 )
+            if (workout == null) {
+                activities.upsertManualActivity(activity)
+                return@submit
+            }
             val response =
                 RunExecution(
                     id,
@@ -188,7 +242,8 @@ class RunningEvidenceCoordinator(
                     versionId,
                     null,
                     null,
-                    "Manually recorded actual run; no splits or reps invented",
+                    if (treadmill) "Manually recorded treadmill run; no splits or reps invented"
+                    else "Manually recorded actual run; no splits or reps invented",
                 )
             coaching.transaction(
                 object : CoachingTransaction {
@@ -197,7 +252,7 @@ class RunningEvidenceCoordinator(
                         coaching.saveResponse(response)
                         coaching.saveFeedback(
                             id,
-                            versionId,
+                            requireNotNull(versionId),
                             RunScoreEngine.analyse(workout, activity, response),
                         )
                     }

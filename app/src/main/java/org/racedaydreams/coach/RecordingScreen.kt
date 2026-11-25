@@ -36,6 +36,18 @@ import org.racedaydreams.data.RecordingStore
     CoachHeading(if(workoutId!=null)"Live Coach"else "Record a run")
     if(status==null)WhyDetails("Phone GPS stays active with the screen locked. No route leaves your device. Elapsed time includes pauses; moving time excludes manual pauses. Poor fixes and gaps are excluded from distance.","Recording and privacy")
     if(!running&&status==null&&unfinished==null)CoachButton("Start GPS recording"){if(context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED)send(RunRecordingService.START)else permission.launch((listOf(Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION)+if(android.os.Build.VERSION.SDK_INT>=33)listOf(Manifest.permission.POST_NOTIFICATIONS)else emptyList()).toTypedArray())}
+    if (checked && !running && unfinished == null) {
+        val state by model.state.collectAsState()
+        SharedTreadmillEntry(
+            state,
+            model.runningEvidence,
+            AndroidCoachCalendarDates,
+            { java.time.LocalTime.parse(it).toString() },
+            versionId?.takeIf { workoutId != null },
+            workoutId?.takeIf { versionId != null },
+            onSaved,
+        ) { label, value, change, decimal -> CoachInput(label, value, change, decimal) }
+    }
     if(!running&&status==null&&unfinished!=null) {
         GuidanceCard {
             Text("Your recorded portion is safe",style=MaterialTheme.typography.titleLarge)

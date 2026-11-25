@@ -89,6 +89,42 @@ abstract class CoreBackupRestoreRepositoryContract {
             assertEquals("watch", restored.activitySummaries().single().id())
         }
 
+    @Test
+    fun treadmillSummarySurvivesBackupWithoutInventedMovingTimeOrRoute() =
+        storage { source, target ->
+            val atEnd = Instants.ofEpochSecond(at.getEpochSecond() + 1800, at.getNano().toLong())
+            val treadmill =
+                ActivityRecord(
+                    "treadmill",
+                    SourceIdentity("manual", "treadmill", null),
+                    at,
+                    atEnd,
+                    Offsets.ofTotalSeconds(0),
+                    Offsets.ofTotalSeconds(0),
+                    5_000.0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "",
+                    emptyList(),
+                    emptyList(),
+                    null,
+                    null,
+                    environment = RunEnvironment.TREADMILL,
+                )
+            SqliteActivities(source) { at }.upsertManualActivity(treadmill)
+            SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+            val restored = SqliteActivities(target) { at }.activitySummaries().single()
+            assertEquals(treadmill, restored)
+            assertEquals(5_000.0, restored.distanceMetres())
+            assertEquals(Durations.ofSeconds(1800), restored.elapsedTime())
+            assertTrue(restored.samples().isEmpty())
+            assertNull(restored.movingTime())
+        }
+
     private fun seed(db: SqlDatabase): CoreBackupDataJson.Snapshot {
         SqliteAthleteProfile(db).save(CoachingArchiveFixtures.profile())
         db.execute(
