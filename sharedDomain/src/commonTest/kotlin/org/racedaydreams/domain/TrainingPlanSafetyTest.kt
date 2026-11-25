@@ -358,6 +358,58 @@ class TrainingPlanSafetyTest {
     }
 
     @Test
+    fun readinessTextAgreesWithTheRatingWhenThereIsNoRecentRaceTime() {
+        // Audit R-01: a target time without a recent race time must not claim the plan prepares
+        // the runner to finish unless the preparation itself is Supported.
+        fun texts(a: PlanFeasibility.Assessment) = a.reasons() + a.headline()
+        val finishClaim = "prepares you to finish"
+        // Supported preparation: the finish statement is true and kept.
+        val supported =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                25,
+                baseline(19.6, 9.0),
+                mode = GoalMode.TARGET_TIME,
+            )!!
+        assertEquals(PlanFeasibility.Level.LIMITED, supported.level())
+        assertTrue(supported.reasons().single().contains("Your plan prepares you to finish;"))
+        // Limited preparation (8 weeks to a half): no finish claim; finishing comes first.
+        val limited =
+            assess(RaceDistance.HALF_MARATHON, 8, baseline(30.0, 12.0), 4, GoalMode.TARGET_TIME)!!
+        assertEquals(PlanFeasibility.Level.LIMITED, limited.level())
+        assertTrue(texts(limited).none { it.contains(finishClaim) }, texts(limited).toString())
+        assertTrue(limited.reasons().any { it.contains("focus on being ready to finish") })
+        // The audit case: marathon target, three runs, no history, five weeks: Not supported,
+        // and nothing reassures the runner that the plan prepares them to finish.
+        for ((distance, weeks) in
+            listOf(RaceDistance.MARATHON to 5L, RaceDistance.HALF_MARATHON to 4L)) {
+            val unsupported = assess(distance, weeks, empty, 3, GoalMode.TARGET_TIME)!!
+            assertEquals(PlanFeasibility.Level.NOT_SUPPORTED, unsupported.level(), distance.name)
+            assertTrue(texts(unsupported).none { it.contains(finishClaim) }, distance.name)
+            assertTrue(
+                unsupported.reasons().any { it.contains("can't yet prepare you to finish") },
+                distance.name,
+            )
+        }
+        // 5K run/walk with a target and no history: Limited, not described as finish-ready.
+        val fiveK = assess(RaceDistance.FIVE_K, 10, empty, 3, GoalMode.TARGET_TIME)!!
+        assertEquals(PlanFeasibility.Level.LIMITED, fiveK.level())
+        assertTrue(texts(fiveK).none { it.contains(finishClaim) }, texts(fiveK).toString())
+        // Ambiguous evidence (a recent time slower than the target) with limited preparation:
+        // the headline describes limited preparation, never finish readiness.
+        val ambiguous =
+            assess(
+                RaceDistance.HALF_MARATHON,
+                8,
+                baseline(30.0, 12.0, recentHalf = Durations.ofMinutes(130)),
+                4,
+                GoalMode.TARGET_TIME,
+            )!!
+        assertEquals(PlanFeasibility.Level.LIMITED, ambiguous.level())
+        assertTrue(texts(ambiguous).none { it.contains(finishClaim) }, texts(ambiguous).toString())
+    }
+
+    @Test
     fun aTargetTimeNeedsARecentResultThatSupportsIt() {
         // 1:55 recent half supports a 2-hour target; 2:10 does not.
         val fast =

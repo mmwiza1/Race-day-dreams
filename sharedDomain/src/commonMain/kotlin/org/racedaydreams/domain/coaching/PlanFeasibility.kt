@@ -165,7 +165,8 @@ object PlanFeasibility {
             )
 
         // Anything above lowers the rating because of preparation; a target time is judged apart.
-        val preparationShort = level != Level.SUPPORTED
+        val preparation = level
+        val preparationShort = preparation != Level.SUPPORTED
         // A target time needs its own evidence: a finish-ready plan doesn't make a target
         // realistic.
         var targetUnsupported = false
@@ -175,9 +176,19 @@ object PlanFeasibility {
             val targetSeconds = target.getSeconds().toDouble()
             if (predicted == null) {
                 targetUnsupported = true
+                // The finish statement must agree with the preparation rating above (audit R-01):
+                // only a Supported preparation may say the plan prepares the runner to finish.
                 lower(
                     Level.LIMITED,
-                    "There's no recent race time to show your target time is realistic. Your plan prepares you to finish; the target is up to you.",
+                    "There's no recent race time to show your target time is realistic. " +
+                        when (preparation) {
+                            Level.SUPPORTED ->
+                                "Your plan prepares you to finish; the target is up to you."
+                            Level.LIMITED ->
+                                "Your preparation is also limited, so focus on being ready to finish before aiming for a time."
+                            Level.NOT_SUPPORTED ->
+                                "Your plan can't yet prepare you to finish, so a target time isn't realistic for this race."
+                        },
                 )
             } else if (targetSeconds < predicted * .97) {
                 targetUnsupported = true
