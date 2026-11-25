@@ -9,10 +9,12 @@ class StrengthEvidenceModelsTest {
     @Test
     fun canonicalCatalogueKeepsAllOriginalIdentitiesAliasesAndFrozenOrdering() {
         val rows = ExerciseCatalog.definitions()
-        assertEquals(220, rows.size)
-        assertEquals(220, rows.map { it.exercise().id() }.toSet().size)
+        assertEquals(246, rows.size)
+        assertEquals(246, rows.map { it.exercise().id() }.toSet().size)
         assertEquals("back-squat", rows.first().exercise().id())
-        assertEquals("cable-internal-rotation", rows.last().exercise().id())
+        assertEquals("cable-internal-rotation", rows[219].exercise().id())
+        assertEquals("squat-pulse", rows[220].exercise().id())
+        assertEquals("forward-step-down", rows.last().exercise().id())
         assertEquals(rows.map { it.exercise() }, StrengthExercise.starters())
         assertTrue(
             requireNotNull(ExerciseCatalog.definition("romanian-deadlift"))

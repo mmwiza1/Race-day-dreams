@@ -6,7 +6,7 @@ import org.racedaydreams.domain.strength.*
 class TechniqueGuidanceContractTest {
     @Test
     fun everyCanonicalExerciseRetainsItsCompleteOriginalGuideAndArtwork() {
-        assertEquals(220, ExerciseCatalog.exercises().size)
+        assertEquals(246, ExerciseCatalog.exercises().size)
         for (exercise in ExerciseCatalog.exercises()) {
             val guide = assertNotNull(TechniqueGuide.forExercise(exercise.id()))
             val art = assertNotNull(TechniqueIllustrations.forExercise(exercise.id()))

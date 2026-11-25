@@ -356,6 +356,9 @@ object GymNowWorkouts {
                     "pull-up bar" -> add(Equipment.PULL_UP_BAR)
                     "trap bar" -> add(Equipment.TRAP_BAR)
                     "sled" -> add(Equipment.SLED)
+                    "resistance bands" -> add(Equipment.RESISTANCE_BAND)
+                    "band anchor" -> add(Equipment.SECURE_BAND_ANCHOR)
+                    "stable step" -> add(Equipment.STABLE_STEP)
                 }
             }
         }

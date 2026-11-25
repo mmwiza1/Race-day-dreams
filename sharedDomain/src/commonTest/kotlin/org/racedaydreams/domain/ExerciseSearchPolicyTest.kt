@@ -31,13 +31,29 @@ class ExerciseSearchPolicyTest {
     }
 
     @Test
+    fun requestedSearchAliasesFindDistinctMovementsAndDoNotDuplicateExistingIds() {
+        mapOf(
+                "Air squat" to "bodyweight-squat",
+                "Pulse Squat" to "squat-pulse",
+                "Isometric Squat" to "static-squat-hold",
+                "DB Curl" to "dumbbell-curl",
+                "Close-Grip Push-Up" to "diamond-push-up",
+                "Plank Swivel" to "plank-hip-dip",
+                "Assault Bike" to "air-bike",
+                "SkiErg" to "ski-erg",
+                "Resistance Band Row" to "banded-row",
+            )
+            .forEach { (query, expected) -> assertEquals(expected, search(query).first().id()) }
+    }
+
+    @Test
     fun excludedEvidenceIsOnlyEligibleWhenCallerExplicitlyPermitsItsDiscovery() {
         val excluded = setOf("bench-press", "romanian-deadlift")
         assertTrue(search(null, excluded).none { it.id() in excluded })
         assertTrue(search("bench", excluded).none { it.id() in excluded })
         assertTrue(search("bench").any { it.id() == "bench-press" })
-        assertEquals(220, search(null).size)
-        assertEquals(220, catalogue.size)
+        assertEquals(246, search(null).size)
+        assertEquals(246, catalogue.size)
     }
 
     @Test

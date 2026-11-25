@@ -60,8 +60,15 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   coordinate-free report with 36 callbacks, 35 accepted and disk-acknowledged points, and
   manual pause/resume events. This used injected emulator locations, not physical S24 evidence.
 - B implements a shared multi-group review and equipment-aware alternatives using the original
-  planner's target and substitution rules. Two focused JVM cases passed. The Android build and
-  focused Compose validation are in progress. Tasks C–E remain pending.
+  planner's target and substitution rules. Local commit `1b13704c`. Two JVM and two API 28
+  Compose cases passed, including actual replacement before Start with an empty set log.
+  Preview capture is `/workspace/scratch/rdd-part3-gym-multi-group-preview-light.png`.
+- C adds 26 catalogue entries (246 total), refreshed search aliases, and resistance bands
+  plus secure anchors as separate equipment capabilities. Provenance passed for 247 assets,
+  strict visual guide coverage passed 246/246 exercises and 14/14 routines, and the legacy
+  catalogue suite passed 240 checks. The first JVM batch required updating the frozen catalogue
+  boundary assertion to retain the original boundary at index 219 and verify the new appended
+  entries. Soldier get-up awaits a confirmed definition. Tasks D–E remain pending.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

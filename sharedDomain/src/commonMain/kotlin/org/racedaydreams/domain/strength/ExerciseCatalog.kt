@@ -547,7 +547,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Dumbbell Step Up", "Forward Step Up", "Weighted Step Up"),
         )
         add(
             out,
@@ -559,7 +559,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Barbell Step Up", "High Box Step Up"),
         )
         add(
             out,
@@ -571,7 +571,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Weighted Box Step Up", "Dumbbell Box Step Up"),
         )
         add(
             out,
@@ -907,7 +907,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.REPS_ONLY,
             false,
-            listOf(),
+            listOf("Press Up", "Pushup", "Standard Push Up", "Regular Push Up"),
         )
         add(
             out,
@@ -1399,7 +1399,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Dumbbell Bicep Curl", "Dumbbell Biceps Curl", "DB Curl", "Supinated Curl"),
         )
         add(
             out,
@@ -1411,7 +1411,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Neutral Grip Curl", "Dumbbell Hammer Curl"),
         )
         add(
             out,
@@ -1423,7 +1423,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.WEIGHTED,
             StrengthExercise.MeasurementProfile.LOAD_REPS,
             false,
-            listOf(),
+            listOf("Incline Bicep Curl", "Incline DB Curl"),
         )
         add(
             out,
@@ -1891,7 +1891,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.DURATION,
             false,
-            listOf(),
+            listOf("Front Plank", "Forearm Plank", "Low Plank"),
         )
         add(
             out,
@@ -2083,7 +2083,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.DURATION,
             false,
-            listOf(),
+            listOf("Wall Squat Hold", "Isometric Wall Squat"),
         )
         add(
             out,
@@ -2107,7 +2107,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.REPS_ONLY,
             false,
-            listOf("Air Squat"),
+            listOf("Air Squat", "Air Squat", "Free Squat", "Unweighted Squat"),
         )
         add(
             out,
@@ -2503,7 +2503,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.REPS_ONLY,
             false,
-            listOf("Side Step-Down"),
+            listOf("Side Step-Down", "Eccentric Lateral Step Down", "Single Leg Lateral Step Down"),
         )
         add(
             out,
@@ -2515,7 +2515,7 @@ object ExerciseCatalog {
             StrengthExercise.Mode.BODYWEIGHT,
             StrengthExercise.MeasurementProfile.REPS_ONLY,
             false,
-            listOf("High Plank Shoulder Tap"),
+            listOf("High Plank Shoulder Tap", "Plank Taps", "Alternating Plank Tap"),
         )
         add(
             out,
@@ -2697,6 +2697,7 @@ object ExerciseCatalog {
             false,
             listOf("Standing Cable Internal Rotation"),
         )
+        out.addAll(FocusedCatalogueAdditions.entries.map { it.definition })
         val ids = mutableSetOf<String>()
         for (definition in out) check(ids.add(definition.exercise().id())) {
             "Duplicate exercise identity"

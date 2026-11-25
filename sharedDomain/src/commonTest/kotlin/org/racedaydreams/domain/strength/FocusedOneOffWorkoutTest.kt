@@ -65,6 +65,26 @@ class FocusedOneOffWorkoutTest {
         }
     }
 
+    @Test
+    fun bandAndAnchorAreSeparateCapabilitiesForSelectionAndAlternatives() {
+        val arms = setOf(GymNowWorkouts.MuscleGroup.ARMS)
+        val band = setOf("bodyweight", "resistance bands")
+        val result = GymNowWorkouts.generate("bands", time, request(band, arms)).definition()
+        assertTrue(result.slots().any { it.exercise().id() == "banded-curl" })
+        assertFalse(GymProgrammeGenerator.available("banded-row", band))
+        assertTrue(GymProgrammeGenerator.available("banded-row", band + "band anchor"))
+        assertTrue(GymProgrammeGenerator.available("banded-glute-bridge", band))
+        assertFalse(GymProgrammeGenerator.available("banded-glute-bridge", setOf("bodyweight")))
+        assertEquals(
+            StrengthExercise.MeasurementProfile.DURATION,
+            ExerciseCatalog.definition("static-squat-hold")!!.exercise().measurement(),
+        )
+        assertEquals(
+            StrengthExercise.MeasurementProfile.REPS_ONLY,
+            ExerciseCatalog.definition("squat-pulse")!!.exercise().measurement(),
+        )
+    }
+
     private fun request(equipment: Set<String>, groups: Set<GymNowWorkouts.MuscleGroup>) =
         GymNowWorkouts.Request(
             30,

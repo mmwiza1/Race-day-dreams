@@ -1761,6 +1761,9 @@ object ExerciseMetadataCatalog {
             ISOLATION,
         )
 
+        for (entry in FocusedCatalogueAdditions.entries) {
+            check(out.put(entry.metadata.exerciseId(), entry.metadata) == null)
+        }
         val canonicalIds = ExerciseCatalog.definitions().map { it.exercise().id() }.toSet()
         check(canonicalIds == out.keys) {
             "Exercise metadata mismatch; missing=${(canonicalIds - out.keys).sorted()}, extra=${(out.keys - canonicalIds).sorted()}"

@@ -81,6 +81,7 @@ class GymProgrammeGenerator {
             )
         if (
             "full gym" !in settings.equipment() &&
+                !available("banded-row", settings.equipment()) &&
                 listOf("dumbbells", "barbell", "cables", "pull-up bar").none {
                     it in settings.equipment()
                 }
@@ -261,6 +262,10 @@ class GymProgrammeGenerator {
             if ("full gym" in equipment) return ExerciseCatalog.definition(id) != null
             val definition = ExerciseCatalog.definition(id) ?: return false
             val known = id!!
+            if (definition.equipment() in setOf("resistance bands", "stable step"))
+                return ExerciseMetadataCatalog.require(known)
+                    .equipment()
+                    .availableWith(GymNowWorkouts.capabilities(equipment))
             val freeLoad =
                 "dumbbells" in equipment || "kettlebells" in equipment || "barbell" in equipment
             if (known == "goblet-squat")
@@ -385,6 +390,7 @@ class GymProgrammeGenerator {
                             "seated-cable-row",
                             "dumbbell-row",
                             "barbell-row",
+                            "banded-row",
                             "bird-dog",
                         )
                     )

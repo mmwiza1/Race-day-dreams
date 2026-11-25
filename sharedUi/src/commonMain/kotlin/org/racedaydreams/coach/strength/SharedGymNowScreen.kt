@@ -850,6 +850,9 @@ private val GYM_EQUIPMENT =
         "pull-up bar",
         "trap bar",
         "sled",
+        "resistance bands",
+        "band anchor",
+        "stable step",
         "full gym",
     )
 

@@ -2,17 +2,29 @@
 
 ## Current coverage
 
-All **220/220 canonical exercises** have movement-specific illustrated guidance.
+All **246/246 canonical exercises** have movement-specific illustrated guidance.
 All **14/14 supporting-routine movements** have artwork. The strict catalogue audit
 passes; no canonical exercise uses a schematic or a generic unrelated-pose fallback.
 
-There are **223 original local WebP assets**, totalling **11,634,030 bytes** before APK
-packaging. Each is a 1200×800 sequence encoded at quality 84. Only the displayed
+There are **247 original local WebP assets**, totalling **12,000,072 bytes** before APK
+packaging. The original guides use 1200×800 sequences. The November additions use
+reviewed full-pose panels packaged from original contact sheets at quality 84. Only the displayed
 asset is decoded. Single-frame holds, two-frame movements and three-frame technical
 lifts retain meaningful captions and complete written/screen-reader instructions.
 The exact byte sizes, SHA256 checksums and creation/licence records are in
 `asset-provenance.json`. Adding an exercise without a guide fails domain tests and
 the strict packaged-file audit. `missing-canonical-ids.txt` is currently empty.
+
+## Part 3 catalogue additions
+
+Twenty-six entries cover squat pulses, separate timed holds, jump and step-down variations,
+core work, three push-up grips or setups, conditioning, and six resistance-band exercises.
+The squat timing variants share the existing bodyweight squat illustration because their
+visible setup is the same. The other entries have individual original guide panels.
+Anchored band exercises require both a resistance band and a secure anchor. Existing
+catalogue IDs are retained, including the existing dumbbell curls and step-up variations,
+which now have more search aliases. Soldier get-up awaits identification of the intended
+movement.
 
 ## 0.11 catalogue checkpoint
 
