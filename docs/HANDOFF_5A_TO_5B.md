@@ -4,7 +4,7 @@ Written at the end of Piece 5A on 24 November 2026. Everything needed for Piece 
 repository; nothing depends on the Claude conversation. Read with `AGENTS.md`, `CLAUDE.md` and
 `docs/TRAINING_PROGRAMME_PLAN.md`.
 
-## 1. Repository state
+## 1. Repository state at the original handover
 
 | Item | Value |
 | --- | --- |
@@ -399,3 +399,26 @@ JVM tests compile against `java.time` and will not catch other calls; only the i
 - A separate 13-profile deterministic probe passed 65 weekly reviews and 324
   assertions. Cases include the missing/partial/duplicate sync and recurring
   missed day cases, return, heavy lower-body work and above-plan Performance.
+
+### Piece 5B merge and post-merge audit
+
+- Tested PR head `205d2918e1be7c8d1abc2030e8de056551dbdb37`. The
+  [Android gate](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45559510034)
+  passed 857 instrumented tests on each API 28, 35 and 36, with 524 authentic
+  captures per API. Canonical source fingerprint is
+  `e200244d13df7e525375a78dc4dc3680c17af4b9500e3057fc844dcf7baaba0f`.
+- The [Apple gate](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45559510015)
+  passed 1,320 shared Native tests (568 domain, 27 health, 683 storage, 42 UI),
+  real iOS simulator startup, all five
+  XCUITests (including the 30-second no-GPS recovery) and unsigned builds.
+- Owner-authorised [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51)
+  was squash-merged at 07:20 UTC on 25 November 2026 as
+  `7823372c81d3fe09c9485ed6de5ee461d546f593`. The merged tree matched the
+  verified PR head exactly.
+- Independent findings: [running](AUDIT_2026-11_RUNNING_PROGRAMMES.md),
+  [gym](AUDIT_2026-11_GYM_PROGRAMMES.md) and [full app](AUDIT_2026-11_FULL_APP.md).
+  The audits propose a separate remediation PR and make no application changes.
+- [Post-merge CI and rolling publication](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45567338048)
+  passed. Android 0.16.0-test1 / 29 with the unchanged pinned signer, update
+  manifest and the three unsigned iOS 0.16.0 / 29 artifacts were independently
+  verified from the public development assets. See [artifact hashes and checks](AUDIT_2026-11_FULL_APP.md#publication-and-physical-acceptance).

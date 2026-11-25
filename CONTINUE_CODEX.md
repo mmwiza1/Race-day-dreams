@@ -15,65 +15,51 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — Piece 5B (training programme, PR #51)
+## Current verified release — Piece 5B, 0.16.0-test1
 
-- Continue [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51) on
-  `ccr-60f602a7-tfmok3-training` in `/workspace/scratch/rdd-piece5b`. The primary
-  checkout contains unrelated experimental history. Do not change it or parked PR #50.
-- Owner authorised squash merge only after every software release gate and visual review.
-  Base inspected at `60b5201b`; initial head `0bc2a4a0` passed its
-  [draft shared run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45473777369).
-  The draft skips the unfiltered Android matrix and unsigned iPhone build.
-- Piece 5B release candidate is `0.16.0-test1` / 29 (iOS `0.16.0` / 29).
-  Database and backup formats are unchanged; keep the published signing identity.
-- Changes: runner-approved rebuilds cap later weeks and individual sessions at the
-  rebuilt workload until further review; timed recoveries keep active-time targets,
-  with estimated distance budgeted separately. Workout details display recovery seconds.
-  Added multi-runner review, Android recording/backup/upgrade, iOS live and five
-  canonical capture scenarios. See [handover](docs/HANDOFF_5A_TO_5B.md).
-- PR #51 is ready for review. API 28 local checks passed the in-place upgrade
-  from the published 0.15.5 source with a temporary test key (identical database
-  fingerprint), timed recovery link and complete backup, and dark 200% readiness.
-  Both capture tests passed after correcting their navigation selector to Home
-  and all five captures were reviewed. The replacement Android full gate is
-  required on the new head; the earlier Android run was cancelled for the
-  reproduced test defect. See the PR body for the active CI links.
-- The first full gate on `813e6c15` passed API 35/36 and the unsigned iPhone
-  build. API 35 verified 524 original captures and the signing/upgrade guard.
-  API 28 stopped at a process crash without a stack in the existing Gym Now
-  capture; that test and three preceding captures passed in a focused API 28
-  reproduction. Only the failed API 28 job was retried on that head.
-- [Android on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117903)
-  passed 857 tests and 524 valid captures on each API 28/35/36. Canonical screenshots
-  have source fingerprint `e200244d13df7e525375a78dc4dc3680c17af4b9500e3057fc844dcf7baaba0f`.
-- [Apple on `6340e671`](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45498117924)
-  passed shared Native, simulator startup, unsigned device and four existing
-  UI cases. The new case failed before recording. Focusing the Compose label
-  opened the native keypad, as shown in the failed test's accessibility tree,
-  while XCTest's `typeText` could not find native text-field focus. The next
-  candidate taps digits on the actual keypad and retains all playback assertions.
-- Exact head `eb1bb928` passed [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070892)
-  with 857 tests and 524 valid captures per API and no skipped tests. Rechecked the
-  five new exact-head captures against the canonical images; only status bar
-  pixels differ. [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070662)
-  passed Native/shared, startup, unsigned builds and four existing UI cases. The
-  new case entered 30 seconds, saved the workout and displayed Step 1 of 3,
-  then failed to find Complete open step while the workout control disclosure
-  was closed. Open it in XCTest before completing the step. All runtime,
-  pause and interruption assertions still apply.
-- The additional 13-profile probe passed 65 generated reviews and 324 assertions,
-  including duplicate watch evidence, a missed recurring day, incomplete sync
-  and actual heavy lower-body training. The PR body records the evidence.
-- Extra API 28 probes passed actual foreground interval execution with a timed
-  pause and retained run linkage, and a real old weekly review was actionable
-  after upgrade. The rebuild proposal survived complete export and restore.
-- Exact next steps: obtain green unfiltered API 28/35/36 and Apple shared/UI/device
-  jobs, verify the canonical screenshot commit and source fingerprint, then
-  merge if all required gates pass. Verify development publication before
-  claiming release completion. Create the separate audit documentation PR only
-  after the confirmed merge. Physical-device checks remain separate.
+- Owner-authorised [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51)
+  was squash-merged on 25 November 2026 at 07:20 UTC. Main commit
+  `7823372c81d3fe09c9485ed6de5ee461d546f593`, tree
+  `3de75a7501980dfa0ba5432ec92aeceadde1efe3`, exactly matched the verified head
+  `205d2918e1be7c8d1abc2030e8de056551dbdb37`.
+- Android `0.16.0-test1` / 29, iOS `0.16.0` / 29. SQLite 20, JSON backup 14,
+  raw archive 3 and complete ZIP 1 are unchanged. Preserve the public release signer.
+- [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45559510034)
+  passed 857 instrumented tests per API 28/35/36, same-signer upgrade/wrong-key
+  and downgrade guards, 524 captures per API and canonical-source verification.
+  [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45559510015)
+  passed 1,320 shared Native tests, simulator startup, all five native UI
+  cases, and unsigned iPhone/universal simulator builds. The final timed
+  recovery case operated the production keypad and workout disclosure and kept
+  the original playback assertions. [Detailed handoff](docs/HANDOFF_5A_TO_5B.md)
+- Local API 28 probes verified published-base data preservation (temporary
+  emulator signing), the actual foreground interval with a pause and exact
+  plan linkage, legacy review decision, and new review complete-backup
+  round-trip. The 13-profile probe passed 65 weekly reviews and 324 checks.
+- Independent post-merge audit documentation is on
+  `docs/2026-11-post-5b-audits` in `/workspace/scratch/rdd-piece5b`.
+  Results are in the [running](docs/AUDIT_2026-11_RUNNING_PROGRAMMES.md),
+  [gym](docs/AUDIT_2026-11_GYM_PROGRAMMES.md) and [full-app](docs/AUDIT_2026-11_FULL_APP.md)
+  reports. Proposed remediation requires owner approval. No application changes
+  or extra release are part of the audit PR.
+- [Post-merge main CI](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45567338048)
+  and the rolling [development publication](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development)
+  passed. Verified APK bytes from versioned and rolling downloads, package
+  `org.racedaydreams`, version 0.16.0-test1 / 29, non-debuggable build,
+  manifest and exact source commit. APK SHA-256
+  `4004fa1c40d1a12119acfc0ff6a7a617663796313acf645937d03b742848a483`.
+  Release certificate SHA-256 remains
+  `e7af758a8ff6732ee5fd2e19ab34a85bad1d283ec8b277d83813d7c66afd929d`.
+  Independently downloaded and verified all three unsigned iOS pairs and build
+  information. [Verification and downloads](docs/AUDIT_2026-11_FULL_APP.md#publication-and-physical-acceptance)
+- Next potential implementation is an owner-approved, separate remediation PR.
+  R-01 (conflicting marathon readiness copy) is the first priority. No
+  unapproved implementation is active. Physical GPS, connected health,
+  reminders/audio and screen-reader tests remain outstanding.
+- The primary checkout contains unrelated experimental history. Preserve it
+  and leave parked PR #50 untouched.
 
-## Current verified baseline (20 November 2026)
+## Historical verified baseline (20 November 2026)
 
 - **Latest: `main` = `e46d884d` (0.15.2-test1 / 25, iOS 0.15.2 / 25), PR #30 merged (checkpoint
   269).** Published and verified by download on 21 November 2026: APK SHA-256 `8f484d61…b6d2`,
