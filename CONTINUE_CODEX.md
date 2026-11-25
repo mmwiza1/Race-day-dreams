@@ -15,7 +15,20 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — Piece 5B (training programme, PR #51)
+## Active task — Parts 1–4 reliability work (owner request, 25 November 2026)
+
+- **Branch:** one integration branch, `ccr-60f602a7-tfmok3-reliability`, created from `main` `7823372c`
+  (PR #51 merged, 0.16.0-test1 / 29). It has no PR yet, and is local only unless the owner approves a
+  push for handover.
+- **Part 1** (committed; awaiting owner review — do not start Part 2):
+  - R-01 readiness wording fixed in `PlanFeasibility`.
+  - R-02 two-day intensity now uses the effective frequency in `OriginalTrainingPlanGenerator`.
+  - GPS issue #54 investigated in `docs/GPS_ISSUE_54_INVESTIGATION.md`. A late-batched-delivery
+    mechanism is reproduced but not confirmed on a device, and **no GPS code was changed**.
+- **Next:** wait for the owner's review of Part 1 and the device evidence for issue #54. Parts 2–4
+  continue on the same branch.
+
+## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 
 - Continue [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51) on
   `ccr-60f602a7-tfmok3-training` in `/workspace/scratch/rdd-piece5b`. The primary
