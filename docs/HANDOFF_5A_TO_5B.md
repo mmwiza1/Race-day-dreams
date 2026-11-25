@@ -384,3 +384,18 @@ JVM tests compile against `java.time` and will not catch other calls; only the i
   the failed test's accessibility tree), but `typeText` required a native
   keyboard-focus property that the Compose editor did not expose. Use the
   real digit keys and retain all timed playback and interruption assertions.
+
+### Third full-gate findings (head `eb1bb928`)
+
+- [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070892)
+  passed 857 tests and 524 captures per API. The new exact-head API 35 captures
+  match the five reviewed canonical captures below their status bars.
+- [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070662)
+  used the keypad, saved the workout and reached Step 1 of 3. The new case could
+  not find Complete open step because Workout details / controls was still
+  closed. The next candidate opens this disclosure and keeps the original
+  playback assertions. The four existing XCTest cases, startup, shared Native
+  and unsigned builds all passed.
+- A separate 13-profile deterministic probe passed 65 weekly reviews and 324
+  assertions. Cases include the missing/partial/duplicate sync and recurring
+  missed day cases, return, heavy lower-body work and above-plan Performance.

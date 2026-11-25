@@ -178,11 +178,11 @@ final class RunningWorkoutPersistenceTests: XCTestCase {
         tap("Save step", in: app)
         tap("Start custom workout", in: app)
         XCTAssertTrue(control("Step 1 of 3", in: app).waitForExistence(timeout: 20))
+        tap("Workout details / controls", in: app)
         tap("Complete open step", in: app)
         let recoveryStep = control("Step 2 of 3", in: app)
-        // Completing an open step may leave the scroll position near the bottom of the panel.
-        if !recoveryStep.exists {
-            app.swipeDown()
+        // The step heading is at the top of the scrollable panel, above the expanded controls.
+        for _ in 0..<4 where !recoveryStep.exists {
             app.swipeDown()
         }
         XCTAssertTrue(recoveryStep.waitForExistence(timeout: 15), app.debugDescription)

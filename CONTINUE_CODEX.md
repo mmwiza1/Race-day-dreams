@@ -52,6 +52,18 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   opened the native keypad, as shown in the failed test's accessibility tree,
   while XCTest's `typeText` could not find native text-field focus. The next
   candidate taps digits on the actual keypad and retains all playback assertions.
+- Exact head `eb1bb928` passed [Android](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070892)
+  with 857 tests and 524 valid captures per API and no skipped tests. Rechecked the
+  five new exact-head captures against the canonical images; only status bar
+  pixels differ. [Apple](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45508070662)
+  passed Native/shared, startup, unsigned builds and four existing UI cases. The
+  new case entered 30 seconds, saved the workout and displayed Step 1 of 3,
+  then failed to find Complete open step while the workout control disclosure
+  was closed. Open it in XCTest before completing the step. All runtime,
+  pause and interruption assertions still apply.
+- The additional 13-profile probe passed 65 generated reviews and 324 assertions,
+  including duplicate watch evidence, a missed recurring day, incomplete sync
+  and actual heavy lower-body training. The PR body records the evidence.
 - Extra API 28 probes passed actual foreground interval execution with a timed
   pause and retained run linkage, and a real old weekly review was actionable
   after upgrade. The rebuild proposal survived complete export and restore.
