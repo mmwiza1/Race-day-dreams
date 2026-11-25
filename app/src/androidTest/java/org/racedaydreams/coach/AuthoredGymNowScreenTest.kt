@@ -105,6 +105,88 @@ class AuthoredGymNowScreenTest {
     }
 
     @Test
+    fun upcomingWorkoutFinishesTodayAndCannotBeCompletedTwice() {
+        val tomorrow = day.plusDays(1)
+        io {
+            programmes.activate(
+                programme(2, tomorrow),
+                programmes.currentReference(),
+                "future",
+                emptyList(),
+            )
+        }
+        install(plannedDate = tomorrow)
+        click("Start early")
+        compose.onNodeWithText("Keep scheduled day").assertIsDisplayed().performClick()
+        assertNull(execution())
+        click("Start early")
+        compose
+            .onNodeWithText("Finishing today will complete", substring = true)
+            .assertIsDisplayed()
+        capturePart2(app, "gym-start-early")
+        compose.onNodeWithText("Start today's workout").assertIsDisplayed().performClick()
+        await { execution() != null }
+        val started = execution()!!
+        assertEquals("session", started.source()!!.sessionId())
+        assertEquals(day, started.startedAt().atOffset(started.offset()).toLocalDate())
+        assertTrue(started.actualSets().isEmpty())
+        compose.runOnIdle {
+            model.updateForm {
+                it.copy(kilograms = "60", repetitions = "6", effort = "3", rir = true)
+            }
+            model.saveSet()
+        }
+        await { execution()!!.actualSets().size == 1 }
+        compose.runOnIdle { model.finish(true) }
+        await { execution()!!.status() == GymExecution.Status.FINISHED }
+        val actual = io { CoachingStore(app).strength().single() }
+        val development = DevelopmentStore(app)
+        assertEquals(tomorrow, io { development.strengthLinks()[actual.id()] })
+        val calendar =
+            org.racedaydreams.domain.presentation.CalendarData.day(
+                tomorrow,
+                day,
+                null,
+                emptyList(),
+                emptyList(),
+                listOf(actual),
+                io { development.strengthLinks() },
+                emptyList(),
+            )
+        assertEquals(
+            org.racedaydreams.domain.presentation.CalendarData.State.COMPLETED,
+            calendar.single().state(),
+        )
+        assertEquals(actual.id(), calendar.single().id())
+        assertEquals("authored:v2", io { development.gymLinks()[actual.id()]!!.versionKey() })
+        compose.runOnIdle { page.value = "hub" }
+        compose.onNodeWithText("Completed").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Start early").assertDoesNotExist()
+        var reopened = false
+        compose.runOnIdle { model.startPlanned("session") { reopened = true } }
+        compose.waitUntil(20_000) { !model.state.value.busy }
+        assertFalse("A completed workout reopened", reopened)
+        assertTrue(model.state.value.error.orEmpty().contains("already completed"))
+        assertNull(model.state.value.view?.pending())
+        val rejected =
+            GymExecutionEngine.start(
+                    "duplicate",
+                    GymExecution.Origin.PLANNED,
+                    started.prescription(),
+                    started.source(),
+                    started.offset(),
+                    GymExecution.Tick("second-start", 0, Instant.now()),
+                )
+                .snapshot()
+        val store = SqliteGymExecutionRepository(app)
+        val duplicate = runCatching { io { store.start(rejected) } }.exceptionOrNull()
+        assertTrue(duplicate is IllegalArgumentException)
+        assertTrue(duplicate!!.message.orEmpty().contains("already completed"))
+        assertTrue(io { store.unfinished() }.isEmpty())
+        assertEquals(actual, io { CoachingStore(app).strength().single() })
+    }
+
+    @Test
     fun datedEntryDoesNotOfferADifferentDaysSession() {
         install(plannedDate = day.plusDays(1))
         compose
@@ -296,7 +378,7 @@ class AuthoredGymNowScreenTest {
         }
     }
 
-    private fun programme(revision: Int): StrengthProgramme {
+    private fun programme(revision: Int, scheduled: LocalDate = day): StrengthProgramme {
         val target =
             GymWorkoutDefinition.Target(
                 3,
@@ -320,7 +402,7 @@ class AuthoredGymNowScreenTest {
         val workout =
             StrengthProgramme.Workout(
                 "session",
-                day,
+                scheduled,
                 StrengthWorkoutBudget.workoutMinutes(slots),
                 GymWorkoutDefinition("workout", 1, created, "Authored session", slots),
                 null,
@@ -337,7 +419,7 @@ class AuthoredGymNowScreenTest {
                 GymProgramme.Goal.STRENGTH,
                 GymProgramme.Priority.BALANCED,
                 GymProgramme.Experience.INTERMEDIATE,
-                setOf(day.dayOfWeek),
+                setOf(scheduled.dayOfWeek),
                 1,
                 45,
                 setOf(

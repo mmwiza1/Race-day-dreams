@@ -72,6 +72,8 @@ data class GymNowState(
     val substitution: GymSwapState? = null,
     val association: GymAssociationCoordinator.View? = null,
     val nativeRecentIds: Set<String> = emptySet(),
+    val completedProgrammeSessions: Set<String> = emptySet(),
+    val nearbyDemandingRunDates: Set<LocalDate> = emptySet(),
     /**
      * The user's mass unit setting. Loads are typed and shown in it; [GymSetDraft.kilograms] holds
      * the typed text in this unit and is converted to kilograms only when a set is saved (B-05).
@@ -81,7 +83,7 @@ data class GymNowState(
 
 /** Original Gym Now feature operations over one execution coordinator and one database pool. */
 class SharedGymNowCoordinator(
-    database: SqlDatabase,
+    private val database: SqlDatabase,
     private val repository: GymExecutionRepository,
     associationRepository: GymAssociationRepository,
     private val programming: StrengthProgrammingRepository,
@@ -146,6 +148,8 @@ class SharedGymNowCoordinator(
         val archivedIds: Set<String>,
         val excludedIds: Set<String>,
         val nativeRecentIds: Set<String>,
+        val completedProgrammeSessions: Set<String>,
+        val nearbyDemandingRunDates: Set<LocalDate>,
         val massUnit: MassUnit,
     )
 
@@ -183,9 +187,28 @@ class SharedGymNowCoordinator(
             choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
             exclusions.exclusions().map { it.exerciseId() }.toSet(),
             finishedActualIds(recent.map { it.id() }),
+            reference?.let { completedGymSessions(database, it.id()) } ?: emptySet(),
+            nearbyDemandingRunDates(),
             runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
                 .getOrDefault(MassUnit.KG),
         )
+    }
+
+    private fun nearbyDemandingRunDates(): Set<LocalDate> {
+        val instant = now()
+        val today = CalendarDates.atOffset(instant, offsetAt(instant))
+        return coaching
+            .current()
+            ?.plan()
+            ?.workouts()
+            .orEmpty()
+            .filter {
+                it.date().toEpochDay() in
+                    today.minusDays(1).toEpochDay()..today.plusDays(1).toEpochDay() &&
+                    org.racedaydreams.domain.recovery.TrainingRecovery.demanding(it)
+            }
+            .map { it.date() }
+            .toSet()
     }
 
     private fun command(
@@ -280,6 +303,11 @@ class SharedGymNowCoordinator(
                         view = snapshot,
                         association = associations.view(),
                         nativeRecentIds = fresh?.nativeRecentIds ?: previous.nativeRecentIds,
+                        completedProgrammeSessions =
+                            fresh?.completedProgrammeSessions
+                                ?: previous.completedProgrammeSessions,
+                        nearbyDemandingRunDates =
+                            fresh?.nearbyDemandingRunDates ?: previous.nearbyDemandingRunDates,
                         massUnit = fresh?.massUnit ?: previous.massUnit,
                     )
                 }
@@ -331,6 +359,9 @@ class SharedGymNowCoordinator(
                         coaching.exercises().associateBy { it.id() },
                     )
                 }
+            require(sessionId !in completedGymSessions(database, prepared.source().id())) {
+                "This programmed session is already completed."
+            }
             coordinator.start(
                 newId(),
                 GymExecution.Origin.PLANNED,

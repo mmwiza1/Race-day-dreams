@@ -12,6 +12,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.domain.activity.ActivityRecord
 import org.racedaydreams.domain.activity.SourceIdentity
+import org.racedaydreams.domain.strength.ExerciseCatalog
+import org.racedaydreams.domain.strength.StrengthSession
 import java.io.IOException
 import java.time.Instant
 import java.time.ZoneOffset
@@ -21,6 +23,31 @@ import java.util.concurrent.atomic.AtomicInteger
 @RunWith(AndroidJUnit4::class)
 class ActivityHistoryReadinessTest {
     @get:Rule val compose = createComposeRule()
+
+    @Test fun dateOnlyStrengthHistoryDoesNotDisplayAnInventedDuration() {
+        val exercise = requireNotNull(ExerciseCatalog.definition("back-squat")).exercise()
+        val actual = StrengthSession(
+            "date-only",
+            Instant.parse("2026-11-24T12:00:00Z"),
+            ZoneOffset.UTC,
+            StrengthSession.UNRECORDED_DURATION,
+            null,
+            "",
+            listOf(StrengthSession.ExerciseSets(exercise, listOf(StrengthSession.SetEntry("set", 5, 80.0, null, false)))),
+        )
+        compose.setContent {
+            MaterialTheme {
+                ActivityHistoryScreen(
+                    CoachUiState(loading = false, strengthSessions = listOf(actual)),
+                    {},
+                    loadSummaryPage = { _, _, _ -> emptyList() },
+                )
+            }
+        }
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("1 exercise"))
+        compose.onNodeWithText("1 exercise").assertIsDisplayed()
+        compose.onNodeWithText("0 min", substring = true).assertDoesNotExist()
+    }
 
     @Test fun cancelledOldQueryCannotMarkReplacementReadyBeforeItsNativeRowArrives() {
         val older = activity("older", "manual", 0)

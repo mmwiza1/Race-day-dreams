@@ -72,6 +72,7 @@ fun SharedGymNowScreen(
     var discardId by rememberSaveable { mutableStateOf<String?>(null) }
     var confirmReload by rememberSaveable { mutableStateOf(false) }
     var plannedLimit by rememberSaveable { mutableStateOf(7) }
+    var earlySessionId by rememberSaveable { mutableStateOf<String?>(null) }
     val mutable =
         !state.loading &&
             !state.busy &&
@@ -312,11 +313,78 @@ fun SharedGymNowScreen(
                                         )
                                     }
                                     Spacer(Modifier.height(4.dp))
-                                    GymRowAction("Start this session", mayStart) {
-                                        model.startPlanned(session.id, onWorkout)
+                                    when {
+                                        session.id in state.completedProgrammeSessions -> {
+                                            Text(
+                                                "Completed",
+                                                style = MaterialTheme.typography.labelLarge,
+                                            )
+                                        }
+                                        session.date.toEpochDay() > today.toEpochDay() -> {
+                                            GymRowAction("Start early", mayStart) {
+                                                earlySessionId = session.id
+                                            }
+                                        }
+                                        else ->
+                                            GymRowAction("Start this session", mayStart) {
+                                                model.startPlanned(session.id, onWorkout)
+                                            }
                                     }
                                 }
                             }
+                        }
+                    ordered
+                        .firstOrNull {
+                            it.id == earlySessionId && it.id !in state.completedProgrammeSessions
+                        }
+                        ?.let { session ->
+                            AlertDialog(
+                                onDismissRequest = { earlySessionId = null },
+                                title = { Text("Start this session early?") },
+                                text = {
+                                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                        Text(
+                                            "${session.title} is planned for ${formatDate(session.date)}. Finishing today will complete that programme session."
+                                        )
+                                        if (
+                                            sessions.any {
+                                                it.date == today &&
+                                                    it.id !in state.completedProgrammeSessions
+                                            }
+                                        )
+                                            Text(
+                                                "Another strength session is planned for today. Consider leaving recovery time between sessions."
+                                            )
+                                        if (state.nearbyDemandingRunDates.isNotEmpty())
+                                            Text(
+                                                "A demanding run is planned near today. Consider keeping leg work lighter or waiting for the original day."
+                                            )
+                                        val hardDays =
+                                            org.racedaydreams.domain.strength.StrengthAnalytics
+                                                .hardLowerBodyDates(state.recent)
+                                        if (today in hardDays || today.minusDays(1) in hardDays)
+                                            Text(
+                                                "You logged hard lower-body work recently. Consider leaving more recovery time."
+                                            )
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = {
+                                            earlySessionId = null
+                                            model.startPlanned(session.id, onWorkout)
+                                        },
+                                        enabled = mayStart,
+                                    ) {
+                                        Text("Start today's workout")
+                                    }
+                                },
+                                dismissButton = {
+                                    TextButton(onClick = { earlySessionId = null }) {
+                                        Text("Keep scheduled day")
+                                    }
+                                },
+                            )
                         }
                     if (plannedLimit < ordered.size)
                         TextButton(

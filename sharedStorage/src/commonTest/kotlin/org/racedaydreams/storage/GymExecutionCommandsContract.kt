@@ -336,6 +336,22 @@ abstract class GymExecutionCommandsContract {
             assertFails { r.saveWorkout(w.copy(title = "Changed"), p.source()) }
             assertEquals(w, r.workout(w.id(), w.revision()))
             assertEquals(ended, r.finish(ended, 1).execution())
+            val retryAsAnotherWorkout =
+                GymExecutionEngine.start(
+                    "duplicate",
+                    GymExecution.Origin.PLANNED,
+                    p.definition(),
+                    p.source(),
+                    Offsets.ofTotalSeconds(0),
+                    tick(2000),
+                )
+            assertTrue(
+                assertFails { r.start(retryAsAnotherWorkout.snapshot()) }
+                    .message!!
+                    .contains("already completed")
+            )
+            assertNull(r.load("duplicate"))
+            assertEquals(1, db.query("SELECT id FROM strength_sessions").size)
         }
     }
 

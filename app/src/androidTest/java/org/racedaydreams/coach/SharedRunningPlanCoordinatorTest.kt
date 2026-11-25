@@ -267,6 +267,20 @@ class SharedRunningPlanCoordinatorTest {
         }
 
     @Test
+    fun upcomingRunCanMoveEarlierWithItsOriginalIdentityAndRejectsOccupiedToday() = fixture { f ->
+        val blocked = execute(f) { f.service.changeWorkout("move", today) }
+        assertTrue(blocked.error!!.contains("already planned"))
+        assertEquals(f.original, f.coaching.current())
+        assertNull(execute(f) { f.service.changeWorkout("move", today.plusDays(1)) }.error)
+        val moved = f.coaching.current()!!.plan().workouts().single { it.id() == "move" }
+        assertEquals(today.plusDays(1), moved.date())
+        val decision = f.context.sessionDecisions().single()
+        assertEquals(today.plusDays(2), decision.originalDate())
+        assertEquals(moved.id(), decision.workoutId())
+        assertEquals(f.actual, f.activities.activities().single())
+    }
+
+    @Test
     fun explicitMoveCreatesRevisionAndReceiptWhileCompletedWorkoutCannotBeMoved() = fixture { f ->
         assertNull(execute(f) { f.service.changeWorkout("move", today.plusDays(3)) }.error)
         val current = f.coaching.current()!!

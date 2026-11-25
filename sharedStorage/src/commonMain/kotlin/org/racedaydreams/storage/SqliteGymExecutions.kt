@@ -79,6 +79,8 @@ class SqliteGymExecutions(
             require(!records.hasUnfinished()) {
                 "Finish or recover the unfinished gym workout before starting another."
             }
+            if (initial.origin() == GymExecution.Origin.PLANNED)
+                requireUncompleted(initial.source()!!, initial.id())
             sources.ensure(initial.prescription(), initial.source())
             database.execute(
                 "INSERT INTO strength_executions(id,revision,origin,state,started_at,title,recorded_elapsed,active_millis,set_count,event_count,workout_id,workout_revision,header,accepted_actual,actual_edited_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -297,7 +299,15 @@ class SqliteGymExecutions(
             )
         }
 
+    private fun requireUncompleted(source: GymExecution.SourceReference, id: String) {
+        require(source.sessionId() !in completedGymSessions(database, source.id(), id)) {
+            "This programmed session is already completed."
+        }
+    }
+
     private fun saveActualAndAssociation(finished: GymExecution, payload: String) {
+        val source = finished.plannedAssociation()
+        if (source != null) requireUncompleted(source, finished.id())
         val actual = sources.actual(finished.id())
         conflict(actual == null || actual == finished.completedSession())
         if (actual == null)
@@ -305,7 +315,7 @@ class SqliteGymExecutions(
                 "INSERT INTO strength_sessions(id,started_at,payload) VALUES(?,?,?)",
                 texts(finished.id(), finished.startedAt().toString(), payload),
             )
-        val source = finished.plannedAssociation() ?: return
+        if (source == null) return
         val link = plannedLink(finished, source)
         val existing =
             database

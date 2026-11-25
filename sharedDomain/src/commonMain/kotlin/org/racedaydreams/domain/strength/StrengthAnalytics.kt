@@ -104,6 +104,7 @@ object StrengthAnalytics {
     @JvmStatic
     fun sessionLoad(session: StrengthSession): Double? {
         val effort = session.rpe() ?: return null
+        if (!session.hasRecordedDuration()) return null
         // Valid recorded sessions are positive and <=12h. Retain original toMillis
         // truncation/order.
         val duration = session.duration()

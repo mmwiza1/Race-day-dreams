@@ -68,28 +68,9 @@ fun DreamRouteSection(activity: org.racedaydreams.domain.activity.ActivityRecord
 
 @Composable
 fun MobilitySupportCard(open: () -> Unit) {
-    val context = LocalContext.current
-    val count by
-        produceState(0) {
-            value =
-                withContext(Dispatchers.IO) {
-                    SupportStore(context)
-                        .routineCount(
-                            java.time.LocalDate.now()
-                                .with(
-                                    java.time.temporal.TemporalAdjusters.previousOrSame(
-                                        java.time.DayOfWeek.MONDAY
-                                    )
-                                )
-                                .atStartOfDay(java.time.ZoneId.systemDefault())
-                                .toInstant(),
-                            mobilityOnly = true,
-                        )
-                }
-        }
     GuidanceCard(guidanceMint()) {
         Text("Mobility this week", style = MaterialTheme.typography.titleMedium)
-        Text("$count optional sessions · 2–4 short sessions suggested")
+        Text("2–4 short sessions suggested")
         Text("Next: Hips & glutes · 8 min", style = MaterialTheme.typography.bodyMedium)
         TextButton(onClick = open) { Text("View routines") }
     }

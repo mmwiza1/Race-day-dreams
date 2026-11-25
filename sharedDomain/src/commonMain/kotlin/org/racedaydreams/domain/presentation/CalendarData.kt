@@ -208,7 +208,8 @@ object CalendarData {
                 Entry(
                     Category.STRENGTH,
                     State.COMPLETED,
-                    "Strength · ${s.duration().getSeconds() / 60} min",
+                    if (s.hasRecordedDuration()) "Strength · ${s.duration().getSeconds() / 60} min"
+                    else "Strength",
                     s.id(),
                     null,
                 )
@@ -228,8 +229,8 @@ object CalendarData {
                 out.add(
                     Entry(
                         Category.STRENGTH,
-                        State.MOVED,
-                        "Strength routine · recorded on ${formatGymProgrammeDate(strengthDate(s))}",
+                        State.COMPLETED,
+                        "Strength · completed on ${formatGymProgrammeDate(strengthDate(s))}",
                         s.id(),
                         null,
                     )

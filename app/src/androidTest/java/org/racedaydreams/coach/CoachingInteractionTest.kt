@@ -1,6 +1,9 @@
 package org.racedaydreams.coach
 
 import android.content.Context
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.test.core.app.ActivityScenario
@@ -54,24 +57,92 @@ class CoachingInteractionTest {
         Assert.assertEquals("today-workout",FeatureStore(context).activities()[0].plannedWorkoutId())
         Assert.assertEquals("test-version",CoachingStore(context).responses()[0].planVersionId())
     }
+    @OptIn(ExperimentalMaterial3Api::class)
     @Test fun strengthFormPersistsOrderedSetsAndPbEvidence(){
         launch();compose.onNodeWithText("Strength").performClick();await("Log workout")
         compose.onNodeWithText("Log workout").performScrollTo().performClick();await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
-        choosePastDate("Session date")
-        enter("Start time (HH:mm, local)","00:01")
+        val today = LocalDate.now()
+        val yesterday = today.minusDays(1)
+        compose.onNodeWithText("Session date: ${friendlyDate(today)}").performScrollTo()
+            .assertIsDisplayed().performSemanticsAction(SemanticsActions.OnClick)
+        await("Choose date")
+        if (yesterday.month != today.month)
+            compose.onNodeWithContentDescription("Change to previous month").performClick()
+        val accessibleDate = requireNotNull(DatePickerDefaults.dateFormatter().formatDate(
+            yesterday.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli(),
+            java.util.Locale.getDefault(),
+            forContentDescription = true,
+        ))
+        capturePart2(context, "historical-date-picker")
+        compose.onNode(hasText(accessibleDate) and hasClickAction() and hasAnyAncestor(isDialog()))
+            .assertIsDisplayed().assertIsEnabled().performClick()
+        compose.onNodeWithText("Choose date").performSemanticsAction(SemanticsActions.OnClick)
+        compose.onNodeWithText("Session date: ${friendlyDate(yesterday)}").assertExists()
+        compose.onNodeWithText("Start time (HH:mm, local)").assertDoesNotExist()
+        compose.onNodeWithText("Session details (optional)").performScrollTo().performClick()
         enter("Duration (minutes)","50");enter("Session RPE 0–10 (optional)","7")
-        enter("Weight (kg)","80");enter("Reps","5");enter("Set RPE 0–10 (optional)","7")
+        enter("Weight (kg)","80");enter("Reps","5")
+        compose.onNodeWithText("Warm-up and effort (optional)").performScrollTo().performClick()
+        enter("Set RPE 0–10 (optional)","7")
         compose.onNodeWithText("Add set").performScrollTo().performClick()
         enter("Weight (kg)","90");enter("Set RPE 0–10 (optional)","8")
         compose.onNodeWithText("Add set").performScrollTo().performClick()
-        compose.onNodeWithText("Add exercise and sets").performScrollTo().performClick()
         compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
         compose.waitUntil(20000){CoachingStore(context).strength().size==1}
-        val sets=CoachingStore(context).strength()[0].exercises()[0].sets()
+        val session=CoachingStore(context).strength().single()
+        Assert.assertEquals(LocalDate.now().minusDays(1), session.startedAt().atOffset(session.offset()).toLocalDate())
+        Assert.assertEquals(Duration.ofMinutes(50), session.duration())
+        Assert.assertEquals(7.0, session.rpe()!!, 0.0)
+        val sets=session.exercises().single().sets()
         Assert.assertEquals(80.0,sets[0].kilograms(),0.00001);Assert.assertEquals(90.0,sets[1].kilograms(),0.00001)
         Assert.assertTrue(org.racedaydreams.domain.strength.StrengthAnalytics.progression(CoachingStore(context).strength()).any{it.category()=="Load × 5"&&it.kilograms()==90.0})
     }
+    @Test
+    fun dateOnlyWorkoutCopiesDraftSetsAndSavesDistinctActuals() {
+        val original = org.racedaydreams.domain.strength.StrengthSession(
+            "yesterday", LocalDate.now().minusDays(1).atTime(12, 0)
+                .atZone(ZoneId.systemDefault()).toInstant(),
+            ZoneId.systemDefault().rules.getOffset(Instant.now()), Duration.ofMinutes(30),
+            null, "", listOf(org.racedaydreams.domain.strength.StrengthSession.ExerciseSets(
+                requireNotNull(org.racedaydreams.domain.strength.ExerciseCatalog.definition("back-squat")).exercise(),
+                listOf(org.racedaydreams.domain.strength.StrengthSession.SetEntry("original-set", 5, 80.0, null, false)),
+            )),
+        )
+        CoachingStore(context).saveStrength(original)
+        launch()
+        compose.onNodeWithText("Strength").performClick()
+        await("Log workout")
+        compose.onNodeWithText("Log workout").performScrollTo().performClick()
+        await("Log strength workout")
+        compose.onNodeWithText("Log strength workout").performClick()
+
+        compose.onNodeWithText("Use previous sets").assertIsDisplayed()
+        compose.onNodeWithText("Session details (optional)").assertExists()
+        compose.onNodeWithText("Duration (minutes)").assertDoesNotExist()
+        capturePart2(context, "historical-entry")
+        compose.onNodeWithText("Use last working set values").performScrollTo().performClick()
+        compose.onNodeWithText("1: 80.0 kg × 5 reps").assertDoesNotExist()
+        compose.onNodeWithText("Clear set entry").performScrollTo().performClick()
+        compose.onNodeWithText("Use previous sets").performScrollTo().performClick()
+        compose.onNodeWithText("Copied as a draft. Keep only the sets you actually did.").assertExists()
+        compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick()
+        val setsBeforeSave = CoachingStore(context).strength().single()
+        Assert.assertEquals(original, setsBeforeSave)
+        compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
+        compose.waitUntil(20_000) { CoachingStore(context).strength().size == 2 }
+        val logged = CoachingStore(context).strength().first()
+        Assert.assertEquals(LocalDate.now(), logged.startedAt().atOffset(logged.offset()).toLocalDate())
+        Assert.assertFalse(logged.hasRecordedDuration())
+        Assert.assertNull(logged.rpe())
+        val newSets = logged.exercises().single().sets()
+        Assert.assertEquals(listOf(80.0, 80.0), newSets.map { it.kilograms() })
+        Assert.assertEquals(2, newSets.map { it.id() }.toSet().size)
+        Assert.assertTrue(newSets.none { it.id() == "original-set" })
+        Assert.assertEquals(original, CoachingStore(context).strength().last())
+
+    }
+
     @Test fun imperialActualDistanceConvertsOnceWithoutChangingPrescription(){
         val t=profile.preferences()
         profile=UserProfile(profile.raceGoal(),TrainingPreferences(t.strategy(),t.runningDays(),t.runsPerWeek(),t.longRunDay(),t.gymDays(),t.scheduleType(),UnitSystem.IMPERIAL),false)
@@ -111,3 +182,13 @@ class CoachingInteractionTest {
     }
     private fun enter(label:String,value:String){compose.onNodeWithText(label).performScrollTo().performTextReplacement(value)}
 }
+
+internal fun capturePart2(context: Context, name: String) {
+        val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
+        val label = androidx.test.platform.app.InstrumentationRegistry.getArguments().getString("part2Evidence")
+        if (label !in setOf("light", "dark")) return
+        val bitmap = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+        java.io.File(context.filesDir, "$name-$label.png").outputStream().use {
+            check(bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, it))
+        }
+    }

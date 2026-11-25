@@ -185,6 +185,10 @@ fun SharedPlannedWorkoutScreen(
             ) {
                 TextButton(onClick = { moving = !moving }) { Text("Move or skip this session") }
                 if (moving) {
+                    if (workout.date().toEpochDay() > dates.today().toEpochDay())
+                        TextButton(onClick = { moveDate = dates.today().toString() }) {
+                            Text("Use today's date")
+                        }
                     dateInput("Move to", moveDate, { moveDate = it })
                     val proposed = runCatching { dates.parse(moveDate) }.getOrNull()
                     org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(

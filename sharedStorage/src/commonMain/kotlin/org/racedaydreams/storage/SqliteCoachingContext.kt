@@ -114,6 +114,13 @@ class SqliteCoachingContext(
         session: String?,
     ) =
         database.transaction {
+            if (version != null && session != null)
+                require(
+                    session !in
+                        completedGymSessions(database, version.substringBeforeLast(":v"), actual)
+                ) {
+                    "This programmed session is already completed."
+                }
             val payload = buildJsonObject {
                 put("id", actual)
                 put("plannedDate", planned.toString())

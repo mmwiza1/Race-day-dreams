@@ -17,16 +17,39 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 
 ## Active task — Parts 1–4 reliability work (owner request, 25 November 2026)
 
-- **Branch:** one integration branch, `ccr-60f602a7-tfmok3-reliability`, created from `main` `7823372c`
-  (PR #51 merged, 0.16.0-test1 / 29). It has no PR yet, and is local only unless the owner approves a
-  push for handover.
-- **Part 1** (committed; awaiting owner review — do not start Part 2):
-  - R-01 readiness wording fixed in `PlanFeasibility`.
-  - R-02 two-day intensity now uses the effective frequency in `OriginalTrainingPlanGenerator`.
-  - GPS issue #54 investigated in `docs/GPS_ISSUE_54_INVESTIGATION.md`. A late-batched-delivery
-    mechanism is reproduced but not confirmed on a device, and **no GPS code was changed**.
-- **Next:** wait for the owner's review of Part 1 and the device evidence for issue #54. Parts 2–4
-  continue on the same branch.
+- Use one integration branch, `ccr-60f602a7-tfmok3-reliability`. The active worktree
+  is `/workspace/scratch/rdd-reliability`. Part 1 was fetched at
+  `58cf94c4e6749cf2df97a55f7d487a0b1624e1ea`; `a8d17a5a` and `c77d5d15`
+  were verified as ancestors. The branch has no integration PR at this checkpoint.
+- Part 1 remains intact: R-01 readiness wording, R-02 effective-frequency intensity,
+  and the [GPS #54 investigation](docs/GPS_ISSUE_54_INVESTIGATION.md). The owner's
+  available diagnostic and ordinary backup cannot establish the fix-delivery cause.
+  Recording behaviour remains unchanged.
+- Part 2 work: exercise-first historical gym entry, compact set editing and optional
+  details, date-only scheduling and a distinct missing-duration value in the existing
+  backup contract. Gym Now's early start retains the selected original prescription
+  and records actual times. Calendar displays completion on the scheduled date.
+  Shared persistence rejects duplicate completed sessions across programme revisions.
+  Running adds a today shortcut to its existing reviewed one-off move.
+- Part 2 verification: debug app and instrumentation APKs built. Formatting and diff checks
+  passed. 53 focused JVM tests passed (21 gym execution, 19 association, 13 strength evidence/JSON).
+  13 distinct focused API 28 cases passed across the development checks: historical entry in light
+  and dark, earlier date and set/PB persistence, source editing, earlier running moves, truthful
+  date-only history, and eight gym execution/storage cases covering direct duplicate rejection,
+  recovery, original links, rollback and complete backup. The initial emulator aborted in Android's
+  window-manager watchdog. The calendar path, affected assertions and exact duplicate checks were
+  subsequently verified. No iOS simulator, API 35/36 or physical-device runs were requested or run.
+- Local screenshots and test logs are under `/workspace/scratch/rdd-part2-evidence`. Reviewed
+  `historical-entry-light-review.png`, `historical-entry-dark.png`, and `gym-early-final-light.png`.
+  The Android historical form was updated. The shared scheduling/storage changes build on Android;
+  iOS runtime verification is outside this checkpoint.
+- Stop after Part 2 review. Wait for the owner to authorise Part 3 before exercise
+  library expansion, multi-muscle Gym Now generation, substitutions, duplicate-run
+  handling, treadmill support or diagnostic implementation. Keep the same branch and
+  use the eventual single draft integration PR. GPS calculation changes remain
+  deferred pending usable real-world evidence.
+- No version change, release, push of Part 2 or full platform matrix is part of this
+  checkpoint. Local development screenshots do not update the canonical gallery.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 
