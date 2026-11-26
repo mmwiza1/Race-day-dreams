@@ -15,7 +15,25 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — Parts 1–4 reliability work (owner request, 25 November 2026)
+## Active task — Parts 1–4 integration and 0.17.0-test1 publication
+
+- On 26 November the owner authorised pushing the existing reliability branch, opening
+  one integration PR against `main`, merging after all mandatory exact-head checks and
+  screenshot review, and verifying the rolling development publication. Stop after
+  publication verification. The independent audit is a separate task.
+- The local Parts 1–4 checkpoint is `b1e9439a51567018d6a20dd02a0c906349f947b2`.
+  Live main was `7823372c81d3fe09c9485ed6de5ee461d546f593` and an ancestor; the previous
+  published build is 0.16.0-test1 / 29. This candidate prepares 0.17.0-test1 / 30.
+- Use the pre-existing branch `ccr-60f602a7-tfmok3-reliability`. Locate its one PR by
+  head ref. Draft gates cover initial integration; mark ready for the full gates. When
+  API 35 publishes canonical screenshots, fetch the resulting commit and validate the
+  actual source fingerprint, screenshot evidence and checks on the final PR head.
+- Squash merge only when the full Android and Apple gates pass on the final head.
+  Verify post-merge CI and release asset provenance, Android package, version, signing
+  identity and SHA-256, update manifest, and all three unsigned iOS artifacts.
+  Do not create a production tag or start audit work here.
+
+## Development history — Parts 1–4 reliability work (owner request, 25 November 2026)
 
 - Use one integration branch, `ccr-60f602a7-tfmok3-reliability`. The active worktree
   is `/workspace/scratch/rdd-reliability`. Part 1 was fetched at
