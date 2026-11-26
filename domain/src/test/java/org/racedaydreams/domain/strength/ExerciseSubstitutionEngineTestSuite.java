@@ -24,6 +24,7 @@ public final class ExerciseSubstitutionEngineTestSuite {
     public static void main(String[] args) {
         intentIsMoreSpecificThanRegion();
         busyEquipmentOffersDifferentCompleteSetups();
+        experiencedLiftersCanChooseNewEquipmentFreePushUps();
         capabilityRequirementsAreCompleteAndSpecific();
         measurementFamiliesAreHonest();
         easierAndHarderNeedReviewedEvidenceAndExperience();
@@ -75,7 +76,12 @@ public final class ExerciseSubstitutionEngineTestSuite {
         var available = Immutable.set(BARBELL, SQUAT_RACK, BENCH, DUMBBELLS, CHEST_PRESS_MACHINE);
         var alternatives =
                 ExerciseSubstitutionEngine.rank(
-                        context("bench-press", available, EQUIPMENT_BUSY), 4);
+                        context(
+                                "bench-press",
+                                available,
+                                EQUIPMENT_BUSY,
+                                GymProgramme.Experience.BEGINNER),
+                        4);
         equal(
                 4,
                 alternatives.size(),
@@ -109,7 +115,12 @@ public final class ExerciseSubstitutionEngineTestSuite {
         }
         var filtered =
                 ExerciseSubstitutionEngine.rank(
-                        context("bench-press", Collections.emptySet(), EQUIPMENT_UNAVAILABLE), 4);
+                        context(
+                                "bench-press",
+                                Collections.emptySet(),
+                                EQUIPMENT_UNAVAILABLE,
+                                GymProgramme.Experience.BEGINNER),
+                        4);
         equal(
                 2,
                 filtered.size(),
@@ -124,6 +135,35 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 filtered.stream()
                         .allMatch(ExerciseSubstitutionEngine.Suggestion::measurementChanged),
                 "Load-and-reps to bodyweight reps is explicitly flagged");
+    }
+
+    private static void experiencedLiftersCanChooseNewEquipmentFreePushUps() {
+        var available = Immutable.set(BARBELL, SQUAT_RACK, BENCH, DUMBBELLS, CHEST_PRESS_MACHINE);
+        var busy =
+                ExerciseSubstitutionEngine.rank(
+                        context("bench-press", available, EQUIPMENT_BUSY), 4);
+        equal(
+                List.of(
+                        "dumbbell-floor-press",
+                        "machine-chest-press",
+                        "diamond-push-up",
+                        "wide-grip-push-up"),
+                busy.stream().map(suggestion -> suggestion.exercise().id()).toList(),
+                "Experienced lifters see alternative setups before any exercise sharing busy"
+                    + " equipment");
+
+        var bodyweight =
+                ExerciseSubstitutionEngine.rank(
+                        context("bench-press", Collections.emptySet(), EQUIPMENT_UNAVAILABLE), 4);
+        equal(
+                List.of("diamond-push-up", "wide-grip-push-up", "knee-push-up", "push-up"),
+                bodyweight.stream().map(suggestion -> suggestion.exercise().id()).toList(),
+                "Experienced lifters retain familiar options alongside the new no-equipment"
+                    + " variations");
+        ok(
+                bodyweight.stream()
+                        .allMatch(ExerciseSubstitutionEngine.Suggestion::measurementChanged),
+                "All equipment-free replacements still disclose the measurement change");
     }
 
     private static void capabilityRequirementsAreCompleteAndSpecific() {
@@ -256,7 +296,13 @@ public final class ExerciseSubstitutionEngineTestSuite {
                             .appropriateFor(experienced.experience()),
                     "A harder request retains the experience gate");
         }
-        var noEvidence = context("machine-chest-press", Immutable.set(CHEST_PRESS_MACHINE), HARDER);
+        var machineWithNewOptions =
+                context("machine-chest-press", Immutable.set(CHEST_PRESS_MACHINE), HARDER);
+        var harder = ExerciseSubstitutionEngine.rank(machineWithNewOptions, 4);
+        ok(
+                contains(harder, "diamond-push-up"),
+                "New catalogue metadata supports a more technical horizontal push");
+        var noEvidence = context("diamond-push-up", Collections.emptySet(), HARDER);
         ok(
                 ExerciseSubstitutionEngine.rank(noEvidence, 4).isEmpty(),
                 "An unreviewed harder variation is not fabricated to fill the screen");
@@ -671,10 +717,18 @@ public final class ExerciseSubstitutionEngineTestSuite {
     }
 
     private static Context context(String id, Set<Equipment> equipment, Reason reason) {
+        return context(id, equipment, reason, GymProgramme.Experience.EXPERIENCED);
+    }
+
+    private static Context context(
+            String id,
+            Set<Equipment> equipment,
+            Reason reason,
+            GymProgramme.Experience experience) {
         return new Context(
                 exercise(id),
                 GymProgramme.Goal.STRENGTH,
-                GymProgramme.Experience.EXPERIENCED,
+                experience,
                 equipment,
                 Set.of(),
                 Set.of(),

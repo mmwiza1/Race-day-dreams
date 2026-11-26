@@ -24,8 +24,15 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 - The local Parts 1–4 checkpoint is `b1e9439a51567018d6a20dd02a0c906349f947b2`.
   Live main was `7823372c81d3fe09c9485ed6de5ee461d546f593` and an ancestor; the previous
   published build is 0.16.0-test1 / 29. This candidate prepares 0.17.0-test1 / 30.
-- Use the pre-existing branch `ccr-60f602a7-tfmok3-reliability`. Locate its one PR by
-  head ref. Draft gates cover initial integration; mark ready for the full gates. When
+- Use the pre-existing branch `ccr-60f602a7-tfmok3-reliability` and
+  [integration PR #55](https://github.com/mmwiza1/Race-day-dreams/pull/55).
+  [Draft Android formatting](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45889671296)
+  passed. The first [draft shared run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45889671295)
+  exposed legacy substitution fixtures that expected the pre-expansion catalogue. Retained
+  exact beginner expectations and added exact experienced rankings for the expanded catalogue,
+  keeping a separate no-evidence case. The corrected local shared domain, health, storage and
+  retained domain suite passed; visual guidance passed for 246 exercises and 14 routines.
+  Draft gates cover initial integration; mark ready for the full gates. When
   API 35 publishes canonical screenshots, fetch the resulting commit and validate the
   actual source fingerprint, screenshot evidence and checks on the final PR head.
 - Squash merge only when the full Android and Apple gates pass on the final head.
