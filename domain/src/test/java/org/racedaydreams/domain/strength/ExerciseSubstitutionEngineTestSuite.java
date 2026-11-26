@@ -150,7 +150,7 @@ public final class ExerciseSubstitutionEngineTestSuite {
                         "wide-grip-push-up"),
                 busy.stream().map(suggestion -> suggestion.exercise().id()).toList(),
                 "Experienced lifters see alternative setups before any exercise sharing busy"
-                    + " equipment");
+                        + " equipment");
 
         var bodyweight =
                 ExerciseSubstitutionEngine.rank(
@@ -159,7 +159,7 @@ public final class ExerciseSubstitutionEngineTestSuite {
                 List.of("diamond-push-up", "wide-grip-push-up", "knee-push-up", "push-up"),
                 bodyweight.stream().map(suggestion -> suggestion.exercise().id()).toList(),
                 "Experienced lifters retain familiar options alongside the new no-equipment"
-                    + " variations");
+                        + " variations");
         ok(
                 bodyweight.stream()
                         .allMatch(ExerciseSubstitutionEngine.Suggestion::measurementChanged),
