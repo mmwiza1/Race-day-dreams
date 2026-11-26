@@ -120,7 +120,9 @@ class AppleRecordingLocation(
     }
 
     fun preciseLocationGranted(): Boolean? =
-        if (canStart()) manager.accuracyAuthorization == CLAccuracyAuthorizationFullAccuracy
+        if (canStart())
+            manager.accuracyAuthorization ==
+                CLAccuracyAuthorization.CLAccuracyAuthorizationFullAccuracy
         else null
 
     fun start() {

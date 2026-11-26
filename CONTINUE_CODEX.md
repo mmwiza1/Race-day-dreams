@@ -32,6 +32,11 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   exact beginner expectations and added exact experienced rankings for the expanded catalogue,
   keeping a separate no-evidence case. The corrected local shared domain, health, storage and
   retained domain suite passed; visual guidance passed for 246 exercises and 14 routines.
+  The next ready run's formatting failure was corrected with the repository formatter.
+  Local Android lint and the non-debuggable release APK check passed. The
+  [unsigned iPhone compile](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45891449399/job/140155027188)
+  exposed a Core Location enum reference that Android cannot compile-check; the candidate now
+  uses the value scoped under its Kotlin/Native enum type. Await the full gates on the new head.
   Draft gates cover initial integration; mark ready for the full gates. When
   API 35 publishes canonical screenshots, fetch the resulting commit and validate the
   actual source fingerprint, screenshot evidence and checks on the final PR head.
