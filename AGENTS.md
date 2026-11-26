@@ -63,6 +63,18 @@ now and in future. Normal GitHub Actions CI execution is not affected.
 - Never interfere with a branch actively being developed by Codex or another developer.
 - Keep pushes to a minimum, and do not manually trigger expensive workflows unless necessary.
 
+## Progress updates — standing owner preference
+
+Keep the owner informed throughout implementation, including when resuming work.
+
+- Start with a brief implementation plan. After each major task or checkpoint, say what is
+  complete and what remains.
+- Before a longer build or test suite, say what it will validate. When it finishes, summarise
+  the results and any failures.
+- Report blockers and changes of approach promptly, including how they affect the work.
+- During lengthy work, give a short update about every 10–15 minutes where supported.
+  Focus on what has changed so the owner can follow progress without reading tool output.
+
 ## Release notes
 
 All GitHub releases — the rolling `development` release and permanent version tags —
