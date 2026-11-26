@@ -360,15 +360,22 @@ private fun SharedCompletionForm(
     var notes by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     CoachCard {
-        Text(if (treadmill) "Indoor treadmill run" else "Actual workout — manually entered")
+        Text(
+            if (treadmill) "Indoor treadmill run" else "Actual workout — manually entered",
+            style = MaterialTheme.typography.titleMedium,
+        )
         if (!treadmillOnly)
             FilterChip(
                 selected = treadmill,
                 onClick = { treadmill = !treadmill },
                 label = { Text("Indoor treadmill run") },
             )
-        if (treadmill)
-            Text("Enter the distance and duration from your treadmill. No GPS route is recorded.")
+        if (treadmill) {
+            Text(
+                "Use your treadmill’s distance and duration. No GPS route is recorded.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         if (treadmillOnly && workoutId != null)
             Text("Saving will complete the selected planned workout.")
         input(
@@ -382,7 +389,10 @@ private fun SharedCompletionForm(
         input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
         if (treadmillOnly) {
             Text(
-                "If you just finished, you can save now. Set the actual start date and time for an older workout or to match a watch recording."
+                if (details)
+                    "Use the actual start time for an older run or to match a watch recording."
+                else "Defaults to finishing now.",
+                style = MaterialTheme.typography.bodyMedium,
             )
             TextButton(onClick = { details = !details }) {
                 Text(if (details) "Use the current finish time" else "Set start time or add notes")

@@ -88,9 +88,29 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   seven diagnostics, two Gym Now, three run comparison and treadmill, and five catalogue/run
   evidence regressions. See the logs and captures under `/workspace/scratch/rdd-part3-evidence`.
   Native iOS, the full device matrix and a physical S24 run are separate checks.
-- Part 3 ends at the local treadmill and handoff commit. The branch remains unpushed and
-  unmerged. Wait for explicit owner approval to begin Part 4. Keep GPS calculation changes
-  deferred until a new outdoor diagnostic trace is available.
+- Part 3 was pushed for preservation at `b6dcfa4d5ebc06ea48164411c61935dd04e98888`.
+  The branch is unmerged. Keep GPS calculation changes deferred until a new outdoor
+  diagnostic trace is available.
+- The owner authorised the 26 November visual-hardening checkpoint on the same branch.
+  [UI design standards](docs/UI_DESIGN_STANDARDS.md) are mandatory through `AGENTS.md`.
+  The shared duplicate comparison uses selectable recording summaries, a saved-choice
+  indicator and a separate confirmed local-copy action. Treadmill entry has a clearer
+  heading and shorter timing guidance. The existing recording, grouping, storage and
+  ownership rules still apply. Keep the checkpoint local and wait for explicit Part 4 approval.
+- The focused UI review also covered the existing Gym Now setup/preview and historical
+  logging captures. On API 28 the diagnostic session list, JSON review and Android save picker
+  were opened with the Part 3 emulator recording fixture. Broader optional UI backlog:
+  make the Gym Now generated result easier to reach from the long setup; review action
+  hierarchy in historical set entry; give diagnostics a scannable session summary with raw JSON
+  available for review and export. The long treadmill duration label sits close to the preceding
+  field at 200% with the keyboard open. Consider a shorter label with the format as help text.
+- Visual-hardening verification: final debug and test APKs built and formatting passed. API 28
+  passed duplicate selection, cancellation and provider ownership, and unplanned treadmill entry
+  in light and dark at approximately 360dp with 200% text. The planned treadmill association
+  also passed in light. Actual captures exposed a clipped removal warning at 200%. The final
+  review confirmed the shorter scrollable warning and both dialog actions were readable.
+  Evidence and focused logs are in `/workspace/scratch/rdd-ui-hardening`. Native iOS,
+  physical-device, manual TalkBack and full integration gates remain outside this checkpoint.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

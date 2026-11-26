@@ -1,19 +1,24 @@
 package org.racedaydreams.coach
 
 import android.app.Application
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.After
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
+import org.racedaydreams.coach.theme.RaceDayTheme
 import org.racedaydreams.data.FeatureStore
 import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.activity.PhysicalRunSessions
@@ -46,20 +51,23 @@ class TreadmillEntryTest {
                 )[CoachViewModel::class.java]
             }
         val store = FeatureStore(app)
+        val dark = InstrumentationRegistry.getArguments().getString("part2Evidence") == "dark"
         compose.setContent {
-            MaterialTheme {
-                CoachPage {
-                    val view by model.state.collectAsState()
-                    SharedTreadmillEntry(
-                        view,
-                        model.runningEvidence,
-                        AndroidCoachCalendarDates,
-                        { it },
-                        null,
-                        null,
-                        {},
-                    ) { label, value, change, decimal ->
-                        CoachInput(label, value, change, decimal)
+            RaceDayTheme(darkTheme = dark, dynamicColour = false) {
+                Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    CoachPage {
+                        val view by model.state.collectAsState()
+                        SharedTreadmillEntry(
+                            view,
+                            model.runningEvidence,
+                            AndroidCoachCalendarDates,
+                            { it },
+                            null,
+                            null,
+                            {},
+                        ) { label, value, change, decimal ->
+                            CoachInput(label, value, change, decimal)
+                        }
                     }
                 }
             }
@@ -76,7 +84,13 @@ class TreadmillEntryTest {
             .performScrollTo()
             .performTextReplacement("33:30")
         compose.onNodeWithText("Start time (HH:mm, local)").assertDoesNotExist()
-        compose.onNodeWithText("Save treadmill run").performScrollTo().performClick()
+        compose.onNodeWithText("Set start time or add notes").performScrollTo().performClick()
+        compose.onNodeWithText("Start time (HH:mm, local)").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Use the current finish time").performScrollTo().performClick()
+        compose.onNodeWithText("Start time (HH:mm, local)").assertDoesNotExist()
+        compose.onNodeWithText("Save treadmill run").performScrollTo().assertIsDisplayed()
+        capturePart2(app, "treadmill-save")
+        compose.onNodeWithText("Save treadmill run").performClick()
         compose.waitUntil(20_000) { store.activitySummaries().size == 1 }
         val manual = store.activitySummaries().single()
         assertEquals(5100.0, manual.distanceMetres()!!, 0.0)
