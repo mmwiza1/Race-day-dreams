@@ -2,6 +2,7 @@ package org.racedaydreams.domain
 
 import kotlin.test.*
 import org.racedaydreams.domain.activity.*
+import org.racedaydreams.domain.baseline.BaselineEngine
 import org.racedaydreams.domain.presentation.CalendarData
 import org.racedaydreams.domain.presentation.DashboardAnalytics
 import org.racedaydreams.domain.time.*
@@ -81,6 +82,87 @@ class PhysicalRunSessionsTest {
             )
         assertEquals(6600.0, week(separate).distanceMetres())
         assertEquals(2, week(separate).activityCount())
+    }
+
+    @Test
+    fun baselineMatchesDashboardAcrossAutomaticExplicitAndSeparateChoices() {
+        val rdd = run("native", "rdd", null, 450, 33, 1500.0, planned = "long-run")
+        val fitbit = run("watch", "health-connect", "com.fitbit.FitbitMobile", 450, 33, 5100.0)
+        val from = Instants.ofEpochSecond(monday)
+        val to = Instants.ofEpochSecond(monday + 7 * 86400)
+        val watchBest =
+            RecordedResult(
+                "watch-pb",
+                PerformanceDistance.FIVE_K,
+                Durations.ofSeconds(1940),
+                utc(fitbit.start()),
+                null,
+                ResultSource.ROLLING,
+                fitbit.id(),
+                null,
+            )
+        for ((choice, longest) in
+            listOf(
+                null to 1.5,
+                DuplicateRunChoice.COUNT_OTHER to 5.1,
+                DuplicateRunChoice.SEPARATE to 5.1,
+            )) {
+            val source =
+                if (choice == null) rdd else rdd.withDuplicateChoices(mapOf(fitbit.id() to choice))
+            val rows = listOf(source, fitbit)
+            val baseline = BaselineEngine.derive(rows, listOf(watchBest), from, to)
+            assertEquals(week(rows).activityCount(), baseline.activityCount(), "$choice run count")
+            assertEquals(
+                week(rows).distanceMetres()!! / 1000,
+                baseline.weeklyHistory().single().distanceKm(),
+            )
+            assertEquals(longest, baseline.longestRunKm())
+            assertEquals(if (choice == null) null else watchBest.duration(), baseline.recent5k())
+            assertEquals(fitbit.id(), watchBest.activityId())
+        }
+    }
+
+    @Test
+    fun shoesCountPhysicalRunsAndKeepUnambiguousAssignments() {
+        val shoe = Shoe("shoe", "Brand", "Model", null, 100.0, false, null, true)
+        val rdd = run("native", "rdd", null, 450, 33, 1500.0).copy(shoeId = shoe.id())
+        val fitbit =
+            run("watch", "health-connect", "com.fitbit.FitbitMobile", 450, 33, 5100.0)
+                .copy(shoeId = shoe.id())
+        fun verify(rows: List<ActivityRecord>, count: Int, distance: Double, longest: Double?) {
+            val mileage = ShoeMileage.calculate(shoe, rows, today)
+            assertEquals(count, mileage.runCount())
+            assertEquals(distance, mileage.recordedDistanceMetres())
+            assertEquals(distance + 100.0, mileage.totalDistanceMetres())
+            assertEquals(longest, mileage.longestRunMetres())
+            assertEquals(
+                if (count == 0) null else distance / count,
+                mileage.averageRunDistanceMetres(),
+            )
+        }
+        verify(listOf(rdd, fitbit), 1, 1500.0, 1500.0)
+        verify(
+            listOf(
+                rdd.withDuplicateChoices(mapOf(fitbit.id() to DuplicateRunChoice.COUNT_OTHER)),
+                fitbit,
+            ),
+            1,
+            5100.0,
+            5100.0,
+        )
+        verify(
+            listOf(
+                rdd.withDuplicateChoices(mapOf(fitbit.id() to DuplicateRunChoice.SEPARATE)),
+                fitbit,
+            ),
+            2,
+            6600.0,
+            5100.0,
+        )
+        verify(listOf(rdd.copy(shoeId = null), fitbit), 1, 1500.0, 1500.0)
+        verify(listOf(rdd, fitbit.copy(shoeId = null)), 1, 1500.0, 1500.0)
+        verify(listOf(rdd.copy(shoeId = null), fitbit.copy(shoeId = null)), 0, 0.0, null)
+        verify(listOf(rdd.copy(shoeId = "other"), fitbit), 0, 0.0, null)
     }
 
     @Test

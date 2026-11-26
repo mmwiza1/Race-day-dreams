@@ -203,7 +203,8 @@ object WeeklyCoaching {
         // Local midnight, so a run finished late today west of UTC still counts (audit B-R5).
         val tomorrow =
             org.racedaydreams.domain.activity.ActivityDates.startOfDeviceDay(today.plusDays(1))
-        for (a in org.racedaydreams.domain.activity.PhysicalRunSessions.reviewedEvidence(runs)) {
+        val physicalRuns = org.racedaydreams.domain.activity.PhysicalRunSessions.counted(runs)
+        for (a in physicalRuns) {
             val key = if (linked.containsKey(a.id())) linked[a.id()] else a.plannedWorkoutId()
             if (key != null && !a.end().isAfter(tomorrow)) actual[key] = a
         }
@@ -224,7 +225,7 @@ object WeeklyCoaching {
         val countedRuns = mutableSetOf<String>()
         // One physical run reported by two sources (a native recording and a watch import, say)
         // counts once towards volume, as on Progress (audit B-02).
-        for (a in org.racedaydreams.domain.activity.PhysicalRunSessions.counted(runs)) {
+        for (a in physicalRuns) {
             val date = coachingDate(a)
             val metres = a.distanceMetres()
             if (

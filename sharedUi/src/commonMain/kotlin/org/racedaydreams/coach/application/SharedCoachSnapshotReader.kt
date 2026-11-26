@@ -51,7 +51,8 @@ class SharedCoachSnapshotReader(
                 val reviewed = PhysicalRunSessions.reviewedEvidence(activities)
                 val retainedIds = reviewed.map { it.id() }.toSet()
                 val ignoredIds = activities.map { it.id() }.toSet() - retainedIds
-                val results = resultsRepository.results().filter { it.activityId() !in ignoredIds }
+                val retainedResults = resultsRepository.results()
+                val results = retainedResults.filter { it.activityId() !in ignoredIds }
                 val manual = baselineRepository.savedManualBaseline()
                 val now = now()
                 val healthWindow = sources.importWindow()
@@ -61,7 +62,7 @@ class SharedCoachSnapshotReader(
                         now.getNano().toLong(),
                     )
                 val from = maxOf(healthWindow?.first ?: lookback, lookback)
-                val derived = BaselineEngine.derive(activities, results, from, now)
+                val derived = BaselineEngine.derive(activities, retainedResults, from, now)
                 val baseline =
                     BaselineEngine.applyManualOverlay(
                         derived,

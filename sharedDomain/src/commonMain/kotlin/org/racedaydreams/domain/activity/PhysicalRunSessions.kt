@@ -110,7 +110,10 @@ object PhysicalRunSessions {
     fun counted(activities: List<ActivityRecord>): List<ActivityRecord> =
         Immutable.copyList(sessions(activities).map { it.counted })
 
-    /** Suppression explicitly chosen by the athlete. Existing unreviewed analysis is retained. */
+    /**
+     * Applies explicit choices when showing source-level results or reviewing activity links. Use
+     * [counted] for training evidence and totals, including automatic grouping.
+     */
     fun reviewedEvidence(activities: List<ActivityRecord>): List<ActivityRecord> {
         if (activities.none { it.duplicateChoices().isNotEmpty() }) return activities
         val reviewed = sessions(activities).filter { it.reviewed }

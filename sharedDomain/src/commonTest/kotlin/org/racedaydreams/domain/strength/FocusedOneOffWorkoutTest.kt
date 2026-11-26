@@ -85,6 +85,90 @@ class FocusedOneOffWorkoutTest {
         )
     }
 
+    @Test
+    fun machinesAndCablesGenerateAndSuggestCompatibleExercises() {
+        val equipmentCases =
+            listOf(
+                Triple(
+                    ExerciseMetadata.EquipmentGroup.MACHINES,
+                    GymNowWorkouts.MuscleGroup.LEGS,
+                    "leg-press",
+                ),
+                Triple(
+                    ExerciseMetadata.EquipmentGroup.CABLES,
+                    GymNowWorkouts.MuscleGroup.ARMS,
+                    "triceps-pressdown",
+                ),
+            )
+        for ((group, muscle, exercise) in equipmentCases) {
+            val label = group.name.lowercase()
+            val available = GymNowWorkouts.capabilities(setOf(label))
+            assertEquals(
+                ExerciseMetadata.Equipment.entries.filter { it.group() == group }.toSet(),
+                available,
+            )
+            val request = request(setOf(label), setOf(muscle))
+            val workout =
+                GymNowWorkouts.generate(label, time, request, favourites = setOf(exercise))
+                    .definition()
+            val original = workout.slots().first { it.exercise().id() == exercise }
+            val alternatives =
+                GymNowWorkouts.alternatives(
+                    request,
+                    workout.copy(slots = listOf(original)),
+                    original,
+                    emptySet(),
+                    emptySet(),
+                )
+            assertTrue(alternatives.isNotEmpty(), "$label offers compatible alternatives")
+            if (group == ExerciseMetadata.EquipmentGroup.CABLES)
+                assertTrue(alternatives.any { it.exercise().id() == "rope-pressdown" })
+            val offered = workout.slots().map { it.exercise() } + alternatives.map { it.exercise() }
+            assertTrue(
+                offered.all {
+                    ExerciseMetadataCatalog.require(it.id()).equipment().availableWith(available)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun generalOneOffUsesSelectedMachineAndCableSetups() {
+        for ((label, required) in
+            listOf(
+                "machines" to setOf("leg-press", "machine-chest-press", "machine-row"),
+                "cables" to setOf("seated-cable-row"),
+            )) {
+            val request = request(setOf(label), emptySet())
+            val workout = GymNowWorkouts.generate(label, time, request).definition()
+            val actual = workout.slots().map { it.exercise().id() }
+            assertTrue(actual.containsAll(required), "$label generated $actual")
+            val available = GymNowWorkouts.capabilities(setOf(label))
+            assertTrue(
+                actual.all {
+                    ExerciseMetadataCatalog.require(it).equipment().availableWith(available)
+                }
+            )
+        }
+    }
+
+    @Test
+    fun equipmentCapabilityBoundariesFollowThePicker() {
+        val band = ExerciseMetadata.Equipment.RESISTANCE_BAND
+        val anchor = ExerciseMetadata.Equipment.SECURE_BAND_ANCHOR
+        assertEquals(emptySet(), GymNowWorkouts.capabilities(setOf("bodyweight")))
+        assertEquals(setOf(band), GymNowWorkouts.capabilities(setOf("resistance bands")))
+        assertEquals(setOf(anchor), GymNowWorkouts.capabilities(setOf("band anchor")))
+        assertEquals(
+            setOf(band, anchor),
+            GymNowWorkouts.capabilities(setOf("resistance bands", "band anchor")),
+        )
+        assertEquals(
+            ExerciseMetadata.Equipment.entries.toSet(),
+            GymNowWorkouts.capabilities(setOf("full gym")),
+        )
+    }
+
     private fun request(equipment: Set<String>, groups: Set<GymNowWorkouts.MuscleGroup>) =
         GymNowWorkouts.Request(
             30,

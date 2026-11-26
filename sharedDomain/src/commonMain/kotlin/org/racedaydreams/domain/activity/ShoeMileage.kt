@@ -17,8 +17,12 @@ object ShoeMileage {
         var known = 0
         var longest: Double? = null
         var first: Instant? = null
-        for (activity in PhysicalRunSessions.reviewedEvidence(activities)) {
-            if (shoe.id() != activity.shoeId()) continue
+        for (session in PhysicalRunSessions.sessions(activities)) {
+            val activity = session.counted
+            val assignedShoe =
+                activity.shoeId()
+                    ?: session.duplicates.mapNotNull { it.shoeId() }.distinct().singleOrNull()
+            if (shoe.id() != assignedShoe) continue
             count++
             val start = activity.start()
             if (first == null || start.isBefore(first)) first = start

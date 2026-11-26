@@ -59,6 +59,16 @@ abstract class CoreBackupRestoreRepositoryContract {
             val activities = SqliteActivities(source) { at }
             activities.upsertManualActivity(first)
             activities.applyImport("health-connect", listOf(watch), emptyList(), "initial")
+            val day = CalendarDates.atOffset(at, Offsets.ofTotalSeconds(0))
+            fun baselineAt(repository: SqliteActivities): RunnerBaseline =
+                BaselineEngine.derive(
+                    repository.coachingActivities(day),
+                    Instants.ofEpochSecond(day.toEpochDay() * 86400),
+                    Instants.ofEpochSecond(day.plusDays(1).toEpochDay() * 86400),
+                )
+            assertEquals(2, activities.coachingActivities(day).size)
+            assertEquals(1, baselineAt(activities).activityCount())
+            assertEquals(1.5, baselineAt(activities).longestRunKm())
             activities.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
             activities.applyImport("health-connect", listOf(watch), emptyList(), "updated")
             val reviewed = activities.activitySummaries()
@@ -82,8 +92,11 @@ abstract class CoreBackupRestoreRepositoryContract {
                 5100.0,
                 PhysicalRunSessions.counted(restored.activitySummaries()).single().distanceMetres(),
             )
+            assertEquals(1, baselineAt(restored).activityCount())
+            assertEquals(5.1, baselineAt(restored).longestRunKm())
             restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.SEPARATE)
             assertEquals(2, PhysicalRunSessions.counted(restored.activitySummaries()).size)
+            assertEquals(2, baselineAt(restored).activityCount())
             restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
             restored.deleteReviewedLocalDuplicate("native", "watch")
             assertEquals("watch", restored.activitySummaries().single().id())

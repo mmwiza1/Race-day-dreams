@@ -24,7 +24,7 @@ object AdaptiveCoaching {
         var lowAndHard = false
         val evidence = mutableListOf<String>()
         val evidenceIds = mutableListOf<String>()
-        for (run in PhysicalRunSessions.reviewedEvidence(actual)) {
+        for (run in PhysicalRunSessions.counted(actual)) {
             val response = responses.firstOrNull { it.activityId() == run.id() }
             val linked =
                 if (response == null) run.plannedWorkoutId() else response.plannedWorkoutId()

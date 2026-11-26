@@ -111,6 +111,19 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   review confirmed the shorter scrollable warning and both dialog actions were readable.
   Evidence and focused logs are in `/workspace/scratch/rdd-ui-hardening`. Native iOS,
   physical-device, manual TalkBack and full integration gates remain outside this checkpoint.
+- The follow-up Part 3 correctness checkpoint builds on local UI commit `ed0bc4e8`.
+  The 1.5 km RDD / 5.1 km Fitbit fixture reproduced inconsistent baseline and shoe counts.
+  Baseline, adaptive and weekly coaching now use the shared counted-run projection.
+  The history snapshot retains both sources and their underlying PB links, and the
+  athlete can still count both separately. Shoe mileage uses the counted recording's
+  distance and its assignment, or an unambiguous assignment from another copy.
+  Gym Now maps Machines and Cables to their typed setups for generation and substitutions.
+  One-off templates can select machine alternatives. Bands and anchors remain independent.
+  Four regression assertions failed before the fixes. The final focused run passed 83
+  shared-domain tests and 33 SQLite activity and backup/restore tests. Shared Android UI
+  compilation passed. Device tests and native iOS compilation were outside this checkpoint.
+  Logs are in `/workspace/scratch/rdd-part3-correctness`. Stop for review before Part 4.
+  Preserve the local commits and the existing remote branch.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

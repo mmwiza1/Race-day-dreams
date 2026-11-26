@@ -6,12 +6,15 @@ import kotlin.math.abs
 import org.racedaydreams.domain.PlannedWorkout
 import org.racedaydreams.domain.WorkoutCategory
 import org.racedaydreams.domain.coaching.Immutable
+import org.racedaydreams.domain.strength.ExerciseMetadata.Equipment
 import org.racedaydreams.domain.time.*
 
 /**
  * Original deterministic six-week blocks; scheduling penalties are inspectable product heuristics.
  */
-class GymProgrammeGenerator {
+class GymProgrammeGenerator internal constructor(private val oneOffEquipment: Set<Equipment>?) {
+    constructor() : this(null)
+
     @JvmOverloads
     fun generate(
         id: String?,
@@ -37,7 +40,14 @@ class GymProgrammeGenerator {
             val template = template(settings.frequency(), i)
             val lowerTemplate = template == "Lower" || template == "Full body"
             val exercises =
-                prescriptions(settings, template, lowerSessionOrdinal, favourites, excluded)
+                prescriptions(
+                    settings,
+                    template,
+                    lowerSessionOrdinal,
+                    favourites,
+                    excluded,
+                    oneOffEquipment,
+                )
             if (lowerTemplate) lowerSessionOrdinal++
             plans.add(SessionPlan(template, exercises, hasLowerBodyWork(exercises)))
         }
@@ -312,10 +322,18 @@ class GymProgrammeGenerator {
             equipment: Set<String>,
             favourites: Set<String>,
             excluded: Set<String>,
-            vararg ids: String,
+            oneOffEquipment: Set<Equipment>?,
+            ids: List<String>,
         ): String {
+            fun compatible(id: String): Boolean =
+                id !in excluded &&
+                    available(id, equipment) &&
+                    (oneOffEquipment == null ||
+                        ExerciseMetadataCatalog.require(id)
+                            .equipment()
+                            .availableWith(oneOffEquipment))
             for (id in ids) {
-                if (id !in excluded && available(id, equipment) && id in favourites) {
+                if (id in favourites && compatible(id)) {
                     val guide = TechniqueGuide.forExercise(id)
                     val first = TechniqueGuide.forExercise(ids[0])
                     if (
@@ -328,7 +346,7 @@ class GymProgrammeGenerator {
                         return id
                 }
             }
-            for (id in ids) if (id !in excluded && available(id, equipment)) return id
+            for (id in ids) if (compatible(id)) return id
             throw IllegalArgumentException(
                 "No suitable exercise fits your equipment and exclusions. Review these preferences; existing programmes are unchanged."
             )
@@ -340,28 +358,31 @@ class GymProgrammeGenerator {
             lowerSessionOrdinal: Int,
             favourites: Set<String>,
             excluded: Set<String>,
+            oneOffEquipment: Set<Equipment>?,
         ): List<GymProgramme.Prescription> {
             val equipment = settings.equipment()
+            fun pick(vararg ids: String, machine: String? = null): String {
+                val candidates =
+                    if (machine != null && oneOffEquipment != null && "machines" in equipment)
+                        ids.dropLast(1) + machine + ids.last()
+                    else ids.toList()
+                return choose(equipment, favourites, excluded, oneOffEquipment, candidates)
+            }
             val ids = mutableListOf<String>()
             val lower = template == "Lower" || template == "Full body"
             val upper = template != "Lower"
             if (lower) {
                 ids.add(
-                    choose(
-                        equipment,
-                        favourites,
-                        excluded,
+                    pick(
                         if (lowerSessionOrdinal % 2 == 0) "back-squat" else "romanian-deadlift",
                         "goblet-squat",
                         "deadlift",
                         "bodyweight-squat",
+                        machine = "leg-press",
                     )
                 )
                 ids.add(
-                    choose(
-                        equipment,
-                        favourites,
-                        excluded,
+                    pick(
                         if (settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING) "split-squat"
                         else "hip-thrust",
                         "reverse-lunge-bodyweight",
@@ -372,46 +393,31 @@ class GymProgrammeGenerator {
             if (upper) {
                 if (template != "Pull")
                     ids.add(
-                        choose(
-                            equipment,
-                            favourites,
-                            excluded,
+                        pick(
                             "bench-press",
                             "dumbbell-bench-press",
                             "push-up",
+                            machine = "machine-chest-press",
                         )
                     )
                 if (template != "Push")
                     ids.add(
-                        choose(
-                            equipment,
-                            favourites,
-                            excluded,
+                        pick(
                             "seated-cable-row",
                             "dumbbell-row",
                             "barbell-row",
                             "banded-row",
                             "bird-dog",
+                            machine = "machine-row",
                         )
                     )
             }
             if (settings.goal() == GymProgramme.Goal.SUPPORT_RUNNING && lower)
-                ids.add(
-                    choose(
-                        equipment,
-                        favourites,
-                        excluded,
-                        "calf-raise",
-                        "single-leg-calf-raise-bodyweight",
-                    )
-                )
+                ids.add(pick("calf-raise", "single-leg-calf-raise-bodyweight"))
             if (settings.minutes() >= 45 && ids.size < 5 && "plank" !in excluded) ids.add("plank")
             if (settings.minutes() >= 60 && upper)
                 ids.add(
-                    choose(
-                        equipment,
-                        favourites,
-                        excluded,
+                    pick(
                         if (template == "Pull") "barbell-curl" else "overhead-press",
                         "dumbbell-shoulder-press",
                         "dead-bug",

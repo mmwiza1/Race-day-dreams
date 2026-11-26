@@ -158,7 +158,7 @@ object GymNowWorkouts {
                 request.effort(),
             )
         val reference =
-            GymProgrammeGenerator()
+            GymProgrammeGenerator(capabilities(request.equipment()))
                 .generate(
                     "one-off-reference",
                     1,
@@ -352,7 +352,13 @@ object GymNowWorkouts {
                     "kettlebells" -> add(Equipment.KETTLEBELLS)
                     "squat rack" -> add(Equipment.SQUAT_RACK)
                     "bench" -> add(Equipment.BENCH)
-                    "cables" -> add(Equipment.CABLE_STATION)
+                    "machines",
+                    "cables" -> {
+                        val group =
+                            if (label == "machines") ExerciseMetadata.EquipmentGroup.MACHINES
+                            else ExerciseMetadata.EquipmentGroup.CABLES
+                        Equipment.entries.filterTo(this) { it.group() == group }
+                    }
                     "pull-up bar" -> add(Equipment.PULL_UP_BAR)
                     "trap bar" -> add(Equipment.TRAP_BAR)
                     "sled" -> add(Equipment.SLED)
