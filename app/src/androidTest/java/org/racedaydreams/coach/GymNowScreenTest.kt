@@ -1,10 +1,13 @@
 package org.racedaydreams.coach
 
 import android.app.Application
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
@@ -169,7 +172,10 @@ class GymNowScreenTest {
 
     @Test
     fun multiGroupPreviewCanReplaceAnExerciseBeforeStarting() {
-        install()
+        val dark =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("part2Evidence") == "dark"
+        install(largeDark = dark)
         click("Design a workout for me")
         click("Full gym")
         click("Chest")
@@ -177,9 +183,17 @@ class GymNowScreenTest {
         click("Arms")
         click("Review suggested workout")
         await { model.state.value.generated != null }
-        val original = model.state.value.generated!!.definition()
         compose.onNodeWithText("Chest + Shoulders + Arms").performScrollTo().assertIsDisplayed()
+        if (!dark) compose.onNodeWithText("Edit workout choices").assertIsDisplayed()
         capturePart2(application, "gym-multi-group-preview")
+        val firstPreview = model.state.value.generated!!.definition().id()
+        click("Edit workout choices")
+        click("Review suggested workout")
+        await {
+            model.state.value.generated?.definition()?.id()?.let { it != firstPreview } == true
+        }
+        compose.onNodeWithText("Chest + Shoulders + Arms").performScrollTo().assertIsDisplayed()
+        val original = model.state.value.generated!!.definition()
         var swapped = false
         for (slot in original.slots()) {
             click("Find alternative to ${slot.exercise().name()}")
@@ -200,6 +214,8 @@ class GymNowScreenTest {
         }
         assertTrue("At least one compatible preview alternative was exercised", swapped)
         assertNull(execution())
+        compose.onNodeWithText("Start generated workout").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-generated-start")
         click("Start generated workout")
         await { execution()?.origin() == GymExecution.Origin.GENERATED }
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -509,22 +525,24 @@ class GymNowScreenTest {
                 MaterialTheme(
                     colorScheme = if (largeDark) darkColorScheme() else MaterialTheme.colorScheme
                 ) {
-                    shown.value?.let { feature ->
-                        when (page.value) {
-                            "hub" ->
-                                GymNowScreen(
-                                    feature,
-                                    { page.value = "workout" },
-                                    { page.value = "builder" },
-                                    {},
-                                )
-                            "builder" ->
-                                GymWorkoutBuilderScreen(
-                                    feature,
-                                    { page.value = "workout" },
-                                    { page.value = "hub" },
-                                )
-                            "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                        shown.value?.let { feature ->
+                            when (page.value) {
+                                "hub" ->
+                                    GymNowScreen(
+                                        feature,
+                                        { page.value = "workout" },
+                                        { page.value = "builder" },
+                                        {},
+                                    )
+                                "builder" ->
+                                    GymWorkoutBuilderScreen(
+                                        feature,
+                                        { page.value = "workout" },
+                                        { page.value = "hub" },
+                                    )
+                                "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                            }
                         }
                     }
                 }

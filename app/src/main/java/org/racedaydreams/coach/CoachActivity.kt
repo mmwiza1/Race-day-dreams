@@ -23,6 +23,8 @@ import androidx.navigation.compose.rememberNavController
 import org.racedaydreams.coach.navigation.*
 import org.racedaydreams.coach.strength.GymNowViewModel
 import org.racedaydreams.coach.strength.StrengthProgrammeViewModel
+import org.racedaydreams.coach.theme.DisciplineAppearance
+import org.racedaydreams.domain.settings.ColourDiscipline
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.health.HealthConnectGateway
 
@@ -217,51 +219,61 @@ private fun CoachApp(
                     TextButton(onClick = { resetDialog = true }) { Text("Delete local data") }
                 }
             }
-            NavHost(
-                navController = nav,
-                startDestination = startDestination,
-                modifier = Modifier.weight(1f),
+            DisciplineAppearance(
+                state.disciplineColours,
+                routeDiscipline(route),
+                Modifier.weight(1f),
             ) {
-                homeGraph({ state }, model, nav)
-                runningGraph(
-                    { state },
-                    model,
-                    nav,
-                    { runSnapshot },
-                    startSpontaneous = { snapshot ->
-                        runSnapshot = snapshot
-                        nav.navigate("spontaneous-run")
-                    },
-                    connect = connect,
-                    providerUpdate = providerUpdate,
-                )
-                strengthGraph({ state }, model, nav, gymModel, programmeModel, boulderingModel)
-                progressGraph(
-                    { state },
-                    model,
-                    nav,
-                    requestBodyPermissions = {
-                        permissions.launch(HealthConnectGateway.BODY_PERMISSIONS)
-                    },
-                )
-                settingsGraph(
-                    { state },
-                    model,
-                    nav,
-                    connect,
-                    providerUpdate,
-                    providerSettings,
-                    exportBackup = { export.launch("race-day-dreams-backup.json") },
-                    restoreBackup = {
-                        restore.launch(
-                            arrayOf("application/json", "text/plain", "application/octet-stream")
-                        )
-                    },
-                    requestReset = { resetDialog = true },
-                    requestWeightPermission = {
-                        permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION))
-                    },
-                )
+                NavHost(
+                    navController = nav,
+                    startDestination = startDestination,
+                    modifier = Modifier.fillMaxSize(),
+                ) {
+                    homeGraph({ state }, model, nav)
+                    runningGraph(
+                        { state },
+                        model,
+                        nav,
+                        { runSnapshot },
+                        startSpontaneous = { snapshot ->
+                            runSnapshot = snapshot
+                            nav.navigate("spontaneous-run")
+                        },
+                        connect = connect,
+                        providerUpdate = providerUpdate,
+                    )
+                    strengthGraph({ state }, model, nav, gymModel, programmeModel, boulderingModel)
+                    progressGraph(
+                        { state },
+                        model,
+                        nav,
+                        requestBodyPermissions = {
+                            permissions.launch(HealthConnectGateway.BODY_PERMISSIONS)
+                        },
+                    )
+                    settingsGraph(
+                        { state },
+                        model,
+                        nav,
+                        connect,
+                        providerUpdate,
+                        providerSettings,
+                        exportBackup = { export.launch("race-day-dreams-backup.json") },
+                        restoreBackup = {
+                            restore.launch(
+                                arrayOf(
+                                    "application/json",
+                                    "text/plain",
+                                    "application/octet-stream",
+                                )
+                            )
+                        },
+                        requestReset = { resetDialog = true },
+                        requestWeightPermission = {
+                            permissions.launch(setOf(HealthConnectGateway.WEIGHT_PERMISSION))
+                        },
+                    )
+                }
             }
         }
     }
@@ -316,4 +328,35 @@ private fun android.content.Intent?.consumeOpenUpdates(): Boolean {
     if (this == null || !getBooleanExtra(key, false)) return false
     removeExtra(key)
     return true
+}
+
+private fun routeDiscipline(route: String?): ColourDiscipline? {
+    val root = route?.substringBefore('/')?.substringBefore('?')
+    return when {
+        root == "settings" -> ColourDiscipline.SETTINGS
+        root == "bouldering" -> ColourDiscipline.BOULDERING
+        root?.startsWith("gym") == true ||
+            root?.startsWith("strength") == true ||
+            root == "exercise" ||
+            root == "exercises" -> ColourDiscipline.STRENGTH
+        root in
+            setOf(
+                "plan",
+                "running-plan",
+                "weekly",
+                "workout",
+                "activity",
+                "record-run",
+                "execute",
+                "spontaneous-run",
+                "run-now",
+                "race",
+                "race-run",
+                "baseline",
+                "assessment",
+                "manual",
+                "goals",
+            ) || route in setOf("progress/trends", "progress/pbs") -> ColourDiscipline.RUNNING
+        else -> null
+    }
 }

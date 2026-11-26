@@ -4,6 +4,7 @@ import kotlin.test.*
 import kotlinx.serialization.json.*
 import org.racedaydreams.domain.activity.*
 import org.racedaydreams.domain.baseline.*
+import org.racedaydreams.domain.settings.*
 import org.racedaydreams.domain.time.*
 
 abstract class CoreBackupRestoreRepositoryContract {
@@ -23,6 +24,33 @@ abstract class CoreBackupRestoreRepositoryContract {
             source.close()
             target.close()
         }
+    }
+
+    @Test
+    fun disciplineColoursRestoreIndependentlyAndResetToDefaults() = storage { source, target ->
+        val settings = SqliteSettings(source)
+        assertTrue(DisciplineColours.read(settings).isEmpty())
+        val selections =
+            mapOf(
+                ColourDiscipline.RUNNING to AccentColour.TEAL,
+                ColourDiscipline.STRENGTH to AccentColour.BLUE,
+                ColourDiscipline.BOULDERING to AccentColour.AMBER,
+                ColourDiscipline.SETTINGS to AccentColour.VIOLET,
+            )
+        selections.forEach { (discipline, colour) ->
+            DisciplineColours.save(settings, discipline, colour)
+        }
+        assertEquals(selections, DisciplineColours.read(SqliteSettings(source)))
+        SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+        val restored = SqliteSettings(target)
+        assertEquals(selections, DisciplineColours.read(restored))
+        DisciplineColours.save(restored, ColourDiscipline.STRENGTH, null)
+        assertEquals(selections - ColourDiscipline.STRENGTH, DisciplineColours.read(restored))
+        restored.putSetting(ColourDiscipline.SETTINGS.key, "UNKNOWN_FUTURE_COLOUR")
+        assertEquals(
+            selections - ColourDiscipline.STRENGTH - ColourDiscipline.SETTINGS,
+            DisciplineColours.read(restored),
+        )
     }
 
     @Test

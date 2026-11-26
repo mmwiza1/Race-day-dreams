@@ -29,8 +29,17 @@ import org.racedaydreams.domain.strength.*
             upcoming?.let { day -> CoachCard { Text("Next routine strength · ${friendlyDate(day)}");Text("From your normal strength days; actual exercises and effort have not been recorded.");OutlinedButton(onClick={routineDate=day.toString();logging=true},modifier=Modifier.heightIn(min=48.dp)){Text("Log planned strength")}} }
         }
         if(section=="log"){
-        CoachButton(if(logging)"Hide workout form"else "Log strength workout",{if(!logging)routineDate=null;logging=!logging})
-        if(logging)StrengthForm(state,model,plannedDate){logging=false;routineDate=null}
+        if (logging) {
+            TextButton(onClick = { logging = false }, modifier = Modifier.heightIn(min = CoachSpace.Touch)) {
+                Text("Hide workout form")
+            }
+            StrengthForm(state, model, plannedDate) { logging = false; routineDate = null }
+        } else {
+            CoachButton("Log strength workout") {
+                routineDate = null
+                logging = true
+            }
+        }
         }
         if(section=="pbs"){
         OutlinedButton(onClick={historical=!historical},modifier=Modifier.heightIn(min=48.dp)){Text("Add historical PB")}

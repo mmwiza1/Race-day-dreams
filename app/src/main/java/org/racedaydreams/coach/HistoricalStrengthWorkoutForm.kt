@@ -203,9 +203,9 @@ internal fun StrengthForm(
                     )
                 )
             }
-            Button(
+            OutlinedButton(
                 onClick = { if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true },
-                modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+                modifier = Modifier.heightIn(min = CoachSpace.Touch),
             ) {
                 Text("Use previous sets")
             }
@@ -359,32 +359,35 @@ internal fun StrengthForm(
             )
         }
         val operation = editingSet
-        CoachButton(if (operation == null) "Add set" else "Update set") {
-            try {
-                val usingRir = rir && profile.usesReps()
-                val effortValue = effort.takeIf { it.isNotBlank() }?.toDouble()
-                val pending =
-                    ActualSet(
-                        operation?.let { decodeSet(sets[it]).id() } ?: UUID.randomUUID().toString(),
-                        if (profile.usesReps()) measure.toInt() else 0,
-                        if (profile.usesLoad()) unit.toKilograms(load.toDouble()) else 0.0,
-                        effortValue.takeUnless { usingRir },
-                        warmUp,
-                        if (profile.usesDuration()) StrengthMeasurements.seconds(measure) else null,
-                        if (profile.usesDistance()) measure.toDouble() * metresPerUnit else null,
-                        effortValue.takeIf { usingRir },
-                    )
-                val revised = sets.map(::decodeSet).toMutableList()
-                if (operation == null) revised.add(pending) else revised[operation] = pending
-                StrengthSession.ExerciseSets(exercise, revised)
-                sets = ArrayList(revised.map(::encodeSet))
-                dirty = false
-                editingSet = null
-                error = null
-            } catch (e: IllegalArgumentException) {
-                error = e.message ?: "Check your weight, amount and effort."
-            }
-        }
+        FilledTonalButton(
+            onClick = {
+                try {
+                    val usingRir = rir && profile.usesReps()
+                    val effortValue = effort.takeIf { it.isNotBlank() }?.toDouble()
+                    val pending =
+                        ActualSet(
+                            operation?.let { decodeSet(sets[it]).id() } ?: UUID.randomUUID().toString(),
+                            if (profile.usesReps()) measure.toInt() else 0,
+                            if (profile.usesLoad()) unit.toKilograms(load.toDouble()) else 0.0,
+                            effortValue.takeUnless { usingRir },
+                            warmUp,
+                            if (profile.usesDuration()) StrengthMeasurements.seconds(measure) else null,
+                            if (profile.usesDistance()) measure.toDouble() * metresPerUnit else null,
+                            effortValue.takeIf { usingRir },
+                        )
+                    val revised = sets.map(::decodeSet).toMutableList()
+                    if (operation == null) revised.add(pending) else revised[operation] = pending
+                    StrengthSession.ExerciseSets(exercise, revised)
+                    sets = ArrayList(revised.map(::encodeSet))
+                    dirty = false
+                    editingSet = null
+                    error = null
+                } catch (e: IllegalArgumentException) {
+                    error = e.message ?: "Check your weight, amount and effort."
+                }
+            },
+            modifier = Modifier.heightIn(min = CoachSpace.Touch),
+        ) { Text(if (operation == null) "Add set" else "Update set") }
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             if (operation != null || dirty) {
                 TextButton(

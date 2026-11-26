@@ -107,11 +107,13 @@ fun Eyebrow(text: String, style: TextStyle, color: Color) {
 /** Text colour that reads on a discipline accent fill. */
 @Composable
 fun Discipline.onAccent(): Color =
-    when (this) {
-        Discipline.RUNNING -> MaterialTheme.colorScheme.onPrimary
-        Discipline.STRENGTH -> MaterialTheme.colorScheme.onTertiary
-        Discipline.RECOVERY -> MaterialTheme.colorScheme.onSecondary
-    }
+    customAccent()?.onPrimary
+        ?: when (this) {
+            Discipline.RUNNING -> org.racedaydreams.coach.theme.disciplineBaseScheme().onPrimary
+            Discipline.STRENGTH,
+            Discipline.BOULDERING -> org.racedaydreams.coach.theme.disciplineBaseScheme().onTertiary
+            Discipline.RECOVERY -> org.racedaydreams.coach.theme.disciplineBaseScheme().onSecondary
+        }
 
 /**
  * The tonal surface every hero shares: discipline container, 32 dp corners, a glyph disc and a

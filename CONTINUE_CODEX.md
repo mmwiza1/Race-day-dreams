@@ -124,6 +124,29 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   compilation passed. Device tests and native iOS compilation were outside this checkpoint.
   Logs are in `/workspace/scratch/rdd-part3-correctness`. Stop for review before Part 4.
   Preserve the local commits and the existing remote branch.
+- Part 4 was explicitly authorised after `e7753f68` on the same branch. Independent
+  Running, Gym / Strength, Bouldering and Settings accents use existing portable settings,
+  without a schema or backup format change. Settings defaults to green and the other defaults
+  follow their existing theme roles. The targeted UX changes cover treadmill duration entry,
+  a readable diagnostic summary with full JSON, a separate Gym Now preview and clearer
+  historical set and save actions. The 360 dp, 200% manual treadmill check exposed a
+  shared scroll viewport extending behind the Android keyboard. Keyboard insets now
+  shrink the viewport before scrolling is measured. Rechecked on the final Android build:
+  the real keyboard was visible while the focused duration, typed value and format example
+  stayed readable. Android debug and instrumentation APKs built. All eight focused
+  SQLite backup/restore tests and the repository formatting check passed. API 28
+  passed the accent, contrast, relaunch, Gym Now, historical logging and treadmill flows
+  in light theme, and the colour, Gym Now, historical logging, treadmill and diagnostic
+  review/export flows at 200% text in dark theme. Visually inspected diagnostic summaries
+  in both themes. Android aborted the light diagnostic test after the capture with
+  `INSTRUMENTATION_ABORTED: System has crashed`. The API 35 image could not provision
+  its partition in this workspace. Native iOS,
+  hardware and the full Android/iOS matrix are reserved for integration. Logs and source
+  captures are in `/workspace/scratch/rdd-part4`. The visual review archive is in
+  `/workspace/shared/downloads/Race-Day-Dreams-Part4-UI.zip`. Stop for owner review and
+  independent audit. After approval, reopen the light diagnostic JSON and export on a stable
+  Android emulator during final integration. Keep this branch local and leave the version,
+  PR and release state alone.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 

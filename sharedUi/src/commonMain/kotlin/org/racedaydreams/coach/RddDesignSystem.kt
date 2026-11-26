@@ -43,6 +43,7 @@ enum class Discipline(val label: String) {
     RUNNING("Run"),
     STRENGTH("Strength"),
     RECOVERY("Recovery"),
+    BOULDERING("Bouldering"),
 }
 
 /**
@@ -89,27 +90,51 @@ fun chartAccent(hue: ChartHue): ChartAccent {
 /** Accent (marks, figures) and container (hero surfaces) colours for a discipline. */
 @Composable
 fun Discipline.accent(): Color =
-    when (this) {
-        Discipline.RUNNING -> MaterialTheme.colorScheme.primary
-        Discipline.STRENGTH -> MaterialTheme.colorScheme.tertiary
-        Discipline.RECOVERY -> MaterialTheme.colorScheme.secondary
-    }
+    customAccent()?.primary
+        ?: when (this) {
+            Discipline.RUNNING -> org.racedaydreams.coach.theme.disciplineBaseScheme().primary
+            Discipline.STRENGTH,
+            Discipline.BOULDERING -> org.racedaydreams.coach.theme.disciplineBaseScheme().tertiary
+            Discipline.RECOVERY -> org.racedaydreams.coach.theme.disciplineBaseScheme().secondary
+        }
 
 @Composable
 fun Discipline.container(): Color =
-    when (this) {
-        Discipline.RUNNING -> MaterialTheme.colorScheme.primaryContainer
-        Discipline.STRENGTH -> MaterialTheme.colorScheme.tertiaryContainer
-        Discipline.RECOVERY -> MaterialTheme.colorScheme.secondaryContainer
-    }
+    customAccent()?.container
+        ?: when (this) {
+            Discipline.RUNNING ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().primaryContainer
+            Discipline.STRENGTH,
+            Discipline.BOULDERING ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().tertiaryContainer
+            Discipline.RECOVERY ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().secondaryContainer
+        }
 
 @Composable
 fun Discipline.onContainer(): Color =
-    when (this) {
-        Discipline.RUNNING -> MaterialTheme.colorScheme.onPrimaryContainer
-        Discipline.STRENGTH -> MaterialTheme.colorScheme.onTertiaryContainer
-        Discipline.RECOVERY -> MaterialTheme.colorScheme.onSecondaryContainer
-    }
+    customAccent()?.onContainer
+        ?: when (this) {
+            Discipline.RUNNING ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().onPrimaryContainer
+            Discipline.STRENGTH,
+            Discipline.BOULDERING ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().onTertiaryContainer
+            Discipline.RECOVERY ->
+                org.racedaydreams.coach.theme.disciplineBaseScheme().onSecondaryContainer
+        }
+
+@Composable
+internal fun Discipline.customAccent(): org.racedaydreams.coach.theme.AccentRoles? {
+    val target =
+        when (this) {
+            Discipline.RUNNING -> org.racedaydreams.domain.settings.ColourDiscipline.RUNNING
+            Discipline.STRENGTH -> org.racedaydreams.domain.settings.ColourDiscipline.STRENGTH
+            Discipline.BOULDERING -> org.racedaydreams.domain.settings.ColourDiscipline.BOULDERING
+            Discipline.RECOVERY -> return null
+        }
+    return org.racedaydreams.coach.theme.currentAccent(target)
+}
 
 /**
  * The single most important thing on a screen: a discipline-tinted surface with generous padding.

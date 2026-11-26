@@ -3,12 +3,15 @@
 package org.racedaydreams.coach.strength
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,11 +30,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.ChartHue
 import org.racedaydreams.coach.CoachFilterChip
+import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.Discipline
@@ -43,6 +48,7 @@ import org.racedaydreams.coach.ScreenHeader
 import org.racedaydreams.coach.SectionLabel
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
+import org.racedaydreams.coach.WhyDetails
 import org.racedaydreams.coach.chartAccent
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.ExerciseMetadataCatalog
@@ -95,8 +101,12 @@ fun SharedGymNowScreen(
             ) {
                 Text(if (section == "Overview") "Back" else "Back to Gym Now")
             }
-        if (section != "Overview")
-            ScreenHeader(Discipline.STRENGTH, sectionGlyph(section), "Gym Now", section)
+        when (section) {
+            "Quick workout",
+            "Design a workout for me" -> CoachHeading(section)
+            "Overview" -> Unit
+            else -> ScreenHeader(Discipline.STRENGTH, sectionGlyph(section), "Gym Now", section)
+        }
         if (state.loading) CircularProgressIndicator()
         if (state.busy && !state.loading)
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
@@ -181,6 +191,14 @@ fun SharedGymNowScreen(
                         section = "Planned workouts"
                     }
                     GymOptionTile(
+                        "Design a workout for me",
+                        "Choose your focus and review a suggested workout",
+                        Glyph.SPARK,
+                        mutable,
+                    ) {
+                        section = "Design a workout for me"
+                    }
+                    GymOptionTile(
                         "Quick workout",
                         "A simple one-off session for the time and equipment you have",
                         Glyph.DUMBBELL,
@@ -196,14 +214,6 @@ fun SharedGymNowScreen(
                     ) {
                         model.newBuilder()
                         onBuild()
-                    }
-                    GymOptionTile(
-                        "Design a workout for me",
-                        "Choose your focus and review a suggested workout",
-                        Glyph.SPARK,
-                        mutable,
-                    ) {
-                        section = "Design a workout for me"
                     }
                 }
                 SectionLabel("Saved and recent", Glyph.FLAG, ChartHue.PLUM)
@@ -573,268 +583,285 @@ private fun OneOffWorkoutPicker(
     var showPreview by rememberSaveable(quick) { mutableStateOf(false) }
     var error by rememberSaveable(quick) { mutableStateOf<String?>(null) }
 
-    Text(
-        "A one-off prescription for today. It will not change your programme or complete a planned session."
-    )
-    Text("Available time", style = MaterialTheme.typography.titleMedium)
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-    ) {
-        listOf(30, 45, 60, 75).forEach { value ->
-            CoachFilterChip(
-                selected = minutes == value,
-                onClick = {
-                    minutes = value
-                    showPreview = false
-                },
-                enabled = enabled,
-                label = { Text("$value min") },
-            )
-        }
-    }
-    Text("Equipment available", style = MaterialTheme.typography.titleMedium)
-    OutlinedButton(
-        onClick = {
-            equipment = listOf("bodyweight")
+    val generate: () -> Unit = {
+        try {
+            val request =
+                GymNowWorkouts.Request(
+                    minutes,
+                    equipment.toSet(),
+                    GymNowWorkouts.Focus.valueOf(focus),
+                    GymProgramme.Goal.valueOf(goal),
+                    GymProgramme.Experience.valueOf(experience),
+                    GymProgramme.Priority.valueOf(priority),
+                    GymProgramme.Effort.valueOf(effort),
+                    groups.map(GymNowWorkouts.MuscleGroup::valueOf).toSet(),
+                    variant,
+                )
+            variant++
+            error = null
+            showPreview = true
+            model.generate(request)
+        } catch (invalid: IllegalArgumentException) {
+            error = invalid.message ?: "Review the workout choices."
             showPreview = false
-        },
-        enabled = enabled,
-    ) {
-        Text(
-            if (equipment == listOf("bodyweight")) "Bodyweight only selected"
-            else "No equipment / Bodyweight only"
-        )
-    }
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-    ) {
-        GYM_EQUIPMENT.forEach { value ->
-            CoachFilterChip(
-                selected = value in equipment,
-                onClick = {
-                    equipment = if (value in equipment) equipment - value else equipment + value
-                    showPreview = false
-                },
-                enabled = enabled,
-                label = { Text(value.replaceFirstChar { it.titlecase() }) },
-            )
         }
     }
-    Text("Focus", style = MaterialTheme.typography.titleMedium)
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-    ) {
-        GymNowWorkouts.Focus.values().forEach { value ->
-            CoachFilterChip(
-                selected = groups.isEmpty() && focus == value.name,
-                onClick = {
-                    focus = value.name
-                    groups = emptyList()
-                    showPreview = false
-                },
-                enabled = enabled,
-                label = { Text(value.title().removeSuffix(" workout")) },
-            )
-        }
-    }
-    if (!quick) {
-        Text("Or choose one or more muscle groups", style = MaterialTheme.typography.titleMedium)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        ) {
-            GymNowWorkouts.MuscleGroup.entries.forEach { group ->
-                CoachFilterChip(
-                    selected = group.name in groups,
-                    onClick = {
-                        groups =
-                            if (group.name in groups) groups - group.name else groups + group.name
-                        showPreview = false
-                    },
-                    enabled = enabled,
-                    label = { Text(group.label) },
-                )
-            }
-        }
-        Text("Goal", style = MaterialTheme.typography.titleMedium)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        ) {
-            GymProgramme.Goal.values().forEach { value ->
-                CoachFilterChip(
-                    selected = goal == value.name,
-                    onClick = {
-                        goal = value.name
-                        showPreview = false
-                    },
-                    enabled = enabled,
-                    label = { Text(gymGoalLabel(value)) },
-                )
-            }
-        }
-        Text("Experience", style = MaterialTheme.typography.titleMedium)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        ) {
-            GymProgramme.Experience.values().forEach { value ->
-                CoachFilterChip(
-                    selected = experience == value.name,
-                    onClick = {
-                        experience = value.name
-                        showPreview = false
-                    },
-                    enabled = enabled,
-                    label = { Text(gymEnumLabel(value.name)) },
-                )
-            }
-        }
-        Text("Training priority", style = MaterialTheme.typography.titleMedium)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        ) {
-            GymProgramme.Priority.values().forEach { value ->
-                CoachFilterChip(
-                    selected = priority == value.name,
-                    onClick = {
-                        priority = value.name
-                        showPreview = false
-                    },
-                    enabled = enabled,
-                    label = { Text(gymEnumLabel(value.name)) },
-                )
-            }
-        }
-        Text("Effort guidance", style = MaterialTheme.typography.titleMedium)
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-        ) {
-            GymProgramme.Effort.values().forEach { value ->
-                CoachFilterChip(
-                    selected = effort == value.name,
-                    onClick = {
-                        effort = value.name
-                        showPreview = false
-                    },
-                    enabled = enabled,
-                    label = { Text(value.name) },
-                )
-            }
-        }
-    } else
-        Text(
-            "Quick workouts use general fitness, beginner experience and conservative RPE guidance. Use Design a workout for me to choose a different goal or experience."
-        )
+    val suggestion = state.generated?.takeIf { showPreview }
     error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
-    Button(
-        onClick = {
-            try {
-                val request =
-                    GymNowWorkouts.Request(
-                        minutes,
-                        equipment.toSet(),
-                        GymNowWorkouts.Focus.valueOf(focus),
-                        GymProgramme.Goal.valueOf(goal),
-                        GymProgramme.Experience.valueOf(experience),
-                        GymProgramme.Priority.valueOf(priority),
-                        GymProgramme.Effort.valueOf(effort),
-                        groups.map(GymNowWorkouts.MuscleGroup::valueOf).toSet(),
-                        variant,
-                    )
-                variant++
-                error = null
-                showPreview = true
-                model.generate(request)
-            } catch (invalid: IllegalArgumentException) {
-                error = invalid.message ?: "Review the workout choices."
-                showPreview = false
-            }
-        },
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-    ) {
+    if (showPreview && state.busy && suggestion == null) {
+        Text("Preparing your workout…", style = MaterialTheme.typography.bodyMedium)
+    } else if (suggestion == null) {
         Text(
-            if (showPreview && groups.isNotEmpty()) "Regenerate suggested workout"
-            else "Review suggested workout"
+            "A one-off prescription for today. It will not change your programme or complete a planned session."
         )
-    }
-    if (showPreview && !state.busy)
-        state.generated?.let { suggestion ->
+        Text("Available time", style = MaterialTheme.typography.titleMedium)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
+            listOf(30, 45, 60, 75).forEach { value ->
+                CoachFilterChip(
+                    selected = minutes == value,
+                    onClick = {
+                        minutes = value
+                        showPreview = false
+                    },
+                    enabled = enabled,
+                    label = { Text("$value min") },
+                )
+            }
+        }
+        Text("Equipment available", style = MaterialTheme.typography.titleMedium)
+        OutlinedButton(
+            onClick = {
+                equipment = listOf("bodyweight")
+                showPreview = false
+            },
+            enabled = enabled,
+        ) {
+            Text(
+                if (equipment == listOf("bodyweight")) "Bodyweight only selected"
+                else "No equipment / Bodyweight only"
+            )
+        }
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
+            GYM_EQUIPMENT.forEach { value ->
+                CoachFilterChip(
+                    selected = value in equipment,
+                    onClick = {
+                        equipment = if (value in equipment) equipment - value else equipment + value
+                        showPreview = false
+                    },
+                    enabled = enabled,
+                    label = { Text(value.replaceFirstChar { it.titlecase() }) },
+                )
+            }
+        }
+        Text("Focus", style = MaterialTheme.typography.titleMedium)
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+        ) {
+            GymNowWorkouts.Focus.values().forEach { value ->
+                CoachFilterChip(
+                    selected = groups.isEmpty() && focus == value.name,
+                    onClick = {
+                        focus = value.name
+                        groups = emptyList()
+                        showPreview = false
+                    },
+                    enabled = enabled,
+                    label = { Text(value.title().removeSuffix(" workout")) },
+                )
+            }
+        }
+        if (!quick) {
+            Text(
+                "Or choose one or more muscle groups",
+                style = MaterialTheme.typography.titleMedium,
+            )
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
+                GymNowWorkouts.MuscleGroup.entries.forEach { group ->
+                    CoachFilterChip(
+                        selected = group.name in groups,
+                        onClick = {
+                            groups =
+                                if (group.name in groups) groups - group.name
+                                else groups + group.name
+                            showPreview = false
+                        },
+                        enabled = enabled,
+                        label = { Text(group.label) },
+                    )
+                }
+            }
+            Text("Goal", style = MaterialTheme.typography.titleMedium)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
+                GymProgramme.Goal.values().forEach { value ->
+                    CoachFilterChip(
+                        selected = goal == value.name,
+                        onClick = {
+                            goal = value.name
+                            showPreview = false
+                        },
+                        enabled = enabled,
+                        label = { Text(gymGoalLabel(value)) },
+                    )
+                }
+            }
+            Text("Experience", style = MaterialTheme.typography.titleMedium)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
+                GymProgramme.Experience.values().forEach { value ->
+                    CoachFilterChip(
+                        selected = experience == value.name,
+                        onClick = {
+                            experience = value.name
+                            showPreview = false
+                        },
+                        enabled = enabled,
+                        label = { Text(gymEnumLabel(value.name)) },
+                    )
+                }
+            }
+            Text("Training priority", style = MaterialTheme.typography.titleMedium)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
+                GymProgramme.Priority.values().forEach { value ->
+                    CoachFilterChip(
+                        selected = priority == value.name,
+                        onClick = {
+                            priority = value.name
+                            showPreview = false
+                        },
+                        enabled = enabled,
+                        label = { Text(gymEnumLabel(value.name)) },
+                    )
+                }
+            }
+            Text("Effort guidance", style = MaterialTheme.typography.titleMedium)
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ) {
+                GymProgramme.Effort.values().forEach { value ->
+                    CoachFilterChip(
+                        selected = effort == value.name,
+                        onClick = {
+                            effort = value.name
+                            showPreview = false
+                        },
+                        enabled = enabled,
+                        label = { Text(value.name) },
+                    )
+                }
+            }
+        } else
+            Text(
+                "Quick workouts use general fitness, beginner experience and conservative RPE guidance. Use Design a workout for me to choose a different goal or experience."
+            )
+
+        Button(
+            onClick = generate,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
+        ) {
+            Text("Review suggested workout")
+        }
+    } else {
+        val previewTop = remember { BringIntoViewRequester() }
+        LaunchedEffect(Unit) {
+            withFrameNanos {}
+            previewTop.bringIntoView()
+        }
+        Box(Modifier.bringIntoViewRequester(previewTop)) {
             SectionLabel(
                 suggestion.definition().title(),
                 Glyph.SPARK,
                 ChartHue.PLUM,
-                caption = exerciseCount(suggestion.definition().slots().size),
+                caption = exerciseCount(suggestion.definition().slots().size) + " · $minutes min",
             )
-            Panel {
-                Text(suggestion.explanation())
-                suggestion.definition().slots().forEachIndexed { index, slot ->
-                    if (index > 0) HorizontalDivider()
-                    Text(
-                        slot.exercise().name(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    SharedPlainWorkoutTarget(slot, formatTarget)
-                    val requirements =
-                        ExerciseMetadataCatalog.find(slot.exercise().id())?.equipment()
-                    val capabilities = GymNowWorkouts.capabilities(equipment.toSet())
-                    val setup =
-                        requirements?.alternatives()?.firstOrNull { capabilities.containsAll(it) }
-                    val equipmentText =
-                        setup?.joinToString { gymEnumLabel(it.name) }?.ifEmpty { "Bodyweight" }
-                            ?: ExerciseCatalog.definition(slot.exercise().id())?.equipment()
-                    equipmentText?.let { Text("Equipment: $it") }
-                    TextButton(
-                        onClick = { model.openGeneratedAlternatives(slot.id()) },
-                        enabled = enabled,
-                    ) {
-                        Text("Find alternative to ${slot.exercise().name()}")
-                    }
-                    state.generatedSwap
-                        ?.takeIf { it.slotId == slot.id() }
-                        ?.let { review ->
-                            if (review.choices.isEmpty())
-                                Text(
-                                    "No compatible alternative fits the chosen equipment and target."
-                                )
-                            review.choices.forEach { alternative ->
-                                TextButton(
-                                    onClick = {
-                                        model.replaceGenerated(slot.id(), alternative.exercise())
-                                    },
-                                    enabled = enabled,
-                                ) {
-                                    Text("Use ${alternative.exercise().name()}")
-                                }
-                                Text(
-                                    alternative.explanation(),
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
-                            }
-                            TextButton(onClick = model::closeGeneratedAlternatives) {
-                                Text("Keep original exercise")
-                            }
-                        }
-                }
-                suggestion.limitations().forEach { limitation -> Text(limitation) }
-                Text(
-                    "These are targets, not completed sets. You choose and record your actual loads."
-                )
-                GymStartAction(
-                    if (quick) "Start quick workout" else "Start generated workout",
-                    mayStart,
-                ) {
-                    model.startGenerated(quick, onWorkout)
+        }
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+            OutlinedButton(onClick = { showPreview = false }, enabled = enabled) {
+                Text("Edit workout choices")
+            }
+            if (groups.isNotEmpty()) {
+                TextButton(onClick = generate, enabled = enabled) {
+                    Text("Regenerate suggested workout")
                 }
             }
         }
+        Panel {
+            suggestion.definition().slots().forEachIndexed { index, slot ->
+                if (index > 0) HorizontalDivider()
+                Text(
+                    slot.exercise().name(),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                SharedPlainWorkoutTarget(slot, formatTarget)
+                val requirements = ExerciseMetadataCatalog.find(slot.exercise().id())?.equipment()
+                val capabilities = GymNowWorkouts.capabilities(equipment.toSet())
+                val setup =
+                    requirements?.alternatives()?.firstOrNull { capabilities.containsAll(it) }
+                val equipmentText =
+                    setup?.joinToString { gymEnumLabel(it.name) }?.ifEmpty { "Bodyweight" }
+                        ?: ExerciseCatalog.definition(slot.exercise().id())?.equipment()
+                equipmentText?.let { Text("Equipment: $it") }
+                TextButton(
+                    onClick = { model.openGeneratedAlternatives(slot.id()) },
+                    enabled = enabled,
+                ) {
+                    Text("Find alternative to ${slot.exercise().name()}")
+                }
+                state.generatedSwap
+                    ?.takeIf { it.slotId == slot.id() }
+                    ?.let { review ->
+                        if (review.choices.isEmpty())
+                            Text("No compatible alternative fits the chosen equipment and target.")
+                        review.choices.forEach { alternative ->
+                            TextButton(
+                                onClick = {
+                                    model.replaceGenerated(slot.id(), alternative.exercise())
+                                },
+                                enabled = enabled,
+                            ) {
+                                Text("Use ${alternative.exercise().name()}")
+                            }
+                            Text(
+                                alternative.explanation(),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                        }
+                        TextButton(onClick = model::closeGeneratedAlternatives) {
+                            Text("Keep original exercise")
+                        }
+                    }
+            }
+            suggestion.limitations().forEach { limitation -> Text(limitation) }
+            WhyDetails(suggestion.explanation(), title = "How this workout was chosen")
+            GymStartAction(
+                if (quick) "Start quick workout" else "Start generated workout",
+                mayStart,
+            ) {
+                model.startGenerated(quick, onWorkout)
+            }
+        }
+    }
 }
 
 private val GYM_EQUIPMENT =

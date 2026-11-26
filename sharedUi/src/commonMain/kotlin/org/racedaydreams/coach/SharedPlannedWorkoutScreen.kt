@@ -1,10 +1,12 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.*
 import org.racedaydreams.domain.activity.PhysicalRunSessions
@@ -386,7 +388,17 @@ private fun SharedCompletionForm(
             { km = it },
             true,
         )
-        input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
+        if (treadmill) {
+            OutlinedTextField(
+                value = duration,
+                onValueChange = { duration = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Duration") },
+                supportingText = { Text("For example, 33:30 or 1:05:00") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            )
+        } else input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
         if (treadmillOnly) {
             Text(
                 if (details)

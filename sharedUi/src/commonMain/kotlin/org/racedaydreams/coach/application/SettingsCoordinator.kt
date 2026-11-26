@@ -28,6 +28,14 @@ class SettingsCoordinator<File>(
             settings.putSetting(key, value)
         }
 
+    fun colour(
+        discipline: org.racedaydreams.domain.settings.ColourDiscipline,
+        colour: org.racedaydreams.domain.settings.AccentColour?,
+    ) =
+        operations.submit {
+            org.racedaydreams.domain.settings.DisciplineColours.save(settings, discipline, colour)
+        }
+
     fun exportBackup(file: File) =
         operations.submit("Backup saved to the file you selected. Keep it somewhere you trust.") {
             platform.exportBackup(file)

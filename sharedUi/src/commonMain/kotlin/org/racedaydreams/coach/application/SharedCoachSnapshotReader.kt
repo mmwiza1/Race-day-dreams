@@ -147,6 +147,8 @@ class SharedCoachSnapshotReader(
                         )
                 CoachUiState(
                     loading = false,
+                    disciplineColours =
+                        org.racedaydreams.domain.settings.DisciplineColours.read(settings),
                     startingPath = settings.getSetting("starting.path"),
                     primaryFocus = sources.primaryFocus(),
                     shoeDiscomfort = sources.shoeDiscomfort(),

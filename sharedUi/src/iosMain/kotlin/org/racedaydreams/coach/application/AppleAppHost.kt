@@ -19,11 +19,13 @@ import org.racedaydreams.coach.*
 import org.racedaydreams.coach.activity.SharedShoesScreen
 import org.racedaydreams.coach.strength.SharedStrengthAnalyticsScreen
 import org.racedaydreams.coach.strength.SharedTrainingRecoveryContent
+import org.racedaydreams.coach.theme.DisciplineAppearance
 import org.racedaydreams.coach.theme.SharedRaceDayTheme
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.presentation.AthleteLanguage
 import org.racedaydreams.domain.presentation.CalendarData
 import org.racedaydreams.domain.reminders.ReminderSettings
+import org.racedaydreams.domain.settings.ColourDiscipline
 import org.racedaydreams.domain.settings.PrimaryFocus
 import org.racedaydreams.domain.strength.StrengthMeasurementPolicy
 import org.racedaydreams.domain.time.LocalDate
@@ -200,6 +202,35 @@ private enum class ApplePage {
     SHOES,
 }
 
+private fun ApplePage.colourDiscipline(): ColourDiscipline? =
+    when (this) {
+        ApplePage.SETTINGS -> ColourDiscipline.SETTINGS
+        ApplePage.BOULDERING,
+        ApplePage.BOULDERING_SESSION,
+        ApplePage.BOULDERING_REVIEW,
+        ApplePage.BOULDERING_DETAIL,
+        ApplePage.BOULDERING_HISTORY -> ColourDiscipline.BOULDERING
+        ApplePage.GYM,
+        ApplePage.DATED_GYM,
+        ApplePage.PROGRAMMES,
+        ApplePage.EXERCISES,
+        ApplePage.STRENGTH_HISTORY,
+        ApplePage.STRENGTH_ANALYTICS,
+        ApplePage.STRENGTH_HOME,
+        ApplePage.STRENGTH_RECORD -> ColourDiscipline.STRENGTH
+        ApplePage.RECORD,
+        ApplePage.PLAN,
+        ApplePage.WEEKLY,
+        ApplePage.BASELINE,
+        ApplePage.MANUAL_BASELINE,
+        ApplePage.ASSESSMENT,
+        ApplePage.RACE,
+        ApplePage.RUNNING_TRENDS,
+        ApplePage.RESULTS,
+        ApplePage.ACTIVITY -> ColourDiscipline.RUNNING
+        else -> null
+    }
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AppleAppContent(
@@ -262,7 +293,11 @@ private fun AppleAppContent(
             if (page != ApplePage.SETTINGS && !firstRun)
                 TextButton(onClick = { page = ApplePage.SETTINGS }) { Text("Settings") }
         }
-        Box(Modifier.weight(1f)) {
+        DisciplineAppearance(
+            state.disciplineColours,
+            page.colourDiscipline(),
+            Modifier.weight(1f),
+        ) {
             when (page) {
                 ApplePage.SETTINGS ->
                     AppleSettingsScreen(

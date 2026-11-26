@@ -1,8 +1,6 @@
 package org.racedaydreams.coach.application
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Text
@@ -172,6 +170,18 @@ fun AppleSettingsScreen(
             health()
         }
         ExpandableSection(
+            "Appearance",
+            "Discipline colours",
+            "settings-appearance",
+            lastOpened = lastOpened,
+        ) {
+            org.racedaydreams.coach.theme.DisciplineColourSettings(
+                state.disciplineColours,
+                state.busy,
+                session.services.settings::colour,
+            )
+        }
+        ExpandableSection(
             "Data and storage",
             "Backup, restore, GPX import, recording storage and diagnostics",
             "settings-data",
@@ -249,54 +259,37 @@ fun AppleSettingsScreen(
                 }
             }
             diagnosticPreview?.let { report ->
-                AlertDialog(
-                    onDismissRequest = { diagnosticPreview = null },
-                    title = { Text("Review diagnostic report") },
-                    text = {
-                        Column(
-                            Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())
-                        ) {
-                            Text(report)
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(
-                            enabled = !state.busy && !importing && !exporting,
-                            onClick = {
-                                diagnosticPreview = null
-                                exporting = true
-                                scope.launch {
-                                    try {
-                                        session.backupDocuments.exportDiagnostics(
-                                            report,
-                                            presenter,
-                                        ) { outcome ->
-                                            exporting = false
-                                            message =
-                                                when (outcome) {
-                                                    AppleBackupDocuments.Outcome.SAVED ->
-                                                        "Diagnostic report saved."
-                                                    AppleBackupDocuments.Outcome.CANCELLED ->
-                                                        "Diagnostic export cancelled."
-                                                }
+                org.racedaydreams.coach.DiagnosticReview(
+                    report,
+                    dismiss = { diagnosticPreview = null },
+                ) {
+                    if (!state.busy && !importing && !exporting) {
+
+                        diagnosticPreview = null
+                        exporting = true
+                        scope.launch {
+                            try {
+                                session.backupDocuments.exportDiagnostics(report, presenter) {
+                                    outcome ->
+                                    exporting = false
+                                    message =
+                                        when (outcome) {
+                                            AppleBackupDocuments.Outcome.SAVED ->
+                                                "Diagnostic report saved."
+                                            AppleBackupDocuments.Outcome.CANCELLED ->
+                                                "Diagnostic export cancelled."
                                         }
-                                    } catch (cancelled: CancellationException) {
-                                        exporting = false
-                                        throw cancelled
-                                    } catch (_: Exception) {
-                                        exporting = false
-                                        message = "Could not export the diagnostic report."
-                                    }
                                 }
-                            },
-                        ) {
-                            Text("Export diagnostic report")
+                            } catch (cancelled: CancellationException) {
+                                exporting = false
+                                throw cancelled
+                            } catch (_: Exception) {
+                                exporting = false
+                                message = "Could not export the diagnostic report."
+                            }
                         }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { diagnosticPreview = null }) { Text("Close") }
-                    },
-                )
+                    }
+                }
             }
         }
         ExpandableSection(

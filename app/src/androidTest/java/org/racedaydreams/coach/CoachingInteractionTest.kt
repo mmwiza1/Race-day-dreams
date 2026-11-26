@@ -34,6 +34,29 @@ class CoachingInteractionTest {
         FeatureStore(context).putSetting("baseline.reviewed","true")
     }
     @After fun cleanup(){scenario?.close();EveningReminders(context,FeatureStore(context)).cancelAllScheduled();SqliteUserPreferencesRepository(context).clear()}
+    @Test fun savedDisciplineColoursAreLoadedAfterRelaunch() {
+        fun openAppearance() {
+            compose.onNodeWithText("Settings").performClick()
+            compose.onNodeWithTag("settings-app").performScrollTo().performClick()
+        }
+        launch()
+        openAppearance()
+        compose.onNodeWithText("Teal").performScrollTo().performClick()
+        compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.running") == "TEAL" }
+        compose.onNodeWithText("Gym / Strength").performScrollTo().performClick()
+        compose.onNodeWithText("Amber").performScrollTo().performClick()
+        compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.strength") == "AMBER" }
+        scenario?.close()
+        launch()
+        openAppearance()
+        compose.onNodeWithText("Teal").performScrollTo().assertIsSelected()
+        compose.onNodeWithText("Gym / Strength").performScrollTo().performClick()
+        compose.onNodeWithText("Amber").performScrollTo().assertIsSelected()
+        compose.onNodeWithText("Default").performScrollTo().performClick()
+        compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.strength") == null }
+        Assert.assertEquals("TEAL", FeatureStore(context).getSetting("appearance.accent.running"))
+    }
+
     @Test fun runnerCanGenerateOneCurrentProgrammeWithoutHealthData(){
         launch();compose.onNodeWithText("Plan").performClick();await("Generate my programme")
         compose.onNodeWithText("Generate my programme").performScrollTo().performClick()
@@ -62,7 +85,7 @@ class CoachingInteractionTest {
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         compose.onNodeWithText("Indoor treadmill run").performScrollTo().performClick()
         enter("Actual distance (km)", "5")
-        enter("Actual duration (mm:ss or h:mm:ss)", "31:20")
+        enter("Duration", "31:20")
         enter("Start time (HH:mm, local)", "00:01")
         compose.onNodeWithText("Save treadmill run").performScrollTo().performClick()
         compose.waitUntil(20_000) { FeatureStore(context).activitySummaries().size == 1 }
@@ -145,7 +168,9 @@ class CoachingInteractionTest {
         await("Log strength workout")
         compose.onNodeWithText("Log strength workout").performClick()
 
-        compose.onNodeWithText("Use previous sets").assertIsDisplayed()
+        val reuse = compose.onNodeWithText("Use previous sets")
+        if (androidx.test.platform.app.InstrumentationRegistry.getArguments().getString("part2Evidence") == "dark") reuse.performScrollTo()
+        reuse.assertIsDisplayed()
         compose.onNodeWithText("Session details (optional)").assertExists()
         compose.onNodeWithText("Duration (minutes)").assertDoesNotExist()
         capturePart2(context, "historical-entry")
@@ -157,7 +182,9 @@ class CoachingInteractionTest {
         compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick()
         val setsBeforeSave = CoachingStore(context).strength().single()
         Assert.assertEquals(original, setsBeforeSave)
-        compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
+        compose.onNodeWithText("Save strength workout").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "historical-save")
+        compose.onNodeWithText("Save strength workout").performClick()
         compose.waitUntil(20_000) { CoachingStore(context).strength().size == 2 }
         val logged = CoachingStore(context).strength().first()
         Assert.assertEquals(LocalDate.now(), logged.startedAt().atOffset(logged.offset()).toLocalDate())

@@ -2,11 +2,8 @@ package org.racedaydreams.coach
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -14,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -61,16 +57,18 @@ fun DiagnosticExport(state: CoachUiState) {
         Text("Diagnostics", style = MaterialTheme.typography.titleLarge)
         Text("Basic diagnostics show device, app and permission information.")
         CoachButton("Review basic diagnostics") { preview = basic().toString(2) }
-        CoachButton(
-            if (sessions == null) "Find recording troubleshooting reports"
-            else "Hide recording reports"
-        ) {
+        OutlinedButton(
+            onClick = {
             if (sessions != null) sessions = null
             else
                 scope.launch {
                     sessions =
                         withContext(Dispatchers.IO) { RecordingDiagnostics(context).recent() }
                 }
+            },
+            modifier = Modifier.heightIn(min = CoachSpace.Touch),
+        ) {
+            Text(if (sessions == null) "Find recording troubleshooting reports" else "Hide recording reports")
         }
         sessions?.let { runs ->
             Text(
@@ -90,26 +88,10 @@ fun DiagnosticExport(state: CoachUiState) {
         message?.let { Text(it) }
     }
     preview?.let { json ->
-        AlertDialog(
-            onDismissRequest = { preview = null },
-            title = { Text("Review diagnostic report") },
-            text = {
-                Column(Modifier.heightIn(max = 400.dp).verticalScroll(rememberScrollState())) {
-                    Text(json, style = MaterialTheme.typography.bodySmall)
-                }
-            },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        pendingExport = json
-                        preview = null
-                        export.launch("race-day-dreams-diagnostic.json")
-                    }
-                ) {
-                    Text("Export diagnostic report")
-                }
-            },
-            dismissButton = { TextButton(onClick = { preview = null }) { Text("Close") } },
-        )
+        DiagnosticReview(json, dismiss = { preview = null }) {
+            pendingExport = json
+            preview = null
+            export.launch("race-day-dreams-diagnostic.json")
+        }
     }
 }
