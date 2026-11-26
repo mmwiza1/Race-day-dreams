@@ -40,6 +40,7 @@ import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.Discipline
+import org.racedaydreams.coach.ExpandableSection
 import org.racedaydreams.coach.Glyph
 import org.racedaydreams.coach.HeroSurface
 import org.racedaydreams.coach.HeroTitle
@@ -735,43 +736,55 @@ private fun OneOffWorkoutPicker(
                     )
                 }
             }
-            Text("Training priority", style = MaterialTheme.typography.titleMedium)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+            ExpandableSection(
+                title = "Advanced training preferences",
+                summary = "Optional · Effort guidance and training priority",
+                tag = "gym-now-advanced-training-preferences",
             ) {
-                GymProgramme.Priority.values().forEach { value ->
-                    CoachFilterChip(
-                        selected = priority == value.name,
-                        onClick = {
-                            priority = value.name
-                            showPreview = false
-                        },
-                        enabled = enabled,
-                        label = { Text(gymEnumLabel(value.name)) },
+                Text("Effort guidance", style = MaterialTheme.typography.titleMedium)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
+                    GymProgramme.Effort.values().forEach { value ->
+                        CoachFilterChip(
+                            selected = effort == value.name,
+                            onClick = {
+                                effort = value.name
+                                showPreview = false
+                            },
+                            enabled = enabled,
+                            label = { Text(value.name) },
+                        )
+                    }
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                    Text("RPE: Rate how demanding each set feels, on a 1–10 scale.")
+                    Text(
+                        "RIR: Estimate how many more repetitions you could complete before stopping."
                     )
                 }
-            }
-            Text("Effort guidance", style = MaterialTheme.typography.titleMedium)
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
-            ) {
-                GymProgramme.Effort.values().forEach { value ->
-                    CoachFilterChip(
-                        selected = effort == value.name,
-                        onClick = {
-                            effort = value.name
-                            showPreview = false
-                        },
-                        enabled = enabled,
-                        label = { Text(value.name) },
-                    )
+                Text("Training priority", style = MaterialTheme.typography.titleMedium)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                    verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                ) {
+                    GymProgramme.Priority.values().forEach { value ->
+                        CoachFilterChip(
+                            selected = priority == value.name,
+                            onClick = {
+                                priority = value.name
+                                showPreview = false
+                            },
+                            enabled = enabled,
+                            label = { Text(gymEnumLabel(value.name)) },
+                        )
+                    }
                 }
             }
         } else
             Text(
-                "Quick workouts use general fitness, beginner experience and conservative RPE guidance. Use Design a workout for me to choose a different goal or experience."
+                "Quick workouts use general fitness, beginner experience and conservative effort targets. Use Design a workout for me to choose a different goal or experience."
             )
 
         Button(

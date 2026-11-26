@@ -9,15 +9,20 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -56,6 +61,7 @@ import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymProgramme
+import org.racedaydreams.domain.strength.GymWorkoutDefinition
 
 /** Production screens, feature orchestration and real SQLite; no mocked set acknowledgements. */
 @RunWith(AndroidJUnit4::class)
@@ -224,6 +230,61 @@ class GymNowScreenTest {
     }
 
     @Test
+    fun advancedTrainingPreferencesAreOptionalAndKeepSelectionsWhenCollapsed() {
+        val dark =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("part2Evidence") == "dark"
+        install(largeDark = dark)
+        click("Design a workout for me")
+        val advanced = compose.onNodeWithTag("gym-now-advanced-training-preferences")
+        advanced.performScrollTo()
+        advanced.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
+        )
+        compose.onNodeWithText("Effort guidance").assertDoesNotExist()
+        compose.onNodeWithText("Training priority").assertDoesNotExist()
+        compose.onNodeWithText("Review suggested workout").performScrollTo().assertIsEnabled()
+        capturePart2(application, "gym-advanced-collapsed")
+
+        advanced.performScrollTo().performClick()
+        advanced.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded")
+        )
+        compose.onNodeWithText("RPE").performScrollTo().assertIsSelected()
+        compose
+            .onNodeWithText("RPE: Rate how demanding each set feels, on a 1–10 scale.")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "RIR: Estimate how many more repetitions you could complete before stopping."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        click("RIR")
+        compose.onNodeWithText("RIR").assertIsSelected()
+        compose
+            .onNodeWithText(
+                "RIR: Estimate how many more repetitions you could complete before stopping."
+            )
+            .performScrollTo()
+        capturePart2(application, "gym-advanced-effort")
+
+        compose.onNodeWithText("Strength first").performScrollTo().assertIsSelected()
+        click("Balanced")
+        compose.onNodeWithText("Balanced").assertIsSelected()
+        capturePart2(application, "gym-advanced-priority")
+        advanced.performScrollTo().performClick()
+        compose.onNodeWithText("RIR").assertDoesNotExist()
+        click("Review suggested workout")
+        await { model.state.value.generated != null }
+        val suggestion = requireNotNull(model.state.value.generated)
+        val scales = suggestion.definition().slots().mapNotNull { it.target()?.effort()?.scale() }
+        assertEquals(setOf(GymWorkoutDefinition.EffortScale.RIR), scales.toSet())
+        assertTrue(suggestion.explanation().contains("balanced priority"))
+    }
+
+    @Test
     fun quickAndGeneratedEntryFlowsReviewIntentionsAndStartWithDistinctOrigins() {
         install()
         for ((entry, start, origin) in
@@ -238,6 +299,11 @@ class GymNowScreenTest {
             click(entry)
             click("Review suggested workout")
             await { model.state.value.generated != null }
+            val suggestion = requireNotNull(model.state.value.generated)
+            val scales =
+                suggestion.definition().slots().mapNotNull { it.target()?.effort()?.scale() }
+            assertEquals(setOf(GymWorkoutDefinition.EffortScale.RPE), scales.toSet())
+            assertTrue(suggestion.explanation().contains("strength first priority"))
             assertNull(execution()?.completedSession())
             click(start)
             await { execution()?.origin() == origin }

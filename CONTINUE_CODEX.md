@@ -147,6 +147,14 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   independent audit. After approval, reopen the light diagnostic JSON and export on a stable
   Android emulator during final integration. Keep this branch local and leave the version,
   PR and release state alone.
+- Part 4 Gym Now amendment: the designed workout form puts effort scale and training priority
+  under a collapsed Advanced training preferences section with plain-English RPE and RIR
+  explanations. Defaults remain RPE and Strength first. Switching to RIR and Balanced still
+  affects generation after the section is collapsed. Android debug and test APKs built.
+  Two focused API 28 tests passed in light theme and the advanced-options test passed in dark
+  theme at 200% text. Inspected the collapsed, effort and priority states at 360 dp in both
+  themes. Logs are in `/workspace/scratch/rdd-part4-advanced` and captures are in
+  `/workspace/shared/downloads/Race-Day-Dreams-Gym-Advanced-Preferences.zip`.
 
 ## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 
