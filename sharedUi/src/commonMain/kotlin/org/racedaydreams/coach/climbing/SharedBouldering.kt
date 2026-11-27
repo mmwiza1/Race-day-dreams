@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontWeight
@@ -38,9 +39,6 @@ private fun gradeText(grade: ClimbingGrade?, preferred: GradeSystem): String =
         else -> "${grade.label} (≈ ${ClimbingGrade.approximately(grade, preferred).label})"
     }
 
-private fun problemSummary(problem: ClimbingProblem) =
-    "${problem.outcome.label} · ${plural(problem.attempts, "attempt")}"
-
 @Composable
 private fun BackRow(onBack: () -> Unit) {
     TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) { Text("Back") }
@@ -48,15 +46,21 @@ private fun BackRow(onBack: () -> Unit) {
 
 @Composable
 private fun Feedback(state: BoulderingState) {
-    state.error?.let {
+    val error = state.error
+    val message = error ?: state.message ?: return
+    val colours = MaterialTheme.colorScheme
+    Surface(
+        color = if (error != null) colours.errorContainer else Discipline.BOULDERING.container(),
+        contentColor =
+            if (error != null) colours.onErrorContainer else Discipline.BOULDERING.onContainer(),
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
         Text(
-            it,
-            color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+            message,
+            Modifier.padding(CoachSpace.Related),
+            style = MaterialTheme.typography.bodyMedium,
         )
-    }
-    state.message?.let {
-        Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
     }
 }
 
@@ -95,7 +99,7 @@ fun SharedBoulderingHome(
                     plural(draft.problems.size, "problem")
             // Starting is only offered once an interrupted session on this device would be found.
             state.loading -> "Checking for an unsaved session…"
-            else -> "Problems, grades and attempts, kept separate from weightlifting."
+            else -> "Log grades, attempts and sends."
         },
         primary =
             when {
@@ -120,6 +124,23 @@ fun SharedBoulderingHome(
             else emptyList(),
     )
     Feedback(state)
+
+    ExpressiveSection(
+        "Recent sessions",
+        Glyph.LIST,
+        ChartHue.PLUM,
+        trailing =
+            if (state.sessions.isNotEmpty()) {
+                { TextButton(onClick = openHistory) { Text("See all") } }
+            } else null,
+        contentPadding = PaddingValues(horizontal = CoachSpace.Inset, vertical = CoachSpace.Related),
+    ) {
+        if (summary.recent.isEmpty())
+            Text("No bouldering sessions recorded yet.", Modifier.padding(vertical = 12.dp))
+        for (session in summary.recent) SessionRow(session, state.gradeSystem, friendlyDate) {
+            openDetail(session.id)
+        }
+    }
 
     val highest = summary.highestSend[state.gradeSystem]
     val otherSystem = GradeSystem.values().first { it != state.gradeSystem }
@@ -196,23 +217,6 @@ fun SharedBoulderingHome(
         else Progression(summary.progression, state.gradeSystem, friendlyDate)
     }
 
-    ExpressiveSection(
-        "Recent sessions",
-        Glyph.LIST,
-        ChartHue.PLUM,
-        trailing =
-            if (state.sessions.isNotEmpty()) {
-                { TextButton(onClick = openHistory) { Text("See all") } }
-            } else null,
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-    ) {
-        if (summary.recent.isEmpty())
-            Text("No bouldering sessions recorded yet.", Modifier.padding(vertical = 12.dp))
-        for (session in summary.recent) SessionRow(session, state.gradeSystem, friendlyDate) {
-            openDetail(session.id)
-        }
-    }
-
     ExpressiveSection("Grades", Glyph.LIST, ChartHue.PLUM) {
         GradeSystemChooser(state.gradeSystem) { model.setGradeSystem(it) }
         Text(
@@ -230,11 +234,11 @@ fun SharedBoulderingHome(
 @Composable
 private fun GradeSystemChooser(selected: GradeSystem, choose: (GradeSystem) -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (system in GradeSystem.values()) FilterChip(
+        for (system in GradeSystem.values()) CoachFilterChip(
             selected = system == selected,
             onClick = { choose(system) },
             label = { Text(system.label) },
-            modifier = Modifier.heightIn(min = 48.dp).testTag("grade-system-${system.name}"),
+            modifier = Modifier.testTag("grade-system-${system.name}"),
         )
     }
 }
@@ -255,13 +259,49 @@ private fun SessionRow(
                 groups[preferred]?.maxByOrNull { it.rank }
                     ?: groups.values.flatten().maxByOrNull { it.rank }
             }
-    DashboardRow(
-        title = session.location.ifBlank { "Bouldering" },
-        detail = "${friendlyDate(session.date())} · ${climbingTime(session.durationSeconds)}",
-        value = "${session.sends()} / ${session.problems.size} sent",
-        secondary = hardest?.let { "Hardest ${gradeText(it, preferred)}" },
+    Surface(
         onClick = open,
-    )
+        color = MaterialTheme.colorScheme.surfaceContainerLow,
+        modifier =
+            Modifier.fillMaxWidth().testTag("climbing-session-${session.id}").semantics(
+                mergeDescendants = true
+            ) {
+                role = Role.Button
+            },
+    ) {
+        Row(
+            Modifier.fillMaxWidth()
+                .heightIn(min = CoachSpace.Touch)
+                .padding(vertical = CoachSpace.Related),
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(
+                Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
+            ) {
+                Text(
+                    session.location.ifBlank { "Bouldering" },
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Text(
+                    "${friendlyDate(session.date())} · ${climbingTime(session.durationSeconds)}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                Text(
+                    "${session.sends()} / ${session.problems.size} sent · ${plural(session.attempts(), "attempt")}",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                hardest?.let {
+                    Text(
+                        "Hardest ${gradeText(it, preferred)}",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                }
+            }
+            GlyphIcon(Glyph.CHEVRON, MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
 }
 
 @Composable
@@ -347,6 +387,85 @@ private fun Progression(
     }
 }
 
+@Composable
+private fun SessionFigures(problems: List<ClimbingProblem>) {
+    val figures =
+        listOf(
+            Stat("Attempts", problems.sumOf { it.attempts }.toString()),
+            Stat("Sends", problems.count { it.sent() }.toString()),
+            Stat("Flashes", problems.count { it.outcome == ClimbOutcome.FLASH }.toString()),
+        )
+    BoxWithConstraints(Modifier.fillMaxWidth().testTag("climbing-problem-summary")) {
+        if (LocalDensity.current.fontScale < 1.5f && maxWidth >= 230.dp) {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+            ) {
+                figures.forEach { StatBlock(it, Modifier.weight(1f)) }
+            }
+        } else {
+            Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                figures.forEach { StatBlock(it) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ClimbRow(problem: ClimbingProblem, preferred: GradeSystem, edit: (() -> Unit)? = null) {
+    val summary: @Composable (Modifier) -> Unit = { modifier ->
+        Column(modifier, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(gradeText(problem.grade, preferred), style = MaterialTheme.typography.titleLarge)
+            if (problem.name.isNotBlank())
+                Text(problem.name, style = MaterialTheme.typography.bodyMedium)
+            Text(plural(problem.attempts, "attempt"), style = MaterialTheme.typography.bodySmall)
+        }
+    }
+    val outcome: @Composable () -> Unit = {
+        Surface(
+            color =
+                if (problem.sent()) Discipline.BOULDERING.container()
+                else MaterialTheme.colorScheme.surfaceContainerHighest,
+            contentColor =
+                if (problem.sent()) Discipline.BOULDERING.onContainer()
+                else MaterialTheme.colorScheme.onSurface,
+            shape = MaterialTheme.shapes.small,
+        ) {
+            Text(
+                problem.outcome.label,
+                modifier =
+                    Modifier.padding(horizontal = CoachSpace.Related, vertical = CoachSpace.Tiny),
+                style = MaterialTheme.typography.labelMedium,
+            )
+        }
+    }
+    val content: @Composable () -> Unit = {
+        FlowRow(
+            Modifier.fillMaxWidth()
+                .heightIn(min = CoachSpace.Touch)
+                .padding(vertical = CoachSpace.Related)
+                .semantics(mergeDescendants = true) {},
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
+            maxItemsInEachRow = if (LocalDensity.current.fontScale >= 1.5f) 1 else 3,
+            itemVerticalAlignment = Alignment.CenterVertically,
+        ) {
+            summary(Modifier.weight(1f))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                outcome()
+                if (edit != null)
+                    GlyphIcon(Glyph.CHEVRON, MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+    }
+    if (edit == null) content()
+    else
+        Surface(onClick = edit, color = MaterialTheme.colorScheme.surfaceContainerLow) { content() }
+}
+
 /** Logging problems for the unsaved session (live or past) or a saved session being corrected. */
 @Composable
 fun SharedBoulderingSession(
@@ -399,51 +518,51 @@ fun SharedBoulderingSession(
             style = MaterialTheme.typography.titleMedium,
         )
     }
-    CoachTextInput("Climbing gym or location (optional)", target.location, model::setLocation)
-
     var editingProblem by remember { mutableStateOf<ClimbingProblem?>(null) }
     var adding by remember { mutableStateOf(false) }
-    ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
-        Text(
-            "${plural(target.problems.size, "problem")} · ${target.problems.count { it.sent() }} sent · " +
-                "${target.problems.count { it.outcome == ClimbOutcome.FLASH }} flashed",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.testTag("climbing-problem-summary"),
-        )
-        if (target.problems.isEmpty())
-            Text("Add each problem you try, with its grade and attempts.")
-        for (problem in target.problems) DashboardRow(
-            title =
-                gradeText(problem.grade, state.gradeSystem) +
-                    if (problem.name.isNotBlank()) " · ${problem.name}" else "",
-            detail = problemSummary(problem),
-            value = "",
-            secondary = "Edit",
-            onClick = { editingProblem = problem },
-        )
-        Button(
-            onClick = { adding = true },
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp).testTag("climbing-add-problem"),
-        ) {
-            Text("Add problem")
-        }
+    Panel {
+        Text("Session summary", style = MaterialTheme.typography.titleMedium)
+        SessionFigures(target.problems)
     }
-    OutlinedTextField(
-        target.notes,
-        model::setNotes,
-        label = { Text("Notes (optional)") },
-        modifier = Modifier.fillMaxWidth(),
-        minLines = 2,
-    )
     Button(
+        onClick = { adding = true },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp).testTag("climbing-add-problem"),
+    ) {
+        Text("Add problem")
+    }
+    OutlinedButton(
         onClick = {
             model.stopTimer()
             openReview()
         },
-        modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
+        modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
     ) {
         Text(if (editing) "Review corrections" else "Finish and review")
+    }
+    ExpressiveSection(
+        "Recent problems",
+        Glyph.LIST,
+        ChartHue.PLUM,
+        caption = plural(target.problems.size, "problem"),
+    ) {
+        if (target.problems.isEmpty()) Text("Add the first problem you tried.")
+        for (problem in target.problems.asReversed()) ClimbRow(problem, state.gradeSystem) {
+            editingProblem = problem
+        }
+    }
+    ExpandableSection(
+        "Session details",
+        target.location.ifBlank { "Location and notes" },
+        "climbing-session-details",
+    ) {
+        CoachTextInput("Climbing gym or location (optional)", target.location, model::setLocation)
+        OutlinedTextField(
+            target.notes,
+            model::setNotes,
+            label = { Text("Notes (optional)") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 2,
+        )
     }
     var confirmDiscard by remember { mutableStateOf(false) }
     if (editing)
@@ -513,12 +632,11 @@ private fun ProblemEditor(
     remove: (() -> Unit)?,
     dismiss: () -> Unit,
 ) {
-    var system by remember { mutableStateOf(initial?.grade?.system ?: preferred) }
-    var grade by remember { mutableStateOf(initial?.grade?.label) }
-    var attempts by remember { mutableStateOf(initial?.attempts ?: 1) }
-    var outcome by remember { mutableStateOf(initial?.outcome ?: ClimbOutcome.SEND) }
-    var name by remember { mutableStateOf(initial?.name ?: "") }
-    if (outcome == ClimbOutcome.FLASH && attempts > 1) outcome = ClimbOutcome.SEND
+    var system by rememberSaveable { mutableStateOf(initial?.grade?.system ?: preferred) }
+    var grade by rememberSaveable { mutableStateOf(initial?.grade?.label) }
+    var attempts by rememberSaveable { mutableStateOf(initial?.attempts ?: 1) }
+    var outcome by rememberSaveable { mutableStateOf(initial?.outcome ?: ClimbOutcome.SEND) }
+    var name by rememberSaveable { mutableStateOf(initial?.name ?: "") }
     AlertDialog(
         onDismissRequest = dismiss,
         title = { Text(if (initial == null) "Add problem" else "Edit problem") },
@@ -527,9 +645,24 @@ private fun ProblemEditor(
                 Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
+                Surface(
+                    color = Discipline.BOULDERING.container(),
+                    contentColor = Discipline.BOULDERING.onContainer(),
+                    shape = MaterialTheme.shapes.large,
+                    modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+                ) {
+                    Column(Modifier.padding(CoachSpace.Inset)) {
+                        Text("Selected grade", style = MaterialTheme.typography.labelLarge)
+                        Text(
+                            grade ?: "Ungraded",
+                            style = MaterialTheme.typography.displaySmall,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
                 Text("Grade system", style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    for (s in GradeSystem.values()) FilterChip(
+                    for (s in GradeSystem.values()) CoachFilterChip(
                         selected = s == system,
                         onClick = {
                             if (s != system) {
@@ -546,17 +679,17 @@ private fun ProblemEditor(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                 ) {
-                    FilterChip(
+                    CoachFilterChip(
                         selected = grade == null,
                         onClick = { grade = null },
                         label = { Text("Ungraded") },
                         modifier = Modifier.heightIn(min = 48.dp),
                     )
-                    for (label in ClimbingGrade.labels(system)) FilterChip(
+                    for (label in ClimbingGrade.labels(system)) CoachFilterChip(
                         selected = grade == label,
                         onClick = { grade = label },
                         label = { Text(label) },
-                        modifier = Modifier.heightIn(min = 48.dp).testTag("grade-$label"),
+                        modifier = Modifier.testTag("grade-$label"),
                     )
                 }
                 Text("Attempts", style = MaterialTheme.typography.labelLarge)
@@ -581,8 +714,10 @@ private fun ProblemEditor(
                     )
                     OutlinedButton(
                         onClick = {
-                            attempts = (attempts + 1).coerceAtMost(ClimbingProblem.MAX_ATTEMPTS)
+                            attempts += 1
+                            if (outcome == ClimbOutcome.FLASH) outcome = ClimbOutcome.SEND
                         },
+                        enabled = attempts < ClimbingProblem.MAX_ATTEMPTS,
                         modifier =
                             Modifier.heightIn(min = 48.dp).semantics {
                                 contentDescription = "More attempts"
@@ -593,12 +728,12 @@ private fun ProblemEditor(
                 }
                 Text("Outcome", style = MaterialTheme.typography.labelLarge)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    for (o in ClimbOutcome.values()) FilterChip(
+                    for (o in ClimbOutcome.values()) CoachFilterChip(
                         selected = o == outcome,
                         enabled = o != ClimbOutcome.FLASH || attempts == 1,
                         onClick = { outcome = o },
                         label = { Text(o.label) },
-                        modifier = Modifier.heightIn(min = 48.dp).testTag("outcome-${o.name}"),
+                        modifier = Modifier.testTag("outcome-${o.name}"),
                     )
                 }
                 if (attempts > 1)
@@ -616,7 +751,7 @@ private fun ProblemEditor(
             }
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
                     save(
                         ClimbingProblem(
@@ -628,13 +763,14 @@ private fun ProblemEditor(
                         )
                     )
                 },
-                modifier = Modifier.testTag("climbing-save-problem"),
+                modifier =
+                    Modifier.heightIn(min = CoachSpace.Touch).testTag("climbing-save-problem"),
             ) {
                 Text("Save problem")
             }
         },
         dismissButton = {
-            Row {
+            FlowRow {
                 if (remove != null) TextButton(onClick = remove) { Text("Remove") }
                 TextButton(onClick = dismiss) { Text("Cancel") }
             }
@@ -661,7 +797,6 @@ fun SharedBoulderingReview(
         Text("There is no session to review.")
         return@CoachPage
     }
-    Feedback(state)
     val date = org.racedaydreams.domain.time.CalendarDates.atOffset(target.startedAt, target.offset)
     Panel {
         Text("Date", style = MaterialTheme.typography.labelLarge)
@@ -670,7 +805,7 @@ fun SharedBoulderingReview(
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.testTag("climbing-review-date"),
         )
-        Row {
+        FlowRow {
             TextButton(
                 onClick = { model.shiftDate(-1) },
                 modifier = Modifier.heightIn(min = 48.dp),
@@ -711,18 +846,14 @@ fun SharedBoulderingReview(
         )
     }
     CoachTextInput("Climbing gym or location (optional)", target.location, model::setLocation)
-    ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
-        Text(
-            "${plural(target.problems.size, "problem")} · ${target.problems.count { it.sent() }} sent · " +
-                "${target.problems.count { it.outcome == ClimbOutcome.FLASH }} flashed · " +
-                "${plural(target.problems.sumOf { it.attempts }, "attempt")}",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-        )
-        for (problem in target.problems) Text(
-            "${gradeText(problem.grade, state.gradeSystem)} — ${problemSummary(problem)}" +
-                if (problem.name.isNotBlank()) " · ${problem.name}" else ""
-        )
+    ExpressiveSection(
+        "Problems",
+        Glyph.LIST,
+        ChartHue.PLUM,
+        caption = plural(target.problems.size, "problem"),
+    ) {
+        SessionFigures(target.problems)
+        for (problem in target.problems) ClimbRow(problem, state.gradeSystem)
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
             Text("Change problems")
         }
@@ -734,6 +865,7 @@ fun SharedBoulderingReview(
         modifier = Modifier.fillMaxWidth(),
         minLines = 2,
     )
+    Feedback(state)
     Button(
         onClick = { model.save(onSaved) },
         enabled = !state.busy,
@@ -763,32 +895,15 @@ fun SharedBoulderingDetail(
         Text(if (state.loading) "Loading…" else "This session is no longer saved.")
         return@CoachPage
     }
-    CoachHeading(session.location.ifBlank { "Bouldering session" })
-    Feedback(state)
-    Text("${friendlyDate(session.date())} · ${climbingTime(session.durationSeconds)}")
-    Panel {
-        KpiGrid(
-            listOf(
-                Kpi(
-                    "Problems",
-                    session.problems.size.toString(),
-                    plural(session.attempts(), "attempt"),
-                ),
-                Kpi("Sends", session.sends().toString(), "${session.flashes()} flashed"),
-            )
-        )
+    HeroSurface(Discipline.BOULDERING, Glyph.TREND, "Saved session") {
+        HeroTitle(session.location.ifBlank { "Bouldering session" })
+        Text("${friendlyDate(session.date())} · ${climbingTime(session.durationSeconds)}")
     }
+    Feedback(state)
+    Panel { SessionFigures(session.problems) }
     ExpressiveSection("Problems", Glyph.LIST, ChartHue.PLUM) {
         if (session.problems.isEmpty()) Text("No problems were recorded.")
-        for (problem in session.problems) DashboardRow(
-            title =
-                gradeText(problem.grade, state.gradeSystem) +
-                    if (problem.name.isNotBlank()) " · ${problem.name}" else "",
-            detail = problemSummary(problem),
-            value = "",
-            secondary = null,
-            onClick = null,
-        )
+        for (problem in session.problems) ClimbRow(problem, state.gradeSystem)
         if (session.problems.any { it.grade != null && it.grade!!.system != state.gradeSystem })
             Text(
                 "≈ values are approximate conversions; the original grade is kept.",
@@ -843,9 +958,13 @@ fun SharedBoulderingHistory(
     val state by model.state.collectAsState()
     if (!appBarBack) BackRow(onBack)
     CoachHeading("Bouldering history")
-    if (state.sessions.isEmpty()) Text("No bouldering sessions recorded yet.")
+    Feedback(state)
+    if (state.sessions.isEmpty()) Panel { Text("No bouldering sessions recorded yet.") }
     else
-        Panel(contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)) {
+        Panel(
+            contentPadding =
+                PaddingValues(horizontal = CoachSpace.Inset, vertical = CoachSpace.Related)
+        ) {
             for (session in state.sessions) SessionRow(session, state.gradeSystem, friendlyDate) {
                 openDetail(session.id)
             }

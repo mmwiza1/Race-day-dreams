@@ -1,9 +1,12 @@
 package org.racedaydreams.coach
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -21,8 +24,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.climbing.*
+import org.racedaydreams.coach.theme.DisciplineAppearance
+import org.racedaydreams.coach.theme.RaceDayTheme
 import org.racedaydreams.data.AndroidSqlConnection
 import org.racedaydreams.domain.climbing.*
+import org.racedaydreams.domain.settings.AccentColour
+import org.racedaydreams.domain.settings.ColourDiscipline
 import org.racedaydreams.storage.SqliteClimbing
 
 /** Real shared bouldering screens over the real local database. */
@@ -74,14 +81,37 @@ class SharedBoulderingScreenTest {
 
     private fun addProblem(grade: String?, extraAttempts: Int, outcome: ClimbOutcome) {
         compose.onNodeWithTag("climbing-add-problem").performScrollTo().performClick()
-        if (grade != null) compose.onNodeWithTag("grade-$grade").performScrollTo().performClick()
+        if (grade != null) {
+            val choice = compose.onNodeWithTag("grade-$grade")
+            choice.performScrollTo().performClick()
+            choice.assertIsSelected()
+            if (grade == "V4") {
+                compose
+                    .onNode(hasText("Selected grade") and hasText("V4"))
+                    .performScrollTo()
+                    .assertIsDisplayed()
+                capturePart2(context, "piece5-grade")
+            }
+        }
+        val flash = compose.onNodeWithTag("outcome-FLASH")
+        if (outcome == ClimbOutcome.SEND && extraAttempts > 0)
+            flash.performScrollTo().performClick().assertIsSelected()
         repeat(extraAttempts) {
             compose.onNodeWithContentDescription("More attempts").performScrollTo().performClick()
         }
-        if (extraAttempts > 0)
-            compose.onNodeWithTag("outcome-FLASH").performScrollTo().assertIsNotEnabled()
-        compose.onNodeWithTag("outcome-${outcome.name}").performScrollTo().performClick()
-        compose.onNodeWithTag("climbing-save-problem").performClick()
+        if (extraAttempts > 0) {
+            flash.performScrollTo().assertIsNotEnabled().assertIsNotSelected()
+            if (outcome == ClimbOutcome.SEND)
+                compose.onNodeWithTag("outcome-SEND").assertIsSelected()
+        }
+        val selectedOutcome = compose.onNodeWithTag("outcome-${outcome.name}")
+        selectedOutcome.performScrollTo().performClick()
+        selectedOutcome.assertIsSelected()
+        if (outcome == ClimbOutcome.SEND && extraAttempts > 0) {
+            compose.onNodeWithTag("climbing-attempts").assert(hasContentDescription("4 attempts"))
+            capturePart2(context, "piece5-attempts")
+        }
+        compose.onNodeWithTag("climbing-save-problem").assertIsDisplayed().performClick()
         compose.waitForIdle()
     }
 
@@ -92,49 +122,67 @@ class SharedBoulderingScreenTest {
         var detail by mutableStateOf("")
         val today = LocalDate.now()
         compose.setContent {
-            MaterialTheme {
-                when (page) {
-                    "home" ->
-                        SharedBoulderingHome(
-                            model,
-                            today,
-                            ::friendlyDate,
-                            onBack = {},
-                            openSession = { page = "session" },
-                            openDetail = {
-                                detail = it
-                                page = "detail"
-                            },
-                            openHistory = { page = "history" },
-                        )
-                    "session" ->
-                        SharedBoulderingSession(
-                            model,
-                            Instant::now,
-                            ::friendlyDate,
-                            onBack = { page = "home" },
-                            openReview = { page = "review" },
-                        )
-                    "review" ->
-                        SharedBoulderingReview(
-                            model,
-                            Instant::now,
-                            ::friendlyDate,
-                            onBack = { page = "session" },
-                            onSaved = {
-                                detail = it
-                                page = "detail"
-                            },
-                        )
-                    "detail" ->
-                        SharedBoulderingDetail(
-                            model,
-                            detail,
-                            ::friendlyDate,
-                            onBack = { page = "home" },
-                            openCorrection = { page = "session" },
-                        )
-                    else -> {}
+            val dark = InstrumentationRegistry.getArguments().getString("part2Evidence") == "dark"
+            RaceDayTheme(darkTheme = dark, dynamicColour = false) {
+                DisciplineAppearance(
+                    if (dark) mapOf(ColourDiscipline.BOULDERING to AccentColour.VIOLET)
+                    else emptyMap(),
+                    ColourDiscipline.BOULDERING,
+                ) {
+                    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                        when (page) {
+                            "home" ->
+                                SharedBoulderingHome(
+                                    model,
+                                    today,
+                                    ::friendlyDate,
+                                    onBack = {},
+                                    openSession = { page = "session" },
+                                    openDetail = {
+                                        detail = it
+                                        page = "detail"
+                                    },
+                                    openHistory = { page = "history" },
+                                )
+                            "session" ->
+                                SharedBoulderingSession(
+                                    model,
+                                    Instant::now,
+                                    ::friendlyDate,
+                                    onBack = { page = "home" },
+                                    openReview = { page = "review" },
+                                )
+                            "review" ->
+                                SharedBoulderingReview(
+                                    model,
+                                    Instant::now,
+                                    ::friendlyDate,
+                                    onBack = { page = "session" },
+                                    onSaved = {
+                                        detail = it
+                                        page = "detail"
+                                    },
+                                )
+                            "detail" ->
+                                SharedBoulderingDetail(
+                                    model,
+                                    detail,
+                                    ::friendlyDate,
+                                    onBack = { page = "home" },
+                                    openCorrection = { page = "session" },
+                                )
+                            "history" ->
+                                SharedBoulderingHistory(
+                                    model,
+                                    ::friendlyDate,
+                                    onBack = { page = "home" },
+                                    openDetail = {
+                                        detail = it
+                                        page = "detail"
+                                    },
+                                )
+                        }
+                    }
                 }
             }
         }
@@ -153,14 +201,17 @@ class SharedBoulderingScreenTest {
             .performScrollTo()
             .assertExists()
 
+        capturePart2(context, "piece5-empty")
         compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()
         awaitTag("climbing-elapsed", model)
+        capturePart2(context, "piece5-active")
         addProblem("V4", 0, ClimbOutcome.FLASH)
         addProblem("V5", 3, ClimbOutcome.SEND)
         addProblem(null, 1, ClimbOutcome.NOT_SENT)
-        compose
-            .onNodeWithTag("climbing-problem-summary")
-            .assert(hasText("3 problems · 2 sent · 1 flashed"))
+        assertSessionFigures(7)
+        compose.onNodeWithText("Recent problems").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Not sent", substring = false).performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece5-recent-problems")
 
         // An interrupted app: a new coordinator over the same database finds the unsaved session.
         compose.waitUntil(5_000) { SqliteClimbing(database).draft()?.problems?.size == 3 }
@@ -169,18 +220,30 @@ class SharedBoulderingScreenTest {
         compose.waitUntil(5_000) { resumed.state.value.draft?.problems?.size == 3 }
         model = resumed
         page = "home"
-        compose.onNodeWithText("Resume session").performClick()
+        compose.onNodeWithText("Resume session").performScrollTo().performClick()
 
         compose.onNodeWithText("Finish and review").performScrollTo().performClick()
-        compose.onNodeWithTag("climbing-minutes").performTextReplacement("75")
+        compose.onNodeWithTag("climbing-minutes").performScrollTo().performTextReplacement("0")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithTag("climbing-save-session").performScrollTo().performClick()
+        compose
+            .onNodeWithText("Climbing time must be between 1 minute and 24 hours.")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithTag("climbing-save-session").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece5-save-error")
+        assertEquals(0, SqliteClimbing(database).sessions().size)
+        compose.onNodeWithTag("climbing-minutes").performScrollTo().performTextReplacement("75")
         assertEquals(75L * 60, resumed.state.value.draft?.durationSeconds)
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         saveAndAwaitDetail(resumed) { page == "detail" }
         compose.onNodeWithText("1 h 15 min", substring = true).assertExists()
-        compose.onNodeWithTag("kpi-Sends").assert(hasText("2"))
+        assertSessionFigures(7)
+        compose.onNodeWithText("Bouldering session saved.").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece5-saved")
         assertEquals(null, SqliteClimbing(database).draft())
 
-        compose.onNodeWithText("Back").performClick()
+        compose.onNodeWithText("Back").performScrollTo().performClick()
         compose.waitUntil(5_000) { model.state.value.sessions.size == 1 }
         compose.onNodeWithTag("kpi-Sessions").assert(hasText("1"))
         compose.onNodeWithTag("kpi-Highest send").assert(hasText("V5"))
@@ -207,23 +270,38 @@ class SharedBoulderingScreenTest {
             saved.problems.map { it.grade },
         )
 
-        // Correct the saved session, then delete it.
-        detail = saved.id
-        page = "detail"
+        // Visit history before reopening and correcting the recorded session.
+        compose.onNodeWithText("See all").performScrollTo().performClick()
+        compose.onNodeWithText("Bouldering history").assertIsDisplayed()
+        val historyRow = compose.onNodeWithTag("climbing-session-${saved.id}")
+        historyRow.performScrollTo().assertIsDisplayed().assertHasClickAction()
+        val summary = hasText("2 / 3 sent", substring = true)
+        historyRow.assert(summary or hasAnyDescendant(summary))
+        capturePart2(context, "piece5-history")
+        historyRow.performClick()
+        assertEquals(saved.id, detail)
         compose.onNodeWithText("Correct session").performScrollTo().performClick()
         compose.onNodeWithText("Correct session").assertExists()
+        compose.onNodeWithTag("climbing-session-details").performScrollTo().performClick()
         compose
             .onNodeWithText("Climbing gym or location (optional)")
+            .performScrollTo()
             .performTextReplacement("North wall")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithText("Review corrections").performScrollTo().performClick()
-        compose.onNodeWithTag("climbing-save-session").performScrollTo().performClick()
-        compose.waitUntil(5_000) {
-            SqliteClimbing(database).sessions().single().location == "North wall"
-        }
+        saveAndAwaitDetail(resumed) { page == "detail" }
+        assertEquals("North wall", SqliteClimbing(database).sessions().single().location)
         compose.onNodeWithText("Delete session").performScrollTo().performClick()
         compose.onNodeWithText("Delete").performClick()
         compose.waitUntil(5_000) { SqliteClimbing(database).sessions().isEmpty() }
+    }
+
+    private fun assertSessionFigures(attempts: Int) {
+        val summary = hasAnyAncestor(hasTestTag("climbing-problem-summary"))
+        for ((label, value) in
+            listOf("Attempts" to attempts.toString(), "Sends" to "2", "Flashes" to "1")) {
+            compose.onNode(summary and hasText(label) and hasText(value)).assertExists()
+        }
     }
 
     private fun saveAndAwaitDetail(model: SharedBoulderingCoordinator, inDetail: () -> Boolean) {

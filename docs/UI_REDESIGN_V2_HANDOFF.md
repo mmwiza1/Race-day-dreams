@@ -1,10 +1,10 @@
 # UI Redesign v2 handoff
 
-**Piece 4 is complete. Pause for owner review before Piece 5.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
+**Piece 5 is complete. Pause for owner review before Piece 6.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
 
 ## Eight-piece roadmap
 
-The owner approved Pieces 1–4. The archive defines screen patterns without listing a numbered roadmap. The remaining sequence is proposed for review. Each later piece requires explicit approval.
+The owner approved Pieces 1–5. The archive defines screen patterns without listing a numbered roadmap. The remaining sequence is proposed for review. Each later piece requires explicit approval.
 
 | Piece | Focus | Expected checkpoint |
 | --- | --- | --- |
@@ -88,8 +88,48 @@ Native iOS, physical GPS, manual TalkBack/VoiceOver and wallpaper-derived accent
 12 or later remain unverified. The focused checkpoint leaves the full device matrix and
 canonical gallery refresh for integration.
 
+## Piece 5 changes
+
+- Bouldering opens with start or resume and recent sessions. Charts and grade preferences remain
+  available below. History rows show the time, sends, attempts and hardest grade as entered.
+- The live session puts the timer, attempt/send/flash totals and the main Add problem action
+  ahead of the climb list. Each row pairs its grade and attempts with a labelled outcome.
+  Optional location and notes use a disclosure.
+- The problem editor highlights the selected grade, uses checked chips and keeps the labelled
+  attempt stepper and the first-attempt flash rule. Session review keeps editable date, time
+  and notes. Validation feedback appears above Save and successful completion is shown in
+  the saved-session view. The coordinator, grade definitions and storage contracts are unchanged.
+
+## Piece 5 verification and visual review
+
+- Android debug app and instrumentation APKs built. Debug lint, pinned Kotlin formatting,
+  diff and documentation-link checks passed. Six SQLite climbing tests passed, covering
+  draft retention, history, corrections, deletion, grade preferences and separation from lifting.
+- API 28 passed three focused interaction tests in light and the full logging journey in
+  dark at 320dp and 200% text with a configured violet accent. The first light run exposed
+  a history target whose text and action were separate in the test. The revised labelled
+  row passed reopening and correction. Visual review also led to a tighter standard-text
+  layout for the session figures. The fifth instrumentation test passed through the production
+  Strength-to-Bouldering route and captured light, dark and enlarged text.
+- The review bundle is `Race-Day-Dreams-UI-v2-Piece-5-Android.zip`. The before captures use
+  the published Android gallery. The after captures use real Android screens with synthetic
+  training records. The normal light interaction viewport is about 360dp.
+
+| Design check | Actual render and interaction review |
+| --- | --- |
+| Task clarity | Start/Resume and Add problem are visible entry points. The saved header and acknowledgement follow persisted completion. |
+| Visual hierarchy | The reference's prominent grade, attempts and outcomes appear together in the editor and climb rows. Live totals sit above the list and beside each other where they fit. |
+| Interaction efficiency | The attempt stepper stays available while recording the outcome. History rows open the exact recorded session with one tap. |
+| Progressive disclosure | Session location and notes are available behind Session details during logging. The short session figures lead the live view. |
+| Consistency | The same Material 3 controls, shapes and spacing are used throughout. Light uses plum. The dark fixture verifies the configured violet roles. |
+| Visual quality | Compared empty, active, grade selection, attempts, recent problems, saved, history and validation captures with the approved Bouldering reference and the previous app. |
+| Accessibility | Selected and disabled choices expose their state in UI tests. The grade grid, figures, labelled history row and save feedback reflow or scroll at 320dp and 200%, with editor actions remaining reachable. |
+| Functional integrity | The journey verifies draft resume, the first-attempt flash rule, retained original grades after a preference change, corrected duration after validation, saving, history reopening, correction and deletion. |
+
+Native iOS builds and renders, manual TalkBack/VoiceOver and wallpaper-derived colours
+remain unverified. The full device matrix and canonical gallery refresh remain integration work.
+
 ## Next safe step
 
-Wait for owner approval before Piece 5. Fetch and verify the existing redesign branch, read the
-benchmark and follow the scope the owner approves. Keep the published build and active redesign
-checkpoint distinct in the [continuation guide](../CONTINUE_CODEX.md).
+Wait for owner approval before Piece 6. Fetch and verify the existing redesign branch and
+follow the exact scope approved. Keep the published build and redesign checkpoint distinct in the [continuation guide](../CONTINUE_CODEX.md).

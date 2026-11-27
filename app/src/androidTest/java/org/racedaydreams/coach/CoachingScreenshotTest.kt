@@ -1419,7 +1419,7 @@ class CoachingScreenshotTest {
             compose.onNodeWithTag("strength-bouldering-card").performScrollTo().performClick()
             await("Resume session")
             compose.onNodeWithText("Resume session").performClick()
-            await("4 problems · 3 sent · 1 flashed")
+            await("4 problems")
             capture("bouldering-session")
             climbs.clearDraft()
             closeScenario()
