@@ -8,13 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.ActivityHeading
 import org.racedaydreams.coach.CoachSpace
+import org.racedaydreams.coach.Glyph
 import org.racedaydreams.coach.Panel
 
 /** The selected exercise, its most recent performance and any actions for that exercise. */
@@ -25,12 +25,7 @@ fun StrengthExerciseHeader(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Panel {
-        Text(
-            exercise,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.semantics { heading() },
-        )
+        ActivityHeading(exercise, Glyph.DUMBBELL)
         if (previous != null) {
             Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
                 Text("Last time", style = MaterialTheme.typography.labelMedium)

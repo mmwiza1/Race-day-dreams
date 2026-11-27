@@ -222,12 +222,11 @@ internal fun StrengthForm(
                 showExclusionNotice = true,
             )
             if (previous != null) {
-                FilledTonalButton(
+                ActivityAction(
+                    "Use previous sets",
                     onClick = { if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true },
-                    modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
-                ) {
-                    Text("Use previous sets")
-                }
+                    role = ActivityActionRole.SECONDARY,
+                )
             }
         }
         if (confirmReuse)
