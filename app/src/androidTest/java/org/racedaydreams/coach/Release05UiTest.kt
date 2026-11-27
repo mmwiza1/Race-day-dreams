@@ -46,9 +46,12 @@ class Release05UiTest {
         fun openSavedWorkout() {
             compose.onNodeWithText("View activity history").performScrollTo().performClick()
             await("Workout history")
+            val history = compose.onNode(hasScrollToIndexAction())
+            history.performScrollToNode(hasText("workouts loaded", substring = true))
+            await("1 workouts loaded")
             val source = hasText(friendlyDate(date)) and hasClickAction()
-            compose.waitUntil(20_000) { compose.onAllNodes(source).fetchSemanticsNodes().isNotEmpty() }
-            compose.onNode(source).performClick()
+            history.performScrollToNode(source)
+            compose.onNode(source).assertIsDisplayed().performClick()
             await("Edit source workout")
         }
         launch()
@@ -58,6 +61,7 @@ class Release05UiTest {
         compose.onNodeWithContentDescription("Edit set 1").performScrollTo().performClick()
         val loadField = compose.onNodeWithText("Weight (kg)").performScrollTo()
         loadField.performTouchInput { click() }.performTextReplacement("85")
+        val instrumentation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation()
         val evidence = androidx.test.platform.app.InstrumentationRegistry.getArguments().getString("part2Evidence")
         if (evidence in setOf("light", "dark")) {
             compose.waitUntil(10_000) {
@@ -69,6 +73,8 @@ class Release05UiTest {
                 }
                 visible
             }
+            loadField.performScrollTo().assertIsDisplayed()
+            instrumentation.uiAutomation.waitForIdle(300, 6_000)
             capturePart2(context, "strength-keyboard")
         }
         androidx.test.espresso.Espresso.closeSoftKeyboard()
