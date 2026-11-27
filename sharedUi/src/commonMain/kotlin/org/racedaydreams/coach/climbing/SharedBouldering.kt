@@ -85,7 +85,7 @@ fun SharedBoulderingHome(
     val draft = state.draft
     // Same composition as the Strength tab: one hero carries starting or resuming a session.
     ScreenHero(
-        Discipline.STRENGTH,
+        Discipline.BOULDERING,
         Glyph.TREND,
         "Climbing",
         "Bouldering",
@@ -125,7 +125,7 @@ fun SharedBoulderingHome(
     val otherSystem = GradeSystem.values().first { it != state.gradeSystem }
     val otherHighest = summary.highestSend[otherSystem]
     SectionLabel("Your climbing", Glyph.VOLUME, ChartHue.PLUM, period.label)
-    PeriodSelector(period, Discipline.STRENGTH) { periodName = it.name }
+    PeriodSelector(period, Discipline.BOULDERING) { periodName = it.name }
     Panel {
         KpiGrid(
             listOf(
@@ -378,7 +378,7 @@ fun SharedBoulderingSession(
                 delay(1_000)
             }
         }
-        HeroSurface(Discipline.STRENGTH, Glyph.TREND, "Live session") {
+        HeroSurface(Discipline.BOULDERING, Glyph.TREND, "Live session") {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text("Climbing for", style = MaterialTheme.typography.titleMedium)
                 Text(

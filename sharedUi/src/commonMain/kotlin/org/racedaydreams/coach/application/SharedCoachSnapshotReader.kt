@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import org.racedaydreams.coach.CoachUiState
 import org.racedaydreams.domain.activity.ActivityRepository
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.activity.ResultRepository
 import org.racedaydreams.domain.activity.ShoeRepository
 import org.racedaydreams.domain.baseline.BaselineEngine
@@ -47,7 +48,11 @@ class SharedCoachSnapshotReader(
             withContext(ioDispatcher) {
                 val profile = sources.profile()
                 val activities = activitiesRepository.coachingActivities(today())
-                val results = resultsRepository.results()
+                val reviewed = PhysicalRunSessions.reviewedEvidence(activities)
+                val retainedIds = reviewed.map { it.id() }.toSet()
+                val ignoredIds = activities.map { it.id() }.toSet() - retainedIds
+                val retainedResults = resultsRepository.results()
+                val results = retainedResults.filter { it.activityId() !in ignoredIds }
                 val manual = baselineRepository.savedManualBaseline()
                 val now = now()
                 val healthWindow = sources.importWindow()
@@ -57,7 +62,7 @@ class SharedCoachSnapshotReader(
                         now.getNano().toLong(),
                     )
                 val from = maxOf(healthWindow?.first ?: lookback, lookback)
-                val derived = BaselineEngine.derive(activities, results, from, now)
+                val derived = BaselineEngine.derive(activities, retainedResults, from, now)
                 val baseline =
                     BaselineEngine.applyManualOverlay(
                         derived,
@@ -142,6 +147,8 @@ class SharedCoachSnapshotReader(
                         )
                 CoachUiState(
                     loading = false,
+                    disciplineColours =
+                        org.racedaydreams.domain.settings.DisciplineColours.read(settings),
                     startingPath = settings.getSetting("starting.path"),
                     primaryFocus = sources.primaryFocus(),
                     shoeDiscomfort = sources.shoeDiscomfort(),

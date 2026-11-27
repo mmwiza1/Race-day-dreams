@@ -41,6 +41,12 @@ When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as per
 - **Never trade away safety or source integrity:** exact-head required CI, schema/backup checks where applicable, real screenshot/source validation for modified UI, and green post-merge release validation remain mandatory for owner-authorised releases. The existing CI workflow may still run on every PR push until its separate optimization is safely implemented; wording alone does not change GitHub Actions.
 - **Do not bundle unrelated tasks** simply to fill out a release. An ordinary small change is not automatically a new test APK release. Group small fixes into an explicitly requested patch when practical. Preserve the established owner-authorised PR merge/publish policy when a release is requested.
 
+## Mandatory UI design and visual acceptance
+
+Follow [docs/UI_DESIGN_STANDARDS.md](docs/UI_DESIGN_STANDARDS.md) for every new screen or
+meaningful UI change. Inspect the actual rendered screen and relevant interaction states using the
+checklist, and record the evidence and any remaining defects or verification limits.
+
 ## AI development sessions — permanent owner rules (24 November 2026)
 
 These rules apply to every Claude (and other AI assistant) development session on Race Day Dreams,
@@ -56,6 +62,18 @@ now and in future. Normal GitHub Actions CI execution is not affected.
 - Never merge a PR without the owner's explicit approval for that merge.
 - Never interfere with a branch actively being developed by Codex or another developer.
 - Keep pushes to a minimum, and do not manually trigger expensive workflows unless necessary.
+
+## Progress updates — standing owner preference
+
+Keep the owner informed throughout implementation, including when resuming work.
+
+- Start with a brief implementation plan. After each major task or checkpoint, say what is
+  complete and what remains.
+- Before a longer build or test suite, say what it will validate. When it finishes, summarise
+  the results and any failures.
+- Report blockers and changes of approach promptly, including how they affect the work.
+- During lengthy work, give a short update about every 10–15 minutes where supported.
+  Focus on what has changed so the owner can follow progress without reading tool output.
 
 ## Release notes
 

@@ -19,8 +19,8 @@ fun CoachPage(content: @Composable ColumnScope.() -> Unit) {
             Modifier.fillMaxHeight()
                 .widthIn(max = 840.dp)
                 .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
                 .imePadding()
+                .verticalScroll(rememberScrollState())
                 .padding(CoachSpace.Screen),
             verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
             content = content,

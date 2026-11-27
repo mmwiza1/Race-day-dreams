@@ -82,37 +82,14 @@ object GymWorkoutAdapter {
             require(exercise != null && exercise.id() == prescription.exerciseId()) {
                 "The preserved exercise definition is unavailable."
             }
-            val rir =
-                programme.settings().effort() == GymProgramme.Effort.RIR &&
-                    exercise.measurement().usesReps()
-            val effort =
-                GymWorkoutDefinition.EffortRange(
-                    if (rir) GymWorkoutDefinition.EffortScale.RIR
-                    else GymWorkoutDefinition.EffortScale.RPE,
-                    (if (rir) 10 - prescription.maximumRpe() else prescription.minimumRpe())
-                        .toDouble(),
-                    (if (rir) 10 - prescription.minimumRpe() else prescription.maximumRpe())
-                        .toDouble(),
+            slots.add(
+                prescribedSlot(
+                    "slot-${slots.size}",
+                    exercise,
+                    prescription,
+                    programme.settings().effort(),
                 )
-            val reference =
-                if (
-                    exercise.measurement().usesLoad() &&
-                        exercise.mode() != StrengthExercise.Mode.BODYWEIGHT
-                )
-                    prescription.referenceLoadKg()
-                else null
-            val target =
-                GymWorkoutDefinition.Target(
-                    prescription.sets(),
-                    prescription.minimumReps().takeIf { it > 0 },
-                    prescription.maximumReps().takeIf { prescription.minimumReps() > 0 },
-                    prescription.seconds()?.toLong(),
-                    prescription.metres(),
-                    effort,
-                    prescription.restSeconds(),
-                    reference,
-                )
-            slots.add(GymWorkoutDefinition.Slot("slot-${slots.size}", exercise, target, null))
+            )
         }
         val source =
             SourceReference(SourceKind.PROGRAMME, programme.id(), programme.version(), session.id())
@@ -126,6 +103,41 @@ object GymWorkoutAdapter {
             ),
             source,
         )
+    }
+
+    internal fun prescribedSlot(
+        id: String,
+        exercise: StrengthExercise,
+        prescription: GymProgramme.Prescription,
+        effortScale: GymProgramme.Effort,
+    ): GymWorkoutDefinition.Slot {
+        val rir = effortScale == GymProgramme.Effort.RIR && exercise.measurement().usesReps()
+        val effort =
+            GymWorkoutDefinition.EffortRange(
+                if (rir) GymWorkoutDefinition.EffortScale.RIR
+                else GymWorkoutDefinition.EffortScale.RPE,
+                (if (rir) 10 - prescription.maximumRpe() else prescription.minimumRpe()).toDouble(),
+                (if (rir) 10 - prescription.minimumRpe() else prescription.maximumRpe()).toDouble(),
+            )
+        val reference =
+            if (
+                exercise.measurement().usesLoad() &&
+                    exercise.mode() != StrengthExercise.Mode.BODYWEIGHT
+            )
+                prescription.referenceLoadKg()
+            else null
+        val target =
+            GymWorkoutDefinition.Target(
+                prescription.sets(),
+                prescription.minimumReps().takeIf { it > 0 },
+                prescription.maximumReps().takeIf { prescription.minimumReps() > 0 },
+                prescription.seconds()?.toLong(),
+                prescription.metres(),
+                effort,
+                prescription.restSeconds(),
+                reference,
+            )
+        return GymWorkoutDefinition.Slot(id, exercise, target, null)
     }
 
     /** A manual workout repeats only its working exercise structure, never its actual sets. */

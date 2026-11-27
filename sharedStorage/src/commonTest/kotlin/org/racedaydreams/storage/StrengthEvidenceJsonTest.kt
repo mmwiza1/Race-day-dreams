@@ -66,6 +66,17 @@ class StrengthEvidenceJsonTest {
     }
 
     @Test
+    fun dateOnlyLogRoundTripsWithoutInventingMeasuredDurationOrEffortLoad() {
+        val original = session().copy(duration = StrengthSession.UNRECORDED_DURATION, rpe = 7.0)
+        val restored =
+            StrengthEvidenceJson.decodeSession(StrengthEvidenceJson.encodeSession(original))
+        assertEquals(original, restored)
+        assertFalse(restored.hasRecordedDuration())
+        assertNull(StrengthAnalytics.sessionLoad(restored))
+        assertTrue(session().hasRecordedDuration())
+    }
+
+    @Test
     fun everySupportedModalityAndWeightedBodyweightPreserveTheirActualMeasurements() {
         for (profile in StrengthExercise.MeasurementProfile.entries) {
             val original =

@@ -56,7 +56,7 @@ class WorkoutHistoryStore(context:Context) {
                     rows.add(Row(cursor.id,if(run)Kind.RUNNING else Kind.STRENGTH,date,
                         if(!run)"Strength"else category?.name?.lowercase()?.replace('_',' ')?:"Run",
                         if(run&&!j.isNull("distanceMetres"))j.getDouble("distanceMetres")else null,
-                        if(run)null else Duration.parse(j.getString("duration")).toMinutes(),exercises?.length()))
+                        if(run)null else Duration.parse(j.getString("duration")).takeUnless{it==org.racedaydreams.domain.strength.StrengthSession.UNRECORDED_DURATION}?.toMinutes(),exercises?.length()))
                     lastIncluded=cursor
                 }
             }

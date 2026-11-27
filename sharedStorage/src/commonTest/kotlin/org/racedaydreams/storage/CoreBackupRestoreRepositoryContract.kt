@@ -4,6 +4,7 @@ import kotlin.test.*
 import kotlinx.serialization.json.*
 import org.racedaydreams.domain.activity.*
 import org.racedaydreams.domain.baseline.*
+import org.racedaydreams.domain.settings.*
 import org.racedaydreams.domain.time.*
 
 abstract class CoreBackupRestoreRepositoryContract {
@@ -24,6 +25,146 @@ abstract class CoreBackupRestoreRepositoryContract {
             target.close()
         }
     }
+
+    @Test
+    fun disciplineColoursRestoreIndependentlyAndResetToDefaults() = storage { source, target ->
+        val settings = SqliteSettings(source)
+        assertTrue(DisciplineColours.read(settings).isEmpty())
+        val selections =
+            mapOf(
+                ColourDiscipline.RUNNING to AccentColour.TEAL,
+                ColourDiscipline.STRENGTH to AccentColour.BLUE,
+                ColourDiscipline.BOULDERING to AccentColour.AMBER,
+                ColourDiscipline.SETTINGS to AccentColour.VIOLET,
+            )
+        selections.forEach { (discipline, colour) ->
+            DisciplineColours.save(settings, discipline, colour)
+        }
+        assertEquals(selections, DisciplineColours.read(SqliteSettings(source)))
+        SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+        val restored = SqliteSettings(target)
+        assertEquals(selections, DisciplineColours.read(restored))
+        DisciplineColours.save(restored, ColourDiscipline.STRENGTH, null)
+        assertEquals(selections - ColourDiscipline.STRENGTH, DisciplineColours.read(restored))
+        restored.putSetting(ColourDiscipline.SETTINGS.key, "UNKNOWN_FUTURE_COLOUR")
+        assertEquals(
+            selections - ColourDiscipline.STRENGTH - ColourDiscipline.SETTINGS,
+            DisciplineColours.read(restored),
+        )
+    }
+
+    @Test
+    fun runnerComparisonSurvivesProviderRefreshAndBackupWithoutLosingEitherRun() =
+        storage { source, target ->
+            val first =
+                ActivityRecord(
+                    "native",
+                    SourceIdentity("rdd", "native-record", "local"),
+                    at,
+                    Instants.ofEpochSecond(at.getEpochSecond() + 1_980, at.getNano().toLong()),
+                    Offsets.ofTotalSeconds(0),
+                    Offsets.ofTotalSeconds(0),
+                    1500.0,
+                    Durations.ofSeconds(1980),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "",
+                    emptyList(),
+                    emptyList(),
+                    null,
+                    null,
+                )
+            val watch =
+                first.copy(
+                    id = "watch",
+                    source =
+                        SourceIdentity("health-connect", "fitbit-id", "com.fitbit.FitbitMobile"),
+                    distanceMetres = 5100.0,
+                )
+            val activities = SqliteActivities(source) { at }
+            activities.upsertManualActivity(first)
+            activities.applyImport("health-connect", listOf(watch), emptyList(), "initial")
+            val day = CalendarDates.atOffset(at, Offsets.ofTotalSeconds(0))
+            fun baselineAt(repository: SqliteActivities): RunnerBaseline =
+                BaselineEngine.derive(
+                    repository.coachingActivities(day),
+                    Instants.ofEpochSecond(day.toEpochDay() * 86400),
+                    Instants.ofEpochSecond(day.plusDays(1).toEpochDay() * 86400),
+                )
+            assertEquals(2, activities.coachingActivities(day).size)
+            assertEquals(1, baselineAt(activities).activityCount())
+            assertEquals(1.5, baselineAt(activities).longestRunKm())
+            activities.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
+            activities.applyImport("health-connect", listOf(watch), emptyList(), "updated")
+            val reviewed = activities.activitySummaries()
+            assertEquals(setOf("native", "watch"), reviewed.map { it.id() }.toSet())
+            assertEquals(5100.0, PhysicalRunSessions.counted(reviewed).single().distanceMetres())
+            assertFails { activities.deleteReviewedLocalDuplicate("watch", "native") }
+            SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+            val restored = SqliteActivities(target) { at }
+            // Provider histories are intentionally omitted from the app backup. The locally owned
+            // record retains its choice, which takes effect when the same provider record is seen.
+            assertEquals(
+                reviewed.single { it.id() == "native" },
+                restored.activitySummaries().single(),
+            )
+            restored.applyImport("health-connect", listOf(watch), emptyList(), "resync")
+            assertEquals(
+                setOf("native", "watch"),
+                restored.activitySummaries().map { it.id() }.toSet(),
+            )
+            assertEquals(
+                5100.0,
+                PhysicalRunSessions.counted(restored.activitySummaries()).single().distanceMetres(),
+            )
+            assertEquals(1, baselineAt(restored).activityCount())
+            assertEquals(5.1, baselineAt(restored).longestRunKm())
+            restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.SEPARATE)
+            assertEquals(2, PhysicalRunSessions.counted(restored.activitySummaries()).size)
+            assertEquals(2, baselineAt(restored).activityCount())
+            restored.reviewDuplicateRun("native", "watch", DuplicateRunChoice.COUNT_OTHER)
+            restored.deleteReviewedLocalDuplicate("native", "watch")
+            assertEquals("watch", restored.activitySummaries().single().id())
+        }
+
+    @Test
+    fun treadmillSummarySurvivesBackupWithoutInventedMovingTimeOrRoute() =
+        storage { source, target ->
+            val atEnd = Instants.ofEpochSecond(at.getEpochSecond() + 1800, at.getNano().toLong())
+            val treadmill =
+                ActivityRecord(
+                    "treadmill",
+                    SourceIdentity("manual", "treadmill", null),
+                    at,
+                    atEnd,
+                    Offsets.ofTotalSeconds(0),
+                    Offsets.ofTotalSeconds(0),
+                    5_000.0,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    "",
+                    emptyList(),
+                    emptyList(),
+                    null,
+                    null,
+                    environment = RunEnvironment.TREADMILL,
+                )
+            SqliteActivities(source) { at }.upsertManualActivity(treadmill)
+            SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+            val restored = SqliteActivities(target) { at }.activitySummaries().single()
+            assertEquals(treadmill, restored)
+            assertEquals(5_000.0, restored.distanceMetres())
+            assertEquals(Durations.ofSeconds(1800), restored.elapsedTime())
+            assertTrue(restored.samples().isEmpty())
+            assertNull(restored.movingTime())
+        }
 
     private fun seed(db: SqlDatabase): CoreBackupDataJson.Snapshot {
         SqliteAthleteProfile(db).save(CoachingArchiveFixtures.profile())

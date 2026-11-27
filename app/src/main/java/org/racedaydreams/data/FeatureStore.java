@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import org.racedaydreams.domain.PlannedWorkout;
 import org.racedaydreams.domain.activity.ActivityRecord;
 import org.racedaydreams.domain.activity.ActivityRepository;
+import org.racedaydreams.domain.activity.DuplicateRunChoice;
 import org.racedaydreams.domain.activity.RecordedResult;
 import org.racedaydreams.domain.activity.ResultRepository;
 import org.racedaydreams.domain.activity.RunnerDataRepository;
@@ -105,6 +106,16 @@ public final class FeatureStore extends SqliteStoreAccess
     @Override
     public void upsertManualActivity(ActivityRecord activity) {
         activities.upsertManualActivity(activity);
+    }
+
+    @Override
+    public void reviewDuplicateRun(String activityId, String otherId, DuplicateRunChoice choice) {
+        activities.reviewDuplicateRun(activityId, otherId, choice);
+    }
+
+    @Override
+    public void deleteReviewedLocalDuplicate(String activityId, String otherId) {
+        activities.deleteReviewedLocalDuplicate(activityId, otherId);
     }
 
     @Override

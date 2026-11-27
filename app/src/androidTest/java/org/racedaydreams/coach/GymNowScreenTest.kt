@@ -1,20 +1,28 @@
 package org.racedaydreams.coach
 
 import android.app.Application
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isHeading
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -53,6 +61,7 @@ import org.racedaydreams.data.SqliteUserPreferencesRepository
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymProgramme
+import org.racedaydreams.domain.strength.GymWorkoutDefinition
 
 /** Production screens, feature orchestration and real SQLite; no mocked set acknowledgements. */
 @RunWith(AndroidJUnit4::class)
@@ -100,7 +109,7 @@ class GymNowScreenTest {
                 "Start planned workout",
                 "Quick workout",
                 "Build a workout",
-                "Generate one for me",
+                "Design a workout for me",
                 "Favourite workouts",
                 "Repeat previous workout",
             )
@@ -168,13 +177,121 @@ class GymNowScreenTest {
     }
 
     @Test
+    fun multiGroupPreviewCanReplaceAnExerciseBeforeStarting() {
+        val dark =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("part2Evidence") == "dark"
+        install(largeDark = dark)
+        click("Design a workout for me")
+        click("Full gym")
+        click("Chest")
+        click("Shoulders")
+        click("Arms")
+        click("Review suggested workout")
+        await { model.state.value.generated != null }
+        compose.onNodeWithText("Chest + Shoulders + Arms").performScrollTo().assertIsDisplayed()
+        if (!dark) compose.onNodeWithText("Edit workout choices").assertIsDisplayed()
+        capturePart2(application, "gym-multi-group-preview")
+        val firstPreview = model.state.value.generated!!.definition().id()
+        click("Edit workout choices")
+        click("Review suggested workout")
+        await {
+            model.state.value.generated?.definition()?.id()?.let { it != firstPreview } == true
+        }
+        compose.onNodeWithText("Chest + Shoulders + Arms").performScrollTo().assertIsDisplayed()
+        val original = model.state.value.generated!!.definition()
+        var swapped = false
+        for (slot in original.slots()) {
+            click("Find alternative to ${slot.exercise().name()}")
+            await { model.state.value.generatedSwap?.slotId == slot.id() }
+            val candidate = model.state.value.generatedSwap!!.choices.firstOrNull()
+            if (candidate == null) {
+                click("Keep original exercise")
+                continue
+            }
+            click("Use ${candidate.exercise().name()}")
+            await { model.state.value.generatedSwap == null }
+            val revised =
+                model.state.value.generated!!.definition().slots().first { it.id() == slot.id() }
+            assertEquals(candidate.exercise(), revised.exercise())
+            assertEquals(slot.target(), revised.target())
+            swapped = true
+            break
+        }
+        assertTrue("At least one compatible preview alternative was exercised", swapped)
+        assertNull(execution())
+        compose.onNodeWithText("Start generated workout").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-generated-start")
+        click("Start generated workout")
+        await { execution()?.origin() == GymExecution.Origin.GENERATED }
+        assertTrue(execution()!!.actualSets().isEmpty())
+        assertNull(execution()!!.source())
+        assertTrue(io { DevelopmentStore(application).gymLinks().isEmpty() })
+    }
+
+    @Test
+    fun advancedTrainingPreferencesAreOptionalAndKeepSelectionsWhenCollapsed() {
+        val dark =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("part2Evidence") == "dark"
+        install(largeDark = dark)
+        click("Design a workout for me")
+        val advanced = compose.onNodeWithTag("gym-now-advanced-training-preferences")
+        advanced.performScrollTo()
+        advanced.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Collapsed")
+        )
+        compose.onNodeWithText("Effort guidance").assertDoesNotExist()
+        compose.onNodeWithText("Training priority").assertDoesNotExist()
+        compose.onNodeWithText("Review suggested workout").performScrollTo().assertIsEnabled()
+        capturePart2(application, "gym-advanced-collapsed")
+
+        advanced.performScrollTo().performClick()
+        advanced.assert(
+            SemanticsMatcher.expectValue(SemanticsProperties.StateDescription, "Expanded")
+        )
+        compose.onNodeWithText("RPE").performScrollTo().assertIsSelected()
+        compose
+            .onNodeWithText("RPE: Rate how demanding each set feels, on a 1–10 scale.")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose
+            .onNodeWithText(
+                "RIR: Estimate how many more repetitions you could complete before stopping."
+            )
+            .performScrollTo()
+            .assertIsDisplayed()
+        click("RIR")
+        compose.onNodeWithText("RIR").assertIsSelected()
+        compose
+            .onNodeWithText(
+                "RIR: Estimate how many more repetitions you could complete before stopping."
+            )
+            .performScrollTo()
+        capturePart2(application, "gym-advanced-effort")
+
+        compose.onNodeWithText("Strength first").performScrollTo().assertIsSelected()
+        click("Balanced")
+        compose.onNodeWithText("Balanced").assertIsSelected()
+        capturePart2(application, "gym-advanced-priority")
+        advanced.performScrollTo().performClick()
+        compose.onNodeWithText("RIR").assertDoesNotExist()
+        click("Review suggested workout")
+        await { model.state.value.generated != null }
+        val suggestion = requireNotNull(model.state.value.generated)
+        val scales = suggestion.definition().slots().mapNotNull { it.target()?.effort()?.scale() }
+        assertEquals(setOf(GymWorkoutDefinition.EffortScale.RIR), scales.toSet())
+        assertTrue(suggestion.explanation().contains("balanced priority"))
+    }
+
+    @Test
     fun quickAndGeneratedEntryFlowsReviewIntentionsAndStartWithDistinctOrigins() {
         install()
         for ((entry, start, origin) in
             listOf(
                 Triple("Quick workout", "Start quick workout", GymExecution.Origin.QUICK),
                 Triple(
-                    "Generate one for me",
+                    "Design a workout for me",
                     "Start generated workout",
                     GymExecution.Origin.GENERATED,
                 ),
@@ -182,6 +299,11 @@ class GymNowScreenTest {
             click(entry)
             click("Review suggested workout")
             await { model.state.value.generated != null }
+            val suggestion = requireNotNull(model.state.value.generated)
+            val scales =
+                suggestion.definition().slots().mapNotNull { it.target()?.effort()?.scale() }
+            assertEquals(setOf(GymWorkoutDefinition.EffortScale.RPE), scales.toSet())
+            assertTrue(suggestion.explanation().contains("strength first priority"))
             assertNull(execution()?.completedSession())
             click(start)
             await { execution()?.origin() == origin }
@@ -469,22 +591,24 @@ class GymNowScreenTest {
                 MaterialTheme(
                     colorScheme = if (largeDark) darkColorScheme() else MaterialTheme.colorScheme
                 ) {
-                    shown.value?.let { feature ->
-                        when (page.value) {
-                            "hub" ->
-                                GymNowScreen(
-                                    feature,
-                                    { page.value = "workout" },
-                                    { page.value = "builder" },
-                                    {},
-                                )
-                            "builder" ->
-                                GymWorkoutBuilderScreen(
-                                    feature,
-                                    { page.value = "workout" },
-                                    { page.value = "hub" },
-                                )
-                            "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                        shown.value?.let { feature ->
+                            when (page.value) {
+                                "hub" ->
+                                    GymNowScreen(
+                                        feature,
+                                        { page.value = "workout" },
+                                        { page.value = "builder" },
+                                        {},
+                                    )
+                                "builder" ->
+                                    GymWorkoutBuilderScreen(
+                                        feature,
+                                        { page.value = "workout" },
+                                        { page.value = "hub" },
+                                    )
+                                "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                            }
                         }
                     }
                 }

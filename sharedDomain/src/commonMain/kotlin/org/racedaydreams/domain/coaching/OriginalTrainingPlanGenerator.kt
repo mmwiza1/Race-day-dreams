@@ -62,6 +62,11 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
         // Piece 4: graded readiness for intensity from current evidence, replacing the single
         // 20 km/week switch. It is reassessed whenever a plan is generated or rebuilt from the
         // latest actual evidence; planned future runs are never treated as proof of fitness.
+        // The running frequency the plan actually schedules. Intensity is decided from this, not
+        // from the requested days, so equivalent schedules get the same sessions (audit R-02):
+        // three requested days reduced to two by Fewer longer runs is treated like two days.
+        var frequency = if (established) prefs.runsPerWeek() else min(3, prefs.runsPerWeek())
+        if (request.distribution() == "FEWER_LONGER" && frequency > 2) frequency--
         val aerobicOnly =
             prefs.strategy() == TrainingStrategy.ZONE_2 ||
                 goal.distance() == RaceDistance.GENERAL_FITNESS
@@ -69,7 +74,7 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
             when {
                 !established || aerobicOnly || consistent == null || consistent < 3 ->
                     QualityWorkouts.Readiness.NONE
-                weeklyEvidence!! >= 15 && consistent >= 6 && prefs.runsPerWeek() >= 3 ->
+                weeklyEvidence!! >= 15 && consistent >= 6 && frequency >= 3 ->
                     if (prefs.strategy() == TrainingStrategy.PERFORMANCE && performance)
                         QualityWorkouts.Readiness.PERFORMANCE
                     else QualityWorkouts.Readiness.CONTROLLED
@@ -85,8 +90,6 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
         val paces = QualityWorkouts.paces(baseline)
         var lastTemplate: QualityWorkouts.Template? = null
         var qualitySessions = 0
-        var frequency = if (established) prefs.runsPerWeek() else min(3, prefs.runsPerWeek())
-        if (request.distribution() == "FEWER_LONGER" && frequency > 2) frequency--
         var base = if (established) weeklyEvidence!! else 0.0
         val previousFrequency = baseline.runsPerWeek()
         if (established && previousFrequency != null && previousFrequency > frequency)
@@ -499,7 +502,10 @@ class OriginalTrainingPlanGenerator : TrainingPlanGenerator {
                     else if (strides)
                         "Build aerobic endurance with easy running, finishing with a few relaxed strides for leg speed without making the run hard. " +
                             (if (readiness == QualityWorkouts.Readiness.STRIDES)
-                                "A weekly structured session is added when your recent running reaches about 15 km a week over 6 consistent weeks on 3 or more days; rebuild your plan then. "
+                                (if (frequency < 3)
+                                    "Structured sessions need at least three running days a week: with two, one is the long run, so the other stays easy with strides. "
+                                else
+                                    "A weekly structured session is added when your recent running reaches about 15 km a week over 6 consistent weeks on 3 or more days; rebuild your plan then. ")
                             else "")
                     else
                         "Build aerobic endurance while keeping effort controlled to leave room for recovery. ") +

@@ -20,15 +20,14 @@ object BaselineEngine {
         to: Instant,
     ): RunnerBaseline {
         val empty = RunnerBaseline.empty(from, to)
-        val runs = mutableListOf<ActivityRecord>()
-        val seen = mutableSetOf<String>()
-        for (run in activities) {
-            val identity = run.source().provider() + "\u0000" + run.source().recordId()
-            if (!run.start().isBefore(from) && run.start().isBefore(to) && seen.add(identity))
-                runs.add(run)
-        }
-        runs.sortWith(compareBy<ActivityRecord> { it.start() }.thenBy { it.id() })
-        val possibleMirrors = collapseExactMirrors(runs)
+        val unique = activities.distinctBy { it.source().provider() to it.source().recordId() }
+        val counted = PhysicalRunSessions.counted(unique)
+        val countedIds = counted.map { it.id() }.toSet()
+        val ignoredIds = activities.map { it.id() }.toSet() - countedIds
+        val retainedResultEvidence = results.filter { it.activityId() !in ignoredIds }
+        fun inWindow(run: ActivityRecord) = !run.start().isBefore(from) && run.start().isBefore(to)
+        val runs = counted.filter(::inWindow)
+        val possibleMirrors = unique.count(::inWindow) - runs.size
         val provenance = linkedMapOf<String, BaselineProvenance>()
         val explanations = mutableListOf<String>()
         val history = mutableListOf<WeeklyRunningSummary>()
@@ -100,11 +99,33 @@ object BaselineEngine {
         if (longest != null) provenance[RunnerBaseline.LONGEST_RUN] = origin
         if (typical != null) provenance[RunnerBaseline.TYPICAL_DURATION] = origin
         if (consistent != null) provenance[RunnerBaseline.CONSISTENT_WEEKS] = origin
-        val recent5k = resultTime(results, 5000.0, from, to, provenance, RunnerBaseline.RECENT_5K)
+        val recent5k =
+            resultTime(
+                retainedResultEvidence,
+                5000.0,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_5K,
+            )
         val recent10k =
-            resultTime(results, 10000.0, from, to, provenance, RunnerBaseline.RECENT_10K)
+            resultTime(
+                retainedResultEvidence,
+                10000.0,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_10K,
+            )
         val recentHalf =
-            resultTime(results, 21097.5, from, to, provenance, RunnerBaseline.RECENT_HALF)
+            resultTime(
+                retainedResultEvidence,
+                21097.5,
+                from,
+                to,
+                provenance,
+                RunnerBaseline.RECENT_HALF,
+            )
         val latest = runs.lastOrNull()?.start()
         val recent = latest != null && Durations.between(latest, to) <= Durations.ofHours(14 * 24)
         val distanceCoverage = if (runs.isEmpty()) 0.0 else measuredDistances.toDouble() / runs.size
@@ -120,7 +141,7 @@ object BaselineEngine {
             )
             if (possibleMirrors > 0)
                 explanations.add(
-                    "$possibleMirrors possible mirrored recordings shared exact start/end times and matching distance. They were counted once for this baseline; original activities remain stored for review."
+                    "$possibleMirrors possible mirrored recordings were grouped using the same rules as your running totals. The original recordings remain in your history."
                 )
             if (weeklyDistance != null)
                 explanations.add(
@@ -251,37 +272,6 @@ object BaselineEngine {
 
     private fun materiallyDifferent(manual: Double?, recorded: Double?): Boolean =
         manual != null && recorded != null && abs(manual - recorded) > max(5.0, recorded * 0.25)
-
-    private fun collapseExactMirrors(runs: MutableList<ActivityRecord>): Int {
-        var mirrors = 0
-        val unique = mutableListOf<ActivityRecord>()
-        for (candidate in runs) {
-            var duplicate = false
-            for (index in unique.size - 1 downTo 0) {
-                val prior = unique[index]
-                if (prior.start() != candidate.start()) break
-                val otherOrigin =
-                    prior.source().originPackage() != candidate.source().originPackage() ||
-                        prior.source().provider() != candidate.source().provider()
-                val previousMetres = prior.distanceMetres()
-                val metres = candidate.distanceMetres()
-                if (
-                    otherOrigin &&
-                        prior.end() == candidate.end() &&
-                        previousMetres != null &&
-                        metres != null &&
-                        abs(previousMetres - metres) <= 1.0
-                ) {
-                    duplicate = true
-                    break
-                }
-            }
-            if (duplicate) mirrors++ else unique.add(candidate)
-        }
-        runs.clear()
-        runs.addAll(unique)
-        return mirrors
-    }
 
     private fun resultTime(
         results: List<RecordedResult>,

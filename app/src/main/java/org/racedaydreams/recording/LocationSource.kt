@@ -8,7 +8,7 @@ import java.time.Instant
 import org.racedaydreams.domain.recording.RunMetricsEngine
 
 interface LocationSource {
-    fun start(onFix: (RunMetricsEngine.Fix) -> Unit)
+    fun start(onBatch: (Int, Long?) -> Unit, onFix: (RunMetricsEngine.Fix) -> Unit)
 
     fun stop()
 }
@@ -16,10 +16,12 @@ interface LocationSource {
 /** Android GNSS only: no Play Services, network provider or background location permission. */
 class AndroidLocationSource(context: Context) : LocationSource, LocationListener {
     private val manager = context.getSystemService(LocationManager::class.java)
+    private var batch: ((Int, Long?) -> Unit)? = null
     private var callback: ((RunMetricsEngine.Fix) -> Unit)? = null
 
     @SuppressLint("MissingPermission")
-    override fun start(onFix: (RunMetricsEngine.Fix) -> Unit) {
+    override fun start(onBatch: (Int, Long?) -> Unit, onFix: (RunMetricsEngine.Fix) -> Unit) {
+        batch = onBatch
         callback = onFix
         manager.requestLocationUpdates(
             LocationManager.GPS_PROVIDER,
@@ -34,11 +36,17 @@ class AndroidLocationSource(context: Context) : LocationSource, LocationListener
         try {
             manager.removeUpdates(this)
         } finally {
+            batch = null
             callback = null
         }
     }
 
-    override fun onLocationChanged(l: Location) {
+    override fun onLocationChanged(location: Location) {
+        batch?.invoke(1, location.elapsedRealtimeNanos / 1_000_000)
+        deliver(location)
+    }
+
+    private fun deliver(l: Location) {
         val fix =
             runCatching {
                     RunMetricsEngine.Fix(
@@ -59,7 +67,9 @@ class AndroidLocationSource(context: Context) : LocationSource, LocationListener
     // Android may deliver batches. Qualify each original observation in chronological order;
     // the service independently checks receipt age before accepting it or observing auto-pause.
     override fun onLocationChanged(locations: MutableList<Location>) {
-        locations.sortedBy { it.elapsedRealtimeNanos }.forEach { onLocationChanged(it) }
+        if (locations.isEmpty()) return
+        batch?.invoke(locations.size, locations.minOf { it.elapsedRealtimeNanos } / 1_000_000)
+        locations.sortedBy { it.elapsedRealtimeNanos }.forEach(::deliver)
     }
 
     @Deprecated("Platform callback")

@@ -1,6 +1,7 @@
 package org.racedaydreams.data;
 
 import static org.racedaydreams.data.GymJsonSupport.*;
+import static org.racedaydreams.storage.SqliteGymAssociationsKt.completedGymSessions;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -90,6 +91,8 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             if (hasUnfinished(db))
                 throw new IllegalArgumentException(
                         "Finish or recover the unfinished gym workout before starting another.");
+            if (initial.origin() == GymExecution.Origin.PLANNED)
+                requireUncompleted(db, initial.source(), initial.id());
             ensureWorkout(db, initial.prescription(), initial.source());
             insertExecution(db, initial, 1, prepared);
             db.setTransactionSuccessful();
@@ -923,8 +926,17 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
         }
     }
 
+    private static void requireUncompleted(
+            SQLiteDatabase db, GymExecution.SourceReference source, String actualId) {
+        if (completedGymSessions(new AndroidSqlConnection(() -> db), source.id(), actualId)
+                .contains(source.sessionId()))
+            throw new IllegalArgumentException("This programmed session is already completed.");
+    }
+
     private static void saveActualAndAssociation(
             SQLiteDatabase db, GymExecution finished, String payload) {
+        var source = finished.plannedAssociation();
+        if (source != null) requireUncompleted(db, source, finished.id());
         StrengthSession existing = actual(db, finished.id());
         if (existing != null && !existing.equals(finished.completedSession())) throw conflict();
         if (existing == null) {
@@ -934,7 +946,6 @@ public final class SqliteGymExecutionRepository extends SqliteStoreAccess
             row.put("payload", payload);
             db.insertOrThrow("strength_sessions", null, row);
         }
-        var source = finished.plannedAssociation();
         if (source != null) {
             var date = programmeDate(db, finished.prescription(), source);
             JSONObject expected =

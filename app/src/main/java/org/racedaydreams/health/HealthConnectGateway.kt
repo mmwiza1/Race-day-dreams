@@ -38,6 +38,7 @@ import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.SqliteBodyMeasurementsRepository
 import org.racedaydreams.domain.activity.ActivityLap
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.RunEnvironment
 import org.racedaydreams.domain.activity.SourceIdentity
 import org.racedaydreams.domain.body.BodyWeight
 import org.racedaydreams.domain.health.HealthImportPolicy
@@ -459,6 +460,11 @@ class HealthConnectGateway(context: Context, private val clock: Clock = Clock.sy
                 },
                 null,
                 null,
+                environment =
+                    RunEnvironment.TREADMILL.takeIf {
+                        session.exerciseType ==
+                            ExerciseSessionRecord.EXERCISE_TYPE_RUNNING_TREADMILL
+                    },
             )
         return refreshMetrics(skeleton, distanceAllowed, heartRateAllowed)
     }
@@ -519,6 +525,8 @@ class HealthConnectGateway(context: Context, private val clock: Clock = Clock.sy
             activity.laps(),
             activity.plannedWorkoutId(),
             activity.shoeId(),
+            activity.duplicateChoices(),
+            activity.environment(),
         )
     }
 

@@ -15,6 +15,10 @@ interface ActivityRepository : HealthImportRepository {
 
     fun upsertManualActivity(activity: ActivityRecord)
 
+    fun reviewDuplicateRun(activityId: String, otherId: String, choice: DuplicateRunChoice?)
+
+    fun deleteReviewedLocalDuplicate(activityId: String, otherId: String)
+
     fun deleteActivity(id: String)
 
     fun saveActivityNotes(id: String, notes: String?, rpe: Double?)

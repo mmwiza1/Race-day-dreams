@@ -1,12 +1,15 @@
 package org.racedaydreams.coach
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.*
+import org.racedaydreams.domain.activity.PhysicalRunSessions
 import org.racedaydreams.domain.coaching.*
 import org.racedaydreams.domain.time.*
 
@@ -185,6 +188,10 @@ fun SharedPlannedWorkoutScreen(
             ) {
                 TextButton(onClick = { moving = !moving }) { Text("Move or skip this session") }
                 if (moving) {
+                    if (workout.date().toEpochDay() > dates.today().toEpochDay())
+                        TextButton(onClick = { moveDate = dates.today().toString() }) {
+                            Text("Use today's date")
+                        }
                     dateInput("Move to", moveDate, { moveDate = it })
                     val proposed = runCatching { dates.parse(moveDate) }.getOrNull()
                     org.racedaydreams.domain.coaching.WorkoutContext.moveWarnings(
@@ -221,7 +228,8 @@ fun SharedPlannedWorkoutScreen(
             Text(
                 "You can run a different workout, take it easy or rest. Record what actually happened; your original prescription is retained. No session is blocked by a recommendation."
             )
-            val actual = state.activities.firstOrNull { it.plannedWorkoutId() == workout.id() }
+            val counted = PhysicalRunSessions.reviewedEvidence(state.activities)
+            val actual = counted.firstOrNull { it.plannedWorkoutId() == workout.id() }
             if (actual != null)
                 CoachButton("View completed run and feedback") { openActivity(actual.id()) }
             else if (workout.date().toEpochDay() <= dates.today().toEpochDay()) {
@@ -235,8 +243,8 @@ fun SharedPlannedWorkoutScreen(
                         dates,
                         canonicalTime,
                         input,
-                        version,
-                        workout,
+                        version.id(),
+                        workout.id(),
                         openActivity,
                     )
                 var linking by rememberSaveable { mutableStateOf(false) }
@@ -255,7 +263,7 @@ fun SharedPlannedWorkoutScreen(
                                 Modifier.heightIn(max = 320.dp)
                             ) {
                                 val candidates =
-                                    state.activities
+                                    counted
                                         .filter { a -> a.plannedWorkoutId() == null }
                                         .sortedByDescending { it.start() }
                                         .take(100)
@@ -297,6 +305,41 @@ fun SharedPlannedWorkoutScreen(
     }
 }
 
+/**
+ * Indoor entry shares the established actuals form and repository. No location action is called.
+ */
+@Composable
+fun SharedTreadmillEntry(
+    state: CoachUiState,
+    runningEvidence: org.racedaydreams.coach.application.RunningEvidenceCoordinator,
+    dates: CoachCalendarDates,
+    canonicalTime: (String) -> String,
+    versionId: String?,
+    workoutId: String?,
+    done: (String) -> Unit,
+    input: @Composable (String, String, (String) -> Unit, Boolean) -> Unit,
+) {
+    var open by rememberSaveable(versionId, workoutId) { mutableStateOf(false) }
+    OutlinedButton(
+        onClick = { open = !open },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+    ) {
+        Text(if (open) "Hide treadmill form" else "Log an indoor treadmill run")
+    }
+    if (open)
+        SharedCompletionForm(
+            state,
+            runningEvidence,
+            dates,
+            canonicalTime,
+            input,
+            versionId,
+            workoutId,
+            done,
+            treadmillOnly = true,
+        )
+}
+
 @Composable
 private fun SharedCompletionForm(
     state: CoachUiState,
@@ -304,10 +347,13 @@ private fun SharedCompletionForm(
     dates: CoachCalendarDates,
     canonicalTime: (String) -> String,
     input: @Composable (String, String, (String) -> Unit, Boolean) -> Unit,
-    version: PlanVersion,
-    workout: PlannedWorkout,
+    versionId: String?,
+    workoutId: String?,
     done: (String) -> Unit,
+    treadmillOnly: Boolean = false,
 ) {
+    var treadmill by rememberSaveable { mutableStateOf(treadmillOnly) }
+    var details by rememberSaveable { mutableStateOf(!treadmillOnly) }
     var km by rememberSaveable { mutableStateOf("") }
     var duration by rememberSaveable { mutableStateOf("") }
     var rpe by rememberSaveable { mutableStateOf("") }
@@ -316,7 +362,24 @@ private fun SharedCompletionForm(
     var notes by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
     CoachCard {
-        Text("Actual workout — manually entered")
+        Text(
+            if (treadmill) "Indoor treadmill run" else "Actual workout — manually entered",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        if (!treadmillOnly)
+            FilterChip(
+                selected = treadmill,
+                onClick = { treadmill = !treadmill },
+                label = { Text("Indoor treadmill run") },
+            )
+        if (treadmill) {
+            Text(
+                "Use your treadmill’s distance and duration. No GPS route is recorded.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        if (treadmillOnly && workoutId != null)
+            Text("Saving will complete the selected planned workout.")
         input(
             if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL)
                 "Actual distance (miles)"
@@ -325,29 +388,53 @@ private fun SharedCompletionForm(
             { km = it },
             true,
         )
-        input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
-        input("Start date (YYYY-MM-DD)", date, { date = it }, false)
-        input("Start time (HH:mm, local)", time, { time = it }, false)
-        input("RPE 0–10 (optional)", rpe, { rpe = it }, true)
-        input("Notes (optional)", notes, { notes = it }, false)
+        if (treadmill) {
+            OutlinedTextField(
+                value = duration,
+                onValueChange = { duration = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Duration") },
+                supportingText = { Text("For example, 33:30 or 1:05:00") },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            )
+        } else input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
+        if (treadmillOnly) {
+            Text(
+                if (details)
+                    "Use the actual start time for an older run or to match a watch recording."
+                else "Defaults to finishing now.",
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            TextButton(onClick = { details = !details }) {
+                Text(if (details) "Use the current finish time" else "Set start time or add notes")
+            }
+        }
+        if (details) {
+            input("Start date (YYYY-MM-DD)", date, { date = it }, false)
+            input("Start time (HH:mm, local)", time, { time = it }, false)
+            input("RPE 0–10 (optional)", rpe, { rpe = it }, true)
+            input("Notes (optional)", notes, { notes = it }, false)
+        }
         error?.let { Text(it) }
         Button(
             enabled = !state.busy,
             onClick = {
                 try {
                     runningEvidence.completeRun(
-                        version.id(),
-                        workout.id(),
+                        versionId,
+                        workoutId,
                         km.toDouble() *
                             (if (state.profile?.preferences()?.units() == UnitSystem.IMPERIAL)
                                 1.609344
                             else 1.0),
                         PaceCalculator.parseTime(duration),
-                        dates.parse(date),
-                        canonicalTime(time),
+                        if (details) dates.parse(date) else null,
+                        if (details) canonicalTime(time) else null,
                         rpe.takeIf { it.isNotBlank() }?.toDouble(),
                         notes,
                         done,
+                        treadmill = treadmill,
                     )
                     error = null
                 } catch (e: Exception) {
@@ -356,7 +443,7 @@ private fun SharedCompletionForm(
             },
             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
         ) {
-            Text("Save actual run")
+            Text(if (treadmill) "Save treadmill run" else "Save actual run")
         }
     }
 }

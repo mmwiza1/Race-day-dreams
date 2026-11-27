@@ -1,7 +1,5 @@
 package org.racedaydreams.coach
 import android.content.Context
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -41,13 +39,6 @@ fun SpontaneousAssociation(state: CoachUiState, model: CoachViewModel, activity:
     val context=LocalContext.current;val scope=rememberCoroutineScope();var loaded by remember{mutableStateOf(false)};var enabled by remember{mutableStateOf(true)};var cities by remember{mutableStateOf<Set<String>>(emptySet())};var error by remember{mutableStateOf<String?>(null)}
     LaunchedEffect(Unit){val p=withContext(Dispatchers.IO){Release08Store(context).dreamPreferences()};enabled=p.first;cities=p.second;loaded=true}
     SemanticCard(Tile.Race){Text("Dream Routes",style=MaterialTheme.typography.titleLarge);if(loaded){CheckRow("Dream Routes",enabled){enabled=it};DreamRoutes.routes().forEach{r->CheckRow(r.name(),r.id() in cities){checked->cities=if(checked)cities+r.id()else cities-r.id()}};Text("Future assignments only. Existing run assignments never reroll. No city selected uses standard activity presentation.");CoachButton("Save Dream Route choices"){scope.launch{try{withContext(Dispatchers.IO){Release08Store(context).save("config","dream",JSONObject().put("version",1).put("type","dream").put("enabled",enabled).put("cities",JSONArray(cities.sorted())))};error="Choices saved."}catch(_:Exception){error="Choices could not be saved."}}};error?.let{Text(it)}}}
-}
-
-/** Deliberate allow-list; no routes, health values, notes, identifiers or history. */
-@Composable fun DiagnosticExport(state:CoachUiState){
-    val context=LocalContext.current;val scope=rememberCoroutineScope();var message by remember{mutableStateOf<String?>(null)}
-    val export=rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")){uri->if(uri!=null)scope.launch{message=try{withContext(Dispatchers.IO){val report=DiagnosticReport.build(context,state.healthAvailability.name,state.healthPermissions);context.contentResolver.openOutputStream(uri,"wt")!!.use{it.write(report.toString(2).toByteArray())}};"Diagnostic report exported."}catch(_:Exception){"Diagnostic export failed; local data is unchanged."}}}
-    SemanticCard(Tile.Neutral){Text("Diagnostic report",style=MaterialTheme.typography.titleLarge);Text("App/schema versions, Android/device model and permission states only. Excludes GPS, health measurements, weight, notes and workout history. Inspect the file before sharing.");CoachButton("Export diagnostic report"){export.launch("race-day-dreams-diagnostic.json")};message?.let{Text(it)}}
 }
 
 @Composable fun StartingPath(model:CoachViewModel,choose:(String)->Unit)=SharedStartingPath(

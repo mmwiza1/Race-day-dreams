@@ -11,7 +11,7 @@ class ExerciseMetadataModelsTest {
         val rows = ExerciseMetadataCatalog.entries()
         assertEquals(1, ExerciseMetadataCatalog.VERSION)
         assertEquals(ExerciseCatalog.exercises().map { it.id() }.toSet(), rows.keys)
-        assertEquals(220, rows.size)
+        assertEquals(246, rows.size)
         for ((id, entry) in rows) {
             assertEquals(id, entry.exerciseId())
             assertTrue(entry.primaryRole() in entry.roles())

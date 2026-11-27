@@ -11,6 +11,7 @@ import kotlinx.datetime.toKotlinInstant
 import kotlinx.datetime.toNSDate
 import org.racedaydreams.health.body.BodyReadWindow
 import org.racedaydreams.health.body.HealthReadAuthorizationRequest
+import platform.Foundation.NSNumber
 import platform.Foundation.NSSortDescriptor
 import platform.HealthKit.*
 import platform.darwin.dispatch_async
@@ -107,6 +108,9 @@ class HealthKitRunningReader(
                                         workout.totalDistance?.doubleValueForUnit(
                                             HKUnit.meterUnit()
                                         ),
+                                        (workout.metadata?.get(HKMetadataKeyIndoorWorkout)
+                                                as? NSNumber)
+                                            ?.boolValue,
                                     )
                             }
                         }

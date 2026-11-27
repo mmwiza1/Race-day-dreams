@@ -75,6 +75,9 @@ data class GymProgramme(
                     "pull-up bar",
                     "trap bar",
                     "sled",
+                    "resistance bands",
+                    "band anchor",
+                    "stable step",
                     "full gym",
                 )
             require(equipment!!.all { it in supported }) { "Unsupported equipment selection." }

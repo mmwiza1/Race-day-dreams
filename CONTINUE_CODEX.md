@@ -15,7 +15,186 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — Piece 5B (training programme, PR #51)
+## Active task — Parts 1–4 integration and 0.17.0-test1 publication
+
+- On 26 November the owner authorised pushing the existing reliability branch, opening
+  one integration PR against `main`, merging after all mandatory exact-head checks and
+  screenshot review, and verifying the rolling development publication. Stop after
+  publication verification. The independent audit is a separate task.
+- The local Parts 1–4 checkpoint is `b1e9439a51567018d6a20dd02a0c906349f947b2`.
+  Live main was `7823372c81d3fe09c9485ed6de5ee461d546f593` and an ancestor; the previous
+  published build is 0.16.0-test1 / 29. This candidate prepares 0.17.0-test1 / 30.
+- Use the pre-existing branch `ccr-60f602a7-tfmok3-reliability` and
+  [integration PR #55](https://github.com/mmwiza1/Race-day-dreams/pull/55).
+  [Draft Android formatting](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45889671296)
+  passed. The first [draft shared run](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45889671295)
+  exposed legacy substitution fixtures that expected the pre-expansion catalogue. Retained
+  exact beginner expectations and added exact experienced rankings for the expanded catalogue,
+  keeping a separate no-evidence case. The corrected local shared domain, health, storage and
+  retained domain suite passed; visual guidance passed for 246 exercises and 14 routines.
+  The next ready run's formatting failure was corrected with the repository formatter.
+  Local Android lint and the non-debuggable release APK check passed. The
+  [unsigned iPhone compile](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45891449399/job/140155027188)
+  exposed a Core Location enum reference that Android cannot compile-check; the candidate now
+  uses the value scoped under its Kotlin/Native enum type.
+- Ready candidate `013585be` passed [Apple shared, simulator UI and unsigned device](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45892236357).
+  The [Android matrix](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45892236302)
+  reported three common fixture failures in workout capture, artwork dimensions and exercise
+  ranking. API 35 also timed out saving the bouldering fixture and API 28 timed out saving
+  manual weight. The test corrections cover the updated form and reviewed assets, preserve the
+  substitution lifecycle assertions, and close the keyboard before save taps. The first local
+  focused run passed artwork and substitution before an Android system crash. Run the full
+  Android and Apple checks on the corrected head.
+- PR #55 is ready. When
+  API 35 publishes canonical screenshots, fetch the resulting commit and validate the
+  actual source fingerprint, screenshot evidence and checks on the final PR head.
+- Squash merge only when the full Android and Apple gates pass on the final head.
+  Verify post-merge CI and release asset provenance, Android package, version, signing
+  identity and SHA-256, update manifest, and all three unsigned iOS artifacts.
+  Do not create a production tag or start audit work here.
+
+## Development history — Parts 1–4 reliability work (owner request, 25 November 2026)
+
+- Use one integration branch, `ccr-60f602a7-tfmok3-reliability`. The active worktree
+  is `/workspace/scratch/rdd-reliability`. Part 1 was fetched at
+  `58cf94c4e6749cf2df97a55f7d487a0b1624e1ea`; `a8d17a5a` and `c77d5d15`
+  were verified as ancestors. The branch has no integration PR at this checkpoint.
+- Part 1 remains intact: R-01 readiness wording, R-02 effective-frequency intensity,
+  and the [GPS #54 investigation](docs/GPS_ISSUE_54_INVESTIGATION.md). The owner's
+  available diagnostic and ordinary backup cannot establish the fix-delivery cause.
+  Recording behaviour remains unchanged.
+- Part 2 work: exercise-first historical gym entry, compact set editing and optional
+  details, date-only scheduling and a distinct missing-duration value in the existing
+  backup contract. Gym Now's early start retains the selected original prescription
+  and records actual times. Calendar displays completion on the scheduled date.
+  Shared persistence rejects duplicate completed sessions across programme revisions.
+  Running adds a today shortcut to its existing reviewed one-off move.
+- Part 2 verification: debug app and instrumentation APKs built. Formatting and diff checks
+  passed. 53 focused JVM tests passed (21 gym execution, 19 association, 13 strength evidence/JSON).
+  13 distinct focused API 28 cases passed across the development checks: historical entry in light
+  and dark, earlier date and set/PB persistence, source editing, earlier running moves, truthful
+  date-only history, and eight gym execution/storage cases covering direct duplicate rejection,
+  recovery, original links, rollback and complete backup. The initial emulator aborted in Android's
+  window-manager watchdog. The calendar path, affected assertions and exact duplicate checks were
+  subsequently verified. No iOS simulator, API 35/36 or physical-device runs were requested or run.
+- Local screenshots and test logs are under `/workspace/scratch/rdd-part2-evidence`. Reviewed
+  `historical-entry-light-review.png`, `historical-entry-dark.png`, and `gym-early-final-light.png`.
+  The Android historical form was updated. The shared scheduling/storage changes build on Android;
+  iOS runtime verification is outside this checkpoint.
+- Part 3 is authorised on this same branch, starting from local `dcde902c` and remote
+  `58cf94c4`. Complete A (diagnostics), B (Gym Now), C (catalogue), D (duplicate runs), then
+  E (treadmill). Stop for explicit Part 4 approval. Keep the GPS acceptance/distance rules pending
+  a fresh real-world trace. No push, additional PR, version change, release or full matrix.
+- A: Android records parallel coordinate-free delivery, loss, pause and staging evidence. Each
+  report is a bounded snapshot, local to the installation, reviewed in Settings before manual
+  export. Apple captures into the same report format. Report counts reflect the last written
+  checkpoint, and a killed process may leave no final interruption event. App backup formats
+  exclude these diagnostics. See [GPS investigation](docs/GPS_ISSUE_54_INVESTIGATION.md).
+- A verification: two common JVM cases passed for delayed batches, rejection,
+  missing acknowledgement and bounded timelines. Debug app and test APKs built. API 28 passed all
+  seven focused diagnostic export/store and staging checks. See
+  `/workspace/scratch/rdd-part3-diagnostic-instrument.log`. Apple simulator execution needs macOS.
+  Task A is committed locally as `0ab53804` and `0f2899a1`. The live Android emulator service also saved a
+  coordinate-free report with 36 callbacks, 35 accepted and disk-acknowledged points, and
+  manual pause/resume events. This used injected emulator locations. The physical S24 trace is
+  pending. Recording and persistence failures are covered; broader non-recording incident reporting
+  was left out of this checkpoint.
+- B implements a shared multi-group review and equipment-aware alternatives using the original
+  planner's target and substitution rules. Local commit `1b13704c`. Two JVM and two API 28
+  Compose cases passed, including actual replacement before Start with an empty set log.
+  Preview capture is `/workspace/scratch/rdd-part3-evidence/gym-multi-group-preview-light.png`.
+- C adds 26 catalogue entries (246 total), refreshed search aliases, and resistance bands
+  plus secure anchors as separate equipment capabilities. Provenance passed for 247 assets,
+  strict visual guide coverage passed 246/246 exercises and 14/14 routines, and the legacy
+  catalogue suite passed 240 checks. The first JVM batch required updating the frozen catalogue
+  boundary assertion to retain the original boundary at index 219 and verify the new appended
+  entries. The revised focused JVM batch passed all 24 cases. Local commit `c6e99cb4`. Soldier
+  get-up awaits a confirmed definition.
+- D adds reversible duplicate-run comparison, including close same-source candidates. The exact
+  1.5/5.1 km fixture selects Fitbit for counted evidence while retaining native plan provenance.
+  Owned-record choices survive app backup and take effect again when the matching provider record
+  is reimported. App backup still excludes provider histories and therefore provider-only pair
+  choices. The first JVM domain batch passed 46 cases. Storage and Android comparison checks then
+  passed, including reimport after core backup. Local commits `963e539d` and `ace37c53`.
+- E reuses the actual-run form for explicit indoor treadmill entry, with optional planned-workout
+  association and optional historical start time. App-owned treadmill classifications are retained
+  in activity JSON. Health Connect's treadmill type and HealthKit's broader indoor flag are kept
+  separately from source identity. Matching imported records reuse the physical-session grouping.
+- Part 3 debug and instrumentation APKs built. Final focused JVM batch passed 55 cases (12 run
+  grouping, 10 HealthKit mapping, 33 SQLite/activity/backup). Formatting passed for 1040 Kotlin and
+  95 Java files. No database or backup version bump. API 28 passed 17 distinct focused cases:
+  seven diagnostics, two Gym Now, three run comparison and treadmill, and five catalogue/run
+  evidence regressions. See the logs and captures under `/workspace/scratch/rdd-part3-evidence`.
+  Native iOS, the full device matrix and a physical S24 run are separate checks.
+- Part 3 was pushed for preservation at `b6dcfa4d5ebc06ea48164411c61935dd04e98888`.
+  The branch is unmerged. Keep GPS calculation changes deferred until a new outdoor
+  diagnostic trace is available.
+- The owner authorised the 26 November visual-hardening checkpoint on the same branch.
+  [UI design standards](docs/UI_DESIGN_STANDARDS.md) are mandatory through `AGENTS.md`.
+  The shared duplicate comparison uses selectable recording summaries, a saved-choice
+  indicator and a separate confirmed local-copy action. Treadmill entry has a clearer
+  heading and shorter timing guidance. The existing recording, grouping, storage and
+  ownership rules still apply. Keep the checkpoint local and wait for explicit Part 4 approval.
+- The focused UI review also covered the existing Gym Now setup/preview and historical
+  logging captures. On API 28 the diagnostic session list, JSON review and Android save picker
+  were opened with the Part 3 emulator recording fixture. Broader optional UI backlog:
+  make the Gym Now generated result easier to reach from the long setup; review action
+  hierarchy in historical set entry; give diagnostics a scannable session summary with raw JSON
+  available for review and export. The long treadmill duration label sits close to the preceding
+  field at 200% with the keyboard open. Consider a shorter label with the format as help text.
+- Visual-hardening verification: final debug and test APKs built and formatting passed. API 28
+  passed duplicate selection, cancellation and provider ownership, and unplanned treadmill entry
+  in light and dark at approximately 360dp with 200% text. The planned treadmill association
+  also passed in light. Actual captures exposed a clipped removal warning at 200%. The final
+  review confirmed the shorter scrollable warning and both dialog actions were readable.
+  Evidence and focused logs are in `/workspace/scratch/rdd-ui-hardening`. Native iOS,
+  physical-device, manual TalkBack and full integration gates remain outside this checkpoint.
+- The follow-up Part 3 correctness checkpoint builds on local UI commit `ed0bc4e8`.
+  The 1.5 km RDD / 5.1 km Fitbit fixture reproduced inconsistent baseline and shoe counts.
+  Baseline, adaptive and weekly coaching now use the shared counted-run projection.
+  The history snapshot retains both sources and their underlying PB links, and the
+  athlete can still count both separately. Shoe mileage uses the counted recording's
+  distance and its assignment, or an unambiguous assignment from another copy.
+  Gym Now maps Machines and Cables to their typed setups for generation and substitutions.
+  One-off templates can select machine alternatives. Bands and anchors remain independent.
+  Four regression assertions failed before the fixes. The final focused run passed 83
+  shared-domain tests and 33 SQLite activity and backup/restore tests. Shared Android UI
+  compilation passed. Device tests and native iOS compilation were outside this checkpoint.
+  Logs are in `/workspace/scratch/rdd-part3-correctness`. Stop for review before Part 4.
+  Preserve the local commits and the existing remote branch.
+- Part 4 was explicitly authorised after `e7753f68` on the same branch. Independent
+  Running, Gym / Strength, Bouldering and Settings accents use existing portable settings,
+  without a schema or backup format change. Settings defaults to green and the other defaults
+  follow their existing theme roles. The targeted UX changes cover treadmill duration entry,
+  a readable diagnostic summary with full JSON, a separate Gym Now preview and clearer
+  historical set and save actions. The 360 dp, 200% manual treadmill check exposed a
+  shared scroll viewport extending behind the Android keyboard. Keyboard insets now
+  shrink the viewport before scrolling is measured. Rechecked on the final Android build:
+  the real keyboard was visible while the focused duration, typed value and format example
+  stayed readable. Android debug and instrumentation APKs built. All eight focused
+  SQLite backup/restore tests and the repository formatting check passed. API 28
+  passed the accent, contrast, relaunch, Gym Now, historical logging and treadmill flows
+  in light theme, and the colour, Gym Now, historical logging, treadmill and diagnostic
+  review/export flows at 200% text in dark theme. Visually inspected diagnostic summaries
+  in both themes. Android aborted the light diagnostic test after the capture with
+  `INSTRUMENTATION_ABORTED: System has crashed`. The API 35 image could not provision
+  its partition in this workspace. Native iOS,
+  hardware and the full Android/iOS matrix are reserved for integration. Logs and source
+  captures are in `/workspace/scratch/rdd-part4`. The visual review archive is in
+  `/workspace/shared/downloads/Race-Day-Dreams-Part4-UI.zip`. Stop for owner review and
+  independent audit. After approval, reopen the light diagnostic JSON and export on a stable
+  Android emulator during final integration. Keep this branch local and leave the version,
+  PR and release state alone.
+- Part 4 Gym Now amendment: the designed workout form puts effort scale and training priority
+  under a collapsed Advanced training preferences section with plain-English RPE and RIR
+  explanations. Defaults remain RPE and Strength first. Switching to RIR and Balanced still
+  affects generation after the section is collapsed. Android debug and test APKs built.
+  Two focused API 28 tests passed in light theme and the advanced-options test passed in dark
+  theme at 200% text. Inspected the collapsed, effort and priority states at 360 dp in both
+  themes. Logs are in `/workspace/scratch/rdd-part4-advanced` and captures are in
+  `/workspace/shared/downloads/Race-Day-Dreams-Gym-Advanced-Preferences.zip`.
+
+## Previous task — Piece 5B (training programme, PR #51; merged as `7823372c`)
 
 - Continue [PR #51](https://github.com/mmwiza1/Race-day-dreams/pull/51) on
   `ccr-60f602a7-tfmok3-training` in `/workspace/scratch/rdd-piece5b`. The primary

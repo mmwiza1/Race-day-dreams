@@ -71,6 +71,13 @@ object ActivityJson {
                 )
                 put("plannedWorkoutId", StoredJson.nullable(activity.plannedWorkoutId()))
                 put("shoeId", StoredJson.nullable(activity.shoeId()))
+                activity.environment()?.let { put("runEnvironment", it.name) }
+                if (activity.duplicateChoices().isNotEmpty())
+                    putJsonObject("duplicateChoices") {
+                        activity.duplicateChoices().forEach { (peer, choice) ->
+                            put(peer, choice.name)
+                        }
+                    }
             }
             .toString()
 
@@ -129,6 +136,15 @@ object ActivityJson {
             laps,
             row.text("plannedWorkoutId"),
             row.text("shoeId"),
+            row["duplicateChoices"]
+                ?.row()
+                ?.mapValues { (_, choice) ->
+                    val text = choice as? JsonPrimitive
+                    require(text?.isString == true) { "Invalid run comparison choice." }
+                    DuplicateRunChoice.valueOf(text.content)
+                }
+                .orEmpty(),
+            row.text("runEnvironment")?.let(RunEnvironment::valueOf),
         )
     }
 }

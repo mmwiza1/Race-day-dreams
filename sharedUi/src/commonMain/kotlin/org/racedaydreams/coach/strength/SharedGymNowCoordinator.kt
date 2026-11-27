@@ -68,10 +68,13 @@ data class GymNowState(
     val form: GymSetDraft,
     val builder: GymBuilderDraft,
     val generated: GymNowWorkouts.Suggestion? = null,
+    val generatedSwap: GeneratedWorkoutSwap? = null,
     val finishEarlyRequired: Boolean = false,
     val substitution: GymSwapState? = null,
     val association: GymAssociationCoordinator.View? = null,
     val nativeRecentIds: Set<String> = emptySet(),
+    val completedProgrammeSessions: Set<String> = emptySet(),
+    val nearbyDemandingRunDates: Set<LocalDate> = emptySet(),
     /**
      * The user's mass unit setting. Loads are typed and shown in it; [GymSetDraft.kilograms] holds
      * the typed text in this unit and is converted to kilograms only when a set is saved (B-05).
@@ -79,9 +82,14 @@ data class GymNowState(
     val massUnit: MassUnit = MassUnit.KG,
 )
 
+data class GeneratedWorkoutSwap(
+    val slotId: String,
+    val choices: List<ExerciseSubstitutionEngine.Suggestion>,
+)
+
 /** Original Gym Now feature operations over one execution coordinator and one database pool. */
 class SharedGymNowCoordinator(
-    database: SqlDatabase,
+    private val database: SqlDatabase,
     private val repository: GymExecutionRepository,
     associationRepository: GymAssociationRepository,
     private val programming: StrengthProgrammingRepository,
@@ -146,6 +154,8 @@ class SharedGymNowCoordinator(
         val archivedIds: Set<String>,
         val excludedIds: Set<String>,
         val nativeRecentIds: Set<String>,
+        val completedProgrammeSessions: Set<String>,
+        val nearbyDemandingRunDates: Set<LocalDate>,
         val massUnit: MassUnit,
     )
 
@@ -183,9 +193,28 @@ class SharedGymNowCoordinator(
             choices.filter { it.archived() }.map { it.exerciseId() }.toSet(),
             exclusions.exclusions().map { it.exerciseId() }.toSet(),
             finishedActualIds(recent.map { it.id() }),
+            reference?.let { completedGymSessions(database, it.id()) } ?: emptySet(),
+            nearbyDemandingRunDates(),
             runCatching { MassUnit.valueOf(settings.getSetting("mass.unit") ?: "KG") }
                 .getOrDefault(MassUnit.KG),
         )
+    }
+
+    private fun nearbyDemandingRunDates(): Set<LocalDate> {
+        val instant = now()
+        val today = CalendarDates.atOffset(instant, offsetAt(instant))
+        return coaching
+            .current()
+            ?.plan()
+            ?.workouts()
+            .orEmpty()
+            .filter {
+                it.date().toEpochDay() in
+                    today.minusDays(1).toEpochDay()..today.plusDays(1).toEpochDay() &&
+                    org.racedaydreams.domain.recovery.TrainingRecovery.demanding(it)
+            }
+            .map { it.date() }
+            .toSet()
     }
 
     private fun command(
@@ -280,6 +309,11 @@ class SharedGymNowCoordinator(
                         view = snapshot,
                         association = associations.view(),
                         nativeRecentIds = fresh?.nativeRecentIds ?: previous.nativeRecentIds,
+                        completedProgrammeSessions =
+                            fresh?.completedProgrammeSessions
+                                ?: previous.completedProgrammeSessions,
+                        nearbyDemandingRunDates =
+                            fresh?.nearbyDemandingRunDates ?: previous.nearbyDemandingRunDates,
                         massUnit = fresh?.massUnit ?: previous.massUnit,
                     )
                 }
@@ -331,6 +365,9 @@ class SharedGymNowCoordinator(
                         coaching.exercises().associateBy { it.id() },
                     )
                 }
+            require(sessionId !in completedGymSessions(database, prepared.source().id())) {
+                "This programmed session is already completed."
+            }
             coordinator.start(
                 newId(),
                 GymExecution.Origin.PLANNED,
@@ -561,23 +598,7 @@ class SharedGymNowCoordinator(
         )
     }
 
-    /** Legacy broad equipment labels never imply that every machine or attachment exists. */
-    private fun initialSwapEquipment(labels: Set<String>): Set<ExerciseMetadata.Equipment> {
-        if ("full gym" in labels) return ExerciseMetadata.Equipment.values().toSet()
-        val capabilities =
-            mapOf(
-                "barbell" to ExerciseMetadata.Equipment.BARBELL,
-                "dumbbells" to ExerciseMetadata.Equipment.DUMBBELLS,
-                "kettlebells" to ExerciseMetadata.Equipment.KETTLEBELLS,
-                "squat rack" to ExerciseMetadata.Equipment.SQUAT_RACK,
-                "bench" to ExerciseMetadata.Equipment.BENCH,
-                "cables" to ExerciseMetadata.Equipment.CABLE_STATION,
-                "pull-up bar" to ExerciseMetadata.Equipment.PULL_UP_BAR,
-                "trap bar" to ExerciseMetadata.Equipment.TRAP_BAR,
-                "sled" to ExerciseMetadata.Equipment.SLED,
-            )
-        return labels.mapNotNull(capabilities::get).toSet()
-    }
+    private fun initialSwapEquipment(labels: Set<String>) = GymNowWorkouts.capabilities(labels)
 
     fun pause() = command { coordinator.pause() }
 
@@ -859,17 +880,62 @@ class SharedGymNowCoordinator(
         }
     }
 
+    private var generatedRequest: GymNowWorkouts.Request? = null
+
     fun generate(request: GymNowWorkouts.Request) = command {
-        mutable.update { it.copy(generated = null) }
+        generatedRequest = request
+        mutable.update { it.copy(generated = null, generatedSwap = null) }
         val suggestion =
             GymNowWorkouts.generate(
                 newId(),
                 now(),
                 request,
                 mutable.value.favouriteExerciseIds,
-                exclusions.exclusions().map { it.exerciseId() }.toSet(),
+                mutable.value.archivedExerciseIds + exclusions.exclusions().map { it.exerciseId() },
             )
         mutable.update { it.copy(generated = suggestion) }
+    }
+
+    fun openGeneratedAlternatives(slotId: String) = command {
+        val definition = mutable.value.generated?.definition() ?: return@command
+        val request = generatedRequest ?: return@command
+        val slot = definition.slots().firstOrNull { it.id() == slotId } ?: return@command
+        val options =
+            GymNowWorkouts.alternatives(
+                request,
+                definition,
+                slot,
+                mutable.value.archivedExerciseIds + mutable.value.excludedExerciseIds,
+                mutable.value.favouriteExerciseIds,
+            )
+        mutable.update { it.copy(generatedSwap = GeneratedWorkoutSwap(slotId, options)) }
+    }
+
+    fun closeGeneratedAlternatives() {
+        mutable.update { it.copy(generatedSwap = null) }
+    }
+
+    fun replaceGenerated(slotId: String, replacement: StrengthExercise) = command {
+        val state = mutable.value
+        val current = requireNotNull(state.generated)
+        val review = requireNotNull(state.generatedSwap)
+        require(review.slotId == slotId && review.choices.any { it.exercise() == replacement })
+        val definition = current.definition()
+        val slots =
+            definition.slots().map { slot ->
+                if (slot.id() == slotId)
+                    slot.copy(
+                        exercise = replacement,
+                        target = slot.target()?.withoutLoadReference(),
+                    )
+                else slot
+            }
+        mutable.update {
+            it.copy(
+                generated = current.copy(definition = definition.copy(slots = slots)),
+                generatedSwap = null,
+            )
+        }
     }
 
     fun startGenerated(quick: Boolean, onReady: () -> Unit) =

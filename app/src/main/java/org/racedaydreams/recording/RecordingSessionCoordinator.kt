@@ -126,6 +126,9 @@ internal class RecordingSessionCoordinator(
     val engine
         get() = shared.engine
 
+    val acknowledgedPointCount: Int
+        get() = shared.acknowledgedPointCount
+
     suspend fun flush() = shared.flush()
 
     fun requestFinish(now: Long) = shared.requestFinish(now)

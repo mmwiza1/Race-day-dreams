@@ -310,6 +310,9 @@ class RunMetricsEngine(monotonicMillis: Long, wall: Instant?) {
         return true
     }
 
+    /** Read immediately after a failed delivery qualification. */
+    fun deliveryRejection(): String? = lastRejection
+
     private fun reject(reason: String, time: Long, wall: Instant?, weak: Boolean): Boolean {
         if (reason != lastRejection) eventRows.add(Event(reason, time, wall))
         lastRejection = reason

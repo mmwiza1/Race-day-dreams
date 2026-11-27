@@ -35,8 +35,9 @@ class SharedBoulderingScreenTest {
 
     private fun clear() {
         // Instrumentation runs off the main thread, as the storage bridge requires.
-        for (table in listOf("climbing_sessions", "climbing_session_draft", "climbing_preferences"))
-            database.execute("DELETE FROM $table")
+        for (table in
+            listOf("climbing_sessions", "climbing_session_draft", "climbing_preferences")) database
+            .execute("DELETE FROM $table")
     }
 
     @Before fun prepare() = clear()
@@ -139,19 +140,27 @@ class SharedBoulderingScreenTest {
         }
         // New climber: honest empty state, offered only after the device has been read.
         compose.waitUntil(5_000) {
-            compose.onAllNodesWithText("Start bouldering session").fetchSemanticsNodes().isNotEmpty()
+            compose
+                .onAllNodesWithText("Start bouldering session")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         }
         compose.onNodeWithTag("kpi-Highest send").assert(hasText("None yet"))
         // V3 Strength composition: one hero carries starting and logging a session.
         compose.onNodeWithTag("screen-hero").assert(hasAnyDescendant(hasText("Log a past session")))
-        compose.onNodeWithText("No bouldering sessions recorded yet.").performScrollTo().assertExists()
+        compose
+            .onNodeWithText("No bouldering sessions recorded yet.")
+            .performScrollTo()
+            .assertExists()
 
         compose.onNodeWithText("Start bouldering session").performScrollTo().performClick()
         awaitTag("climbing-elapsed", model)
         addProblem("V4", 0, ClimbOutcome.FLASH)
         addProblem("V5", 3, ClimbOutcome.SEND)
         addProblem(null, 1, ClimbOutcome.NOT_SENT)
-        compose.onNodeWithTag("climbing-problem-summary").assert(hasText("3 problems · 2 sent · 1 flashed"))
+        compose
+            .onNodeWithTag("climbing-problem-summary")
+            .assert(hasText("3 problems · 2 sent · 1 flashed"))
 
         // An interrupted app: a new coordinator over the same database finds the unsaved session.
         compose.waitUntil(5_000) { SqliteClimbing(database).draft()?.problems?.size == 3 }
@@ -164,8 +173,9 @@ class SharedBoulderingScreenTest {
 
         compose.onNodeWithText("Finish and review").performScrollTo().performClick()
         compose.onNodeWithTag("climbing-minutes").performTextReplacement("75")
-        compose.onNodeWithTag("climbing-save-session").performScrollTo().performClick()
-        compose.waitUntil(5_000) { page == "detail" }
+        assertEquals(75L * 60, resumed.state.value.draft?.durationSeconds)
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        saveAndAwaitDetail(resumed) { page == "detail" }
         compose.onNodeWithText("1 h 15 min", substring = true).assertExists()
         compose.onNodeWithTag("kpi-Sends").assert(hasText("2"))
         assertEquals(null, SqliteClimbing(database).draft())
@@ -189,7 +199,11 @@ class SharedBoulderingScreenTest {
         }
         val saved = SqliteClimbing(database).sessions().single()
         assertEquals(
-            listOf(ClimbingGrade(GradeSystem.V_SCALE, "V4"), ClimbingGrade(GradeSystem.V_SCALE, "V5"), null),
+            listOf(
+                ClimbingGrade(GradeSystem.V_SCALE, "V4"),
+                ClimbingGrade(GradeSystem.V_SCALE, "V5"),
+                null,
+            ),
             saved.problems.map { it.grade },
         )
 
@@ -198,13 +212,35 @@ class SharedBoulderingScreenTest {
         page = "detail"
         compose.onNodeWithText("Correct session").performScrollTo().performClick()
         compose.onNodeWithText("Correct session").assertExists()
-        compose.onNodeWithText("Climbing gym or location (optional)").performTextReplacement("North wall")
+        compose
+            .onNodeWithText("Climbing gym or location (optional)")
+            .performTextReplacement("North wall")
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithText("Review corrections").performScrollTo().performClick()
         compose.onNodeWithTag("climbing-save-session").performScrollTo().performClick()
-        compose.waitUntil(5_000) { SqliteClimbing(database).sessions().single().location == "North wall" }
+        compose.waitUntil(5_000) {
+            SqliteClimbing(database).sessions().single().location == "North wall"
+        }
         compose.onNodeWithText("Delete session").performScrollTo().performClick()
         compose.onNodeWithText("Delete").performClick()
         compose.waitUntil(5_000) { SqliteClimbing(database).sessions().isEmpty() }
+    }
+
+    private fun saveAndAwaitDetail(model: SharedBoulderingCoordinator, inDetail: () -> Boolean) {
+        compose
+            .onNodeWithTag("climbing-save-session")
+            .performScrollTo()
+            .assertIsEnabled()
+            .performClick()
+        try {
+            compose.waitUntil(5_000, inDetail)
+        } catch (timeout: ComposeTimeoutException) {
+            throw AssertionError(
+                "Session did not open after saving. State: ${model.state.value}\n" +
+                    compose.onRoot(useUnmergedTree = true).printToString(),
+                timeout,
+            )
+        }
     }
 
     @Test
@@ -217,7 +253,14 @@ class SharedBoulderingScreenTest {
                 null,
                 "North wall",
                 "",
-                listOf(ClimbingProblem("p", ClimbingGrade(GradeSystem.V_SCALE, "V2"), 1, ClimbOutcome.FLASH)),
+                listOf(
+                    ClimbingProblem(
+                        "p",
+                        ClimbingGrade(GradeSystem.V_SCALE, "V2"),
+                        1,
+                        ClimbOutcome.FLASH,
+                    )
+                ),
             )
         SqliteClimbing(database).saveDraft(interrupted)
         val model = model()
@@ -242,7 +285,12 @@ class SharedBoulderingScreenTest {
                 "",
                 "",
                 listOf(
-                    ClimbingProblem("p", ClimbingGrade(GradeSystem.V_SCALE, "V3"), 2, ClimbOutcome.SEND)
+                    ClimbingProblem(
+                        "p",
+                        ClimbingGrade(GradeSystem.V_SCALE, "V3"),
+                        2,
+                        ClimbOutcome.SEND,
+                    )
                 ),
             )
         var climbing by mutableStateOf(emptyList<ClimbingSession>())
@@ -267,7 +315,9 @@ class SharedBoulderingScreenTest {
         compose.onNodeWithText("Bouldering").performScrollTo().assertExists()
         climbing = listOf(climb)
         compose.onNodeWithTag("strength-bouldering-card").assertExists()
-        compose.onNodeWithTag("strength-bouldering-card").assert(hasText("hardest V3", substring = true))
+        compose
+            .onNodeWithTag("strength-bouldering-card")
+            .assert(hasText("hardest V3", substring = true))
         // Climbing never becomes working sets, workouts or records.
         compose.onNodeWithTag("kpi-Working sets").assert(hasText("0"))
         compose.onNodeWithTag("kpi-Workouts").assert(hasText("0"))

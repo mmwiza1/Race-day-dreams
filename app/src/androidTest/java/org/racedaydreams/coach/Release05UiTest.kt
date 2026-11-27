@@ -46,11 +46,12 @@ class Release05UiTest {
         launch();compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Workout history")
         compose.waitUntil(20000){compose.onAllNodes(hasText(friendlyDate(date)) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}
         compose.onNode(hasText(friendlyDate(date)) and hasClickAction()).performClick();await("Edit source workout")
-        compose.onNodeWithText("Edit exercise").performScrollTo().performClick()
-        compose.onNodeWithText("Edit").performScrollTo().performClick()
+        compose.onNodeWithText("1: 80.0 kg × 5 reps").performScrollTo().assertExists()
+        compose.onNodeWithContentDescription("Edit set 1").performScrollTo().performClick()
         compose.onNodeWithText("Weight (kg)").performScrollTo().performTextReplacement("85")
         compose.onNodeWithText("Update set").performScrollTo().performClick()
-        compose.onNodeWithText("Add exercise and sets").performScrollTo().performClick()
+        compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Remove set 2").performScrollTo().performClick()
         compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
         compose.waitUntil(20000){CoachingStore(context).strength().single().exercises()[0].sets()[0].kilograms()==85.0}
         val saved=CoachingStore(context).strength().single()

@@ -166,6 +166,8 @@ data class StrengthSession(
 
     fun duration(): Duration = duration!!
 
+    fun hasRecordedDuration(): Boolean = duration != UNRECORDED_DURATION
+
     fun rpe(): Double? = rpe
 
     fun notes(): String = notes!!
@@ -176,6 +178,10 @@ data class StrengthSession(
         "StrengthSession[id=$id, startedAt=$startedAt, offset=$offset, duration=$duration, rpe=$rpe, notes=$notes, exercises=$exercises]"
 
     companion object {
+        // The established archive requires a positive duration. Real live evidence is
+        // millisecond-based.
+        val UNRECORDED_DURATION: Duration = Durations.ofNanos(1)
+
         @JvmStatic
         fun checkRpe(rpe: Double?) {
             require(rpe == null || rpe.isFinite() && rpe >= 0 && rpe <= 10) {

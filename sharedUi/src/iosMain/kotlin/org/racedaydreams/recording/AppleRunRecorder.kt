@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import org.racedaydreams.domain.execution.RecordingCueCoordinator
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
+import org.racedaydreams.domain.recording.RunTroubleshooting
 import org.racedaydreams.domain.time.Instant
 import org.racedaydreams.storage.SqliteRecordingStaging
 import platform.Foundation.NSThread
@@ -81,6 +82,8 @@ class AppleRunRecorder(
     val workout = mutableWorkout.asStateFlow()
     private var session: SharedRecordingSessionCoordinator? = null
     private var ticker: Job? = null
+    private var troubleshooting: RunTroubleshooting? = null
+    private var lastDiagnosticCheckpoint: Long? = null
     private var finishing = false
     private var pendingFinish: RecordingStageSession? = null
     private var finalMovingMillis = 0L
@@ -106,19 +109,33 @@ class AppleRunRecorder(
             onFix = { fix, received, wall ->
                 guarded("GPS observation rejected.") {
                     val engine = session?.engine
-                    if (engine != null && engine.qualifyDelivery(fix, received, wall))
-                        engine.accept(fix)
+                    if (engine != null) {
+                        val qualified = engine.qualifyDelivery(fix, received, wall)
+                        val accepted = qualified && engine.accept(fix)
+                        troubleshooting?.fix(
+                            received,
+                            fix.monotonicMillis(),
+                            accepted,
+                            if (!qualified) engine.deliveryRejection()
+                            else if (!accepted && engine.status(received).paused()) "paused"
+                            else null,
+                        )
+                    }
                     // Multiple fixes in a Core Location batch share one receipt time.
                     publish(received)
                 }
             },
             onUnavailable = { time, wall ->
                 guarded("GPS observation rejected.") {
+                    troubleshooting?.event("location_unavailable", time)
                     session?.engine?.missingFix(time, wall)
                     publish(time)
                 }
             },
             onAuthorizationChanged = { granted -> mutablePermission.value = granted },
+            onBatch = { received, count, oldest ->
+                troubleshooting?.callback(received, count, oldest)
+            },
         )
 
     init {
@@ -126,6 +143,8 @@ class AppleRunRecorder(
     }
 
     fun requestLocationPermission() = location.requestPermission()
+
+    fun preciseLocationGranted(): Boolean? = location.preciseLocationGranted()
 
     private var hillyCourse = false
 
@@ -161,8 +180,13 @@ class AppleRunRecorder(
         speech = if (spokenCues) AppleCoachSpeech() else null
         execution = planned
         session = active
+        troubleshooting = RunTroubleshooting(mono)
+        lastDiagnosticCheckpoint = null
+        troubleshooting?.event("recording_started", mono)
         mutableError.value = null
         location.start()
+        troubleshooting?.event("location_requested", AppleRecordingClock.monotonicMillis())
+        checkpointDiagnostics(active, "recording", force = true)
         stopHeartRateScan()
         if (monitorId != null) monitor?.connect(monitorId)
         publish()
@@ -178,7 +202,7 @@ class AppleRunRecorder(
                             publish()
                             speech?.settle()
                             try {
-                                active.flush()
+                                flushWithDiagnostics(active)
                                 mutableError.value = null
                             } catch (error: CancellationException) {
                                 throw error
@@ -227,16 +251,18 @@ class AppleRunRecorder(
         check(!finishing)
         speech?.stop()
         active.engine.pause(AppleRecordingClock.monotonicMillis(), AppleRecordingClock.now())
+        troubleshooting?.event("manual_pause", AppleRecordingClock.monotonicMillis())
         publish()
-        active.flush()
+        flushWithDiagnostics(active)
     }
 
     suspend fun resume() = command {
         val active = checkNotNull(session)
         check(!finishing)
         active.engine.resume(AppleRecordingClock.monotonicMillis(), AppleRecordingClock.now())
+        troubleshooting?.event("manual_resume", AppleRecordingClock.monotonicMillis())
         publish()
-        active.flush()
+        flushWithDiagnostics(active)
     }
 
     suspend fun changeWorkoutStep(skip: Boolean) = command {
@@ -245,7 +271,7 @@ class AppleRunRecorder(
         check(!finishing)
         if (skip) planned.coordinator.skip() else planned.coordinator.completeOpen()
         publish()
-        active.flush()
+        flushWithDiagnostics(active)
     }
 
     suspend fun finish(): String = command {
@@ -270,7 +296,7 @@ class AppleRunRecorder(
         val retained =
             pendingFinish
                 ?: run {
-                    active.flush()
+                    flushWithDiagnostics(active)
                     withContext(io) { checkNotNull(repository.unfinished()) }
                         .also {
                             check(it.id == active.session.id)
@@ -278,6 +304,9 @@ class AppleRunRecorder(
                         }
                 }
         val id = withContext(io) { repository.finish(retained, finalMovingMillis, false) }
+        troubleshooting?.event("session_saved", AppleRecordingClock.monotonicMillis())
+        checkpointDiagnostics(active, "saved", force = true)
+        troubleshooting = null
         pendingFinish = null
         finalTime = null
         session = null
@@ -292,10 +321,42 @@ class AppleRunRecorder(
         id
     }
 
+    private suspend fun flushWithDiagnostics(active: SharedRecordingSessionCoordinator) {
+        try {
+            active.flush()
+        } catch (failure: Exception) {
+            if (failure is CancellationException) throw failure
+            troubleshooting?.flushFailed(AppleRecordingClock.monotonicMillis())
+            checkpointDiagnostics(active, "staging_failed", force = true)
+            throw failure
+        }
+        checkpointDiagnostics(active, "recording")
+    }
+
+    private suspend fun checkpointDiagnostics(
+        active: SharedRecordingSessionCoordinator,
+        state: String,
+        force: Boolean = false,
+    ) {
+        val now = AppleRecordingClock.monotonicMillis()
+        if (!force && lastDiagnosticCheckpoint?.let { now - it < 15_000 } == true) return
+        val snapshot =
+            troubleshooting?.snapshot(
+                now,
+                active.engine.pointCount(),
+                active.acknowledgedPointCount,
+            ) ?: return
+        lastDiagnosticCheckpoint = now
+        withContext(io) {
+            runCatching { AppleRecordingDiagnostics.write(active.session, state, snapshot) }
+        }
+    }
+
     private fun publish(time: Long = AppleRecordingClock.monotonicMillis()) {
         val engine = session?.engine ?: return
         if (time - lastHeartRateTime > 10_000) mutableHeartRate.value = null
         val status = engine.status(time)
+        troubleshooting?.status(status.gps(), time)
         mutableStatus.value = status
         val planned = execution
         val workoutUpdate = planned?.coordinator?.update(status)

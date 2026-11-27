@@ -286,13 +286,7 @@ class SqliteGymAssociations(private val database: SqlDatabase, private val now: 
             .isNotEmpty()
 
     private fun occupied(key: String, except: String): Set<String?> =
-        database
-            .query(
-                "SELECT session_id FROM strength_association_targets WHERE programme_key=? AND actual_id<>?",
-                texts(key, except),
-            )
-            .map { it.single().nullableSqlText() }
-            .toSet()
+        completedGymSessions(database, key.substringBeforeLast(":v"), except)
 
     private fun key(p: Proposal): String = "${p.programmeId()}:v${p.programmeRevision()}"
 
@@ -302,4 +296,24 @@ class SqliteGymAssociations(private val database: SqlDatabase, private val now: 
         require(condition) {
             "The workout or association changed. Review the saved evidence again."
         }
+}
+
+/** Session IDs survive programme revisions; the recorded link retains its original revision. */
+fun completedGymSessions(
+    database: SqlDatabase,
+    programmeId: String,
+    exceptActual: String = "",
+): Set<String> {
+    val prefix = "$programmeId:v"
+    return database
+        .query(
+            "SELECT programme_key,session_id FROM strength_association_targets WHERE substr(programme_key,1,length(?))=? AND session_id IS NOT NULL AND actual_id<>?",
+            listOf(SqlValue.Text(prefix), SqlValue.Text(prefix), SqlValue.Text(exceptActual)),
+        )
+        .mapNotNull { row ->
+            row[1].sqlText().takeIf {
+                (row[0].sqlText().removePrefix(prefix).toIntOrNull() ?: 0) > 0
+            }
+        }
+        .toSet()
 }

@@ -262,15 +262,11 @@ public final class SqliteGymAssociationRepository extends SqliteStoreAccess
     }
 
     private static Set<String> occupied(SQLiteDatabase db, String key, String except) {
-        var out = new HashSet<String>();
-        try (var c =
-                db.rawQuery(
-                        "SELECT session_id FROM strength_association_targets WHERE programme_key=?"
-                                + " AND actual_id<>?",
-                        new String[] {key, except})) {
-            while (c.moveToNext()) out.add(c.getString(0));
-        }
-        return out;
+        int revisionMarker = key.lastIndexOf(":v");
+        return org.racedaydreams.storage.SqliteGymAssociationsKt.completedGymSessions(
+                new AndroidSqlConnection(() -> db),
+                revisionMarker < 0 ? key : key.substring(0, revisionMarker),
+                except);
     }
 
     private static void setCurrent(SQLiteDatabase db, GymWorkoutAssociation.Decision d) {

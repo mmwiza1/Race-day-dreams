@@ -12,8 +12,8 @@ import org.racedaydreams.domain.time.Instant
  * session and an identical session written by another app into Health Connect, or as a native
  * recording plus a manual entry. Records are treated as one session only when evidence shows it:
  * they come from different sources (provider and writing app) and their time ranges overlap for at
- * least half of the shorter record. Two records from the same source are never combined, and runs
- * that do not overlap in time, such as a morning and an evening run, stay separate.
+ * least half of the shorter record. The athlete's explicit comparison choices can keep an apparent
+ * overlap separate or combine a close same-source duplicate. Separate intervals stay separate.
  */
 object PhysicalRunSessions {
     /** Minimum shared time, as a share of the shorter record, for two sources to be one run. */
@@ -23,7 +23,11 @@ object PhysicalRunSessions {
      * One physical run. [counted] supplies the session's distance and times; [duplicates] are the
      * other sources' representations of the same run, retained but not counted again.
      */
-    data class Session(val counted: ActivityRecord, val duplicates: List<ActivityRecord>) {
+    data class Session(
+        val counted: ActivityRecord,
+        val duplicates: List<ActivityRecord>,
+        val reviewed: Boolean = false,
+    ) {
         fun records(): List<ActivityRecord> = listOf(counted) + duplicates
     }
 
@@ -44,7 +48,16 @@ object PhysicalRunSessions {
             val key = sourceKey(activity)
             val index =
                 open.indexOfFirst { (members, _) ->
-                    members.none { sourceKey(it) == key } && members.any { sameRun(it, activity) }
+                    members.all { prior ->
+                        val decision = decision(prior, activity)
+                        decision != DuplicateRunChoice.SEPARATE &&
+                            (sourceKey(prior) != key || decision != null)
+                    } &&
+                        members.any { prior ->
+                            sameRun(prior, activity) ||
+                                possibleDuplicate(prior, activity) &&
+                                    decision(prior, activity) != null
+                        }
                 }
             if (index < 0) {
                 val members = mutableListOf(activity)
@@ -58,8 +71,34 @@ object PhysicalRunSessions {
         }
         val result =
             groups.map { members ->
-                val counted = members.sortedWith(PREFERENCE).first()
-                Session(counted, Immutable.copyList(members.filter { it !== counted }))
+                val votes =
+                    members.associate { candidate ->
+                        candidate.id() to
+                            members.count {
+                                it !== candidate &&
+                                    decision(candidate, it) == DuplicateRunChoice.COUNT_THIS
+                            }
+                    }
+                val chosen =
+                    members
+                        .sortedWith(
+                            compareByDescending<ActivityRecord> { votes.getValue(it.id()) }
+                                .then(PREFERENCE)
+                        )
+                        .first()
+                val others = members.filter { it !== chosen }
+                val reviewed = votes.getValue(chosen.id()) > 0
+                val preservedWorkout =
+                    others.mapNotNull { it.plannedWorkoutId() }.distinct().singleOrNull()
+                val preservedShoe = others.mapNotNull { it.shoeId() }.distinct().singleOrNull()
+                val counted =
+                    if (reviewed)
+                        chosen.copy(
+                            plannedWorkoutId = chosen.plannedWorkoutId() ?: preservedWorkout,
+                            shoeId = chosen.shoeId() ?: preservedShoe,
+                        )
+                    else chosen
+                Session(counted, Immutable.copyList(others), reviewed)
             }
         return Immutable.copyList(
             result.sortedWith(compareBy({ it.counted.start() }, { it.counted.id() }))
@@ -70,6 +109,35 @@ object PhysicalRunSessions {
     @JvmStatic
     fun counted(activities: List<ActivityRecord>): List<ActivityRecord> =
         Immutable.copyList(sessions(activities).map { it.counted })
+
+    /**
+     * Applies explicit choices when showing source-level results or reviewing activity links. Use
+     * [counted] for training evidence and totals, including automatic grouping.
+     */
+    fun reviewedEvidence(activities: List<ActivityRecord>): List<ActivityRecord> {
+        if (activities.none { it.duplicateChoices().isNotEmpty() }) return activities
+        val reviewed = sessions(activities).filter { it.reviewed }
+        val ignored = reviewed.flatMap { it.duplicates }.map { it.id() }.toSet()
+        val representatives = reviewed.associate { it.counted.id() to it.counted }
+        return activities.filter { it.id() !in ignored }.map { representatives[it.id()] ?: it }
+    }
+
+    fun decision(first: ActivityRecord, second: ActivityRecord): DuplicateRunChoice? =
+        first.duplicateChoices()[second.id()] ?: second.duplicateChoices()[first.id()]?.reciprocal()
+
+    /** A conservative same-writer candidate is reviewable, and counts separately until reviewed. */
+    fun possibleDuplicate(a: ActivityRecord, b: ActivityRecord): Boolean {
+        if (a.id() == b.id()) return false
+        if (sameRun(a, b)) return true
+        if (sourceKey(a) != sourceKey(b)) return false
+        val start = maxOf(a.start(), b.start())
+        val end = minOf(a.end(), b.end())
+        if (!end.isAfter(start)) return false
+        val duration = maxOf(seconds(a.start(), a.end()), seconds(b.start(), b.end()))
+        return seconds(start, end) >= duration * 0.9 &&
+            kotlin.math.abs(seconds(a.start(), b.start())) <= 30 &&
+            kotlin.math.abs(seconds(a.end(), b.end())) <= 30
+    }
 
     /** Whether two records from different sources overlap enough to be the same run. */
     @JvmStatic

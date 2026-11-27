@@ -2,6 +2,7 @@ package org.racedaydreams.health.workouts
 
 import kotlinx.datetime.Instant
 import org.racedaydreams.domain.activity.ActivityRecord
+import org.racedaydreams.domain.activity.RunEnvironment
 import org.racedaydreams.domain.activity.SourceIdentity
 import org.racedaydreams.domain.coaching.Immutable
 import org.racedaydreams.domain.health.HealthImportPolicy
@@ -16,6 +17,7 @@ data class HealthKitRun(
     val start: Instant,
     val end: Instant,
     val distanceMetres: Double?,
+    val indoor: Boolean? = null,
 ) {
     init {
         require(recordId.isNotBlank() && origin.isNotBlank()) {
@@ -108,7 +110,11 @@ object HealthKitRunningImport {
                     ) {
                         "A retained workout conflicts with its source identity; history is unchanged."
                     }
-                    old.copy(distanceMetres = record.distanceMetres ?: old.distanceMetres())
+                    old.copy(
+                        distanceMetres = record.distanceMetres ?: old.distanceMetres(),
+                        environment =
+                            if (record.indoor == true) RunEnvironment.INDOOR else old.environment(),
+                    )
                 } else
                     ActivityRecord(
                         "$PROVIDER:${record.recordId}",
@@ -129,6 +135,7 @@ object HealthKitRunningImport {
                         emptyList(),
                         null,
                         null,
+                        environment = RunEnvironment.INDOOR.takeIf { record.indoor == true },
                     )
             }
         return HealthImportPolicy.Batch(

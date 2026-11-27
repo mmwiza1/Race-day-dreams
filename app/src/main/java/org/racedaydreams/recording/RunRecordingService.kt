@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
@@ -29,6 +30,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import org.racedaydreams.coach.CoachActivity
+import org.racedaydreams.data.RecordingDiagnostics
 import org.racedaydreams.data.RecordingStore
 import org.racedaydreams.data.Release08Store
 import org.racedaydreams.data.SupportStore
@@ -39,6 +41,7 @@ import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.AutoPausePolicy
 import org.racedaydreams.domain.recording.NotificationUpdateGate
 import org.racedaydreams.domain.recording.RunMetricsEngine
+import org.racedaydreams.domain.recording.RunTroubleshooting
 import org.racedaydreams.domain.support.DreamRoutes
 
 /** The service owns the Android recording lifetime; UI sends explicit actions only. */
@@ -56,6 +59,17 @@ class RunRecordingService : Service() {
     private val autoPause = AutoPausePolicy()
     private var manualPause = false
     private var recording: RecordingSessionCoordinator? = null
+
+    private data class DiagnosticCheckpoint(
+        val id: String,
+        val start: Instant,
+        val state: String,
+        val snapshot: RunTroubleshooting.Snapshot,
+    )
+
+    private val diagnosticCheckpoints = Channel<DiagnosticCheckpoint>(Channel.CONFLATED)
+    private var troubleshooting: RunTroubleshooting? = null
+    private var lastDiagnosticCheckpoint: Long? = null
     private val engine: RunMetricsEngine?
         get() = recording?.engine
 
@@ -100,6 +114,20 @@ class RunRecordingService : Service() {
     override fun onCreate() {
         super.onCreate()
         store = RecordingStore(this)
+        val diagnosticStore = RecordingDiagnostics(applicationContext)
+        val checkpoints = diagnosticCheckpoints
+        // A stalled diagnostic write never holds up the recording journal. Keep at most one
+        // waiting snapshot, since the newest one contains all counters and retained events.
+        CoroutineScope(Dispatchers.IO).launch {
+            for (checkpoint in checkpoints) runCatching {
+                diagnosticStore.write(
+                    checkpoint.id,
+                    checkpoint.start,
+                    checkpoint.state,
+                    checkpoint.snapshot,
+                )
+            }
+        }
         location = AndroidLocationSource(this)
         sensors =
             RecordingSensorCoordinator({ StepMotionSource(this) }, { BleHeartRateSource(this) })
@@ -160,6 +188,7 @@ class RunRecordingService : Service() {
                             manualPause = true
                             autoPause.reset()
                             engine?.pause(SystemClock.elapsedRealtime(), Instant.now())
+                            diagnosticEvent("manual_pause")
                             flush()
                             publish()
                         }
@@ -168,16 +197,20 @@ class RunRecordingService : Service() {
                             manualPause = false
                             autoPause.reset()
                             engine?.resume(SystemClock.elapsedRealtime(), Instant.now())
+                            diagnosticEvent("manual_resume")
                             flush()
                             publish()
                         }
                         FINISH -> requestFinish()
                         NOTIFICATION_DISMISSED -> {
+                            diagnosticEvent("notification_dismissed")
                             notificationGate.invalidate()
                             publish()
                         }
                     }
                 } catch (_: Exception) {
+                    diagnosticEvent("recording_command_failed")
+                    checkpointDiagnostics("operation_failed", force = true)
                     message.value =
                         "Recording operation could not complete. Saved staging is retained for recovery."
                     // A start that failed before any GPS point leaves nothing to recover; drop its
@@ -247,8 +280,12 @@ class RunRecordingService : Service() {
                 { executionContext },
                 { execution?.events() ?: emptyList() },
             )
+        troubleshooting = RunTroubleshooting(now)
+        diagnosticEvent("service_started")
+        diagnosticEvent("foreground_service_entered")
         publish()
         startLocation()
+        diagnosticEvent("location_requested")
         wake =
             getSystemService(PowerManager::class.java)
                 .newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "RaceDayDreams:recording")
@@ -276,12 +313,22 @@ class RunRecordingService : Service() {
     }
 
     private fun startLocation() {
-        location.start { fix ->
+        location.start(
+            onBatch = { count, oldest ->
+                troubleshooting?.callback(SystemClock.elapsedRealtime(), count, oldest)
+            }
+        ) { fix ->
             try {
                 val currentEngine = engine ?: return@start
                 val receivedMillis = SystemClock.elapsedRealtime()
                 val receivedWall = Instant.now()
                 if (!currentEngine.qualifyDelivery(fix, receivedMillis, receivedWall)) {
+                    troubleshooting?.fix(
+                        receivedMillis,
+                        fix.monotonicMillis(),
+                        false,
+                        currentEngine.deliveryRejection(),
+                    )
                     publish()
                     return@start
                 }
@@ -293,26 +340,38 @@ class RunRecordingService : Service() {
                     // Transitions apply from when they happened, not when they were confirmed:
                     // the start of the still window, or the first moving fix (audit A-B3).
                     when (autoPause.observe(fix)) {
-                        AutoPausePolicy.Decision.PAUSE ->
+                        AutoPausePolicy.Decision.PAUSE -> {
+                            diagnosticEvent("auto_pause")
                             currentEngine.pause(
                                 receivedMillis,
                                 receivedWall,
                                 true,
                                 autoPause.transitionMillis(),
                             )
-                        AutoPausePolicy.Decision.RESUME ->
+                        }
+                        AutoPausePolicy.Decision.RESUME -> {
+                            diagnosticEvent("auto_resume")
                             currentEngine.resume(
                                 receivedMillis,
                                 receivedWall,
                                 true,
                                 autoPause.transitionMillis(),
                             )
+                        }
                         else -> Unit
                     }
                 }
-                engine?.accept(fix)
+                val accepted = currentEngine.accept(fix)
+                troubleshooting?.fix(
+                    receivedMillis,
+                    fix.monotonicMillis(),
+                    accepted,
+                    if (!accepted && currentEngine.status(receivedMillis).paused()) "paused"
+                    else null,
+                )
                 publish()
             } catch (_: Exception) {
+                diagnosticEvent("location_processing_failed")
                 message.value = "GPS observation rejected."
             }
         }
@@ -336,6 +395,9 @@ class RunRecordingService : Service() {
                 location.stop()
                 ticker?.cancel()
                 withContext(io) { store.discardUnfinished(active.session.id) }
+                diagnosticEvent("empty_session_discarded")
+                diagnosticEvent("service_stopping")
+                checkpointDiagnostics("discarded", force = true)
                 message.value = SharedRecordingSessionCoordinator.DISCARDED_EMPTY_MESSAGE
                 recording = null
                 status.value = null
@@ -365,6 +427,9 @@ class RunRecordingService : Service() {
         engine?.event("FINISH", SystemClock.elapsedRealtime(), Instant.now())
         flush()
         val saved = recording?.finish() ?: error("No staged recording")
+        diagnosticEvent("session_saved")
+        diagnosticEvent("service_stopping")
+        checkpointDiagnostics("saved", force = true)
         savedActivity.value = saved
         message.value = "Run saved. Open Calendar to view it."
         recording = null
@@ -493,7 +558,10 @@ class RunRecordingService : Service() {
 
     private fun publish() {
         status.value = engine?.status(SystemClock.elapsedRealtime())
-        status.value?.let { updateExecution(it) }
+        status.value?.let {
+            troubleshooting?.status(it.gps(), SystemClock.elapsedRealtime())
+            updateExecution(it)
+        }
         // Live metrics are shown in the app, not the notification. Its content changes only with
         // pause and resume, so an unchanged notification is not rebuilt or posted again on every
         // tick and fix.
@@ -508,11 +576,40 @@ class RunRecordingService : Service() {
             getSystemService(NotificationManager::class.java)
                 .notify(104, notification(content.title))
             notificationGate.posted(content)
+            diagnosticEvent("notification_updated")
         }
     }
 
     private suspend fun flush() {
-        recording?.flush()
+        try {
+            recording?.flush()
+        } catch (failure: Exception) {
+            if (failure is kotlinx.coroutines.CancellationException) throw failure
+            troubleshooting?.flushFailed(SystemClock.elapsedRealtime())
+            checkpointDiagnostics("staging_failed", force = true)
+            throw failure
+        }
+        checkpointDiagnostics("recording")
+    }
+
+    private fun diagnosticEvent(kind: String) {
+        troubleshooting?.event(kind, SystemClock.elapsedRealtime())
+    }
+
+    private fun checkpointDiagnostics(state: String, force: Boolean = false) {
+        val active = recording ?: return
+        val now = SystemClock.elapsedRealtime()
+        if (!force && lastDiagnosticCheckpoint?.let { now - it < 15_000 } == true) return
+        val snapshot =
+            troubleshooting?.snapshot(
+                now,
+                active.engine.pointCount(),
+                active.acknowledgedPointCount,
+            ) ?: return
+        lastDiagnosticCheckpoint = now
+        diagnosticCheckpoints.trySend(
+            DiagnosticCheckpoint(active.session.id, active.session.start, state, snapshot)
+        )
     }
 
     private fun serviceIntent(type: String) =
@@ -546,6 +643,11 @@ class RunRecordingService : Service() {
     }
 
     override fun onDestroy() {
+        if (recording != null) {
+            diagnosticEvent("service_destroyed_with_unfinished_run")
+            checkpointDiagnostics("interrupted", force = true)
+        }
+        diagnosticCheckpoints.close()
         dreamRoute.value = null
         audio?.close()
         workoutState.value = null

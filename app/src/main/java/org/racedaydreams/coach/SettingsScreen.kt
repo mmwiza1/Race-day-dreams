@@ -116,6 +116,11 @@ fun SettingsScreen(
         lastOpened = model.settingsSection,
     ) {
         AppearanceSettings()
+        org.racedaydreams.coach.theme.DisciplineColourSettings(
+            state.disciplineColours,
+            state.busy,
+            model.settings::colour,
+        )
         AppUpdatesSettings(effects = false)
     }
 

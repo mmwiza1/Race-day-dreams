@@ -45,6 +45,7 @@ class AppleRecordingLocation(
     private val onFix: (RunMetricsEngine.Fix, Long, Instant) -> Unit,
     private val onUnavailable: (Long, Instant) -> Unit,
     private val onAuthorizationChanged: (Boolean) -> Unit,
+    private val onBatch: (Long, Int, Long?) -> Unit = { _, _, _ -> },
 ) {
     init {
         check(NSThread.isMainThread)
@@ -63,7 +64,14 @@ class AppleRecordingLocation(
                 val receivedMillis = AppleRecordingClock.monotonicMillis()
                 val receivedSeconds = NSDate().timeIntervalSince1970
                 val receivedWall = AppleRecordingClock.instant(receivedSeconds)
-                for (location in didUpdateLocations.filterIsInstance<CLLocation>()) {
+                val locations = didUpdateLocations.filterIsInstance<CLLocation>()
+                val oldest =
+                    locations
+                        .minOfOrNull { it.timestamp.timeIntervalSince1970 }
+                        ?.takeIf { it.isFinite() }
+                        ?.let { receivedMillis - ((receivedSeconds - it) * 1_000).roundToLong() }
+                onBatch(receivedMillis, locations.size, oldest)
+                for (location in locations) {
                     if (!listening) break
                     val timestamp = location.timestamp.timeIntervalSince1970
                     if (!timestamp.isFinite()) continue
@@ -110,6 +118,12 @@ class AppleRecordingLocation(
         check(NSThread.isMainThread)
         return authorized(manager)
     }
+
+    fun preciseLocationGranted(): Boolean? =
+        if (canStart())
+            manager.accuracyAuthorization ==
+                CLAccuracyAuthorization.CLAccuracyAuthorizationFullAccuracy
+        else null
 
     fun start() {
         check(canStart()) { "Location permission is required to record a run." }

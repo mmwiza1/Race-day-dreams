@@ -251,16 +251,26 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
             )
         val existing =
             database.query(
-                "SELECT id,provider,record_id FROM activities WHERE id=? OR (provider=? AND record_id=?)",
+                "SELECT id,provider,record_id,payload FROM activities WHERE id=? OR (provider=? AND record_id=?)",
                 identity,
             )
-        require(existing.all { it == identity }) {
+        require(existing.all { it.take(3) == identity }) {
             "Activity identity conflicts with existing data."
         }
+        // Provider refreshes replace observations, while comparisons remain the athlete's choice.
+        val savedChoices =
+            existing
+                .firstOrNull()
+                ?.get(3)
+                ?.sqlText()
+                ?.let(ActivityJson::decode)
+                ?.duplicateChoices()
+                .orEmpty()
+        val reviewed = activity.withDuplicateChoices(savedChoices + activity.duplicateChoices())
         val stored =
             if (activity.source().provider() in listOf("rdd", "gpx"))
-                activity.copy(samples = emptyList())
-            else activity
+                reviewed.copy(samples = emptyList())
+            else reviewed
         val values =
             listOf(
                 SqlValue.Text(activity.source().provider()),
@@ -323,6 +333,100 @@ class SqliteActivities(private val database: SqlDatabase, private val now: () ->
 
     private fun defaultShoe(): String? =
         database.query("SELECT id FROM shoes WHERE is_default=1").firstOrNull()?.first()?.sqlText()
+
+    override fun reviewDuplicateRun(
+        activityId: String,
+        otherId: String,
+        choice: DuplicateRunChoice?,
+    ) {
+        require(activityId != otherId)
+        database.transaction {
+            // Get projected links for validation, but update only the original payload's choice
+            // map.
+            val a =
+                snapshot(false, onlyId = activityId).singleOrNull() ?: error("Run is unavailable.")
+            val b =
+                snapshot(false, onlyId = otherId).singleOrNull()
+                    ?: error("Other run is unavailable.")
+            require(
+                PhysicalRunSessions.possibleDuplicate(a, b) ||
+                    choice == null && PhysicalRunSessions.decision(a, b) != null
+            ) {
+                "These runs can no longer be compared as possible duplicates."
+            }
+            if (choice == DuplicateRunChoice.COUNT_THIS || choice == DuplicateRunChoice.COUNT_OTHER)
+                require(
+                    a.plannedWorkoutId() == null ||
+                        b.plannedWorkoutId() == null ||
+                        a.plannedWorkoutId() == b.plannedWorkoutId()
+                ) {
+                    "These runs are linked to different scheduled workouts."
+                }
+            saveDuplicateChoice(activityId, otherId, choice)
+            saveDuplicateChoice(otherId, activityId, choice?.reciprocal())
+            if (choice != null) {
+                val group =
+                    PhysicalRunSessions.sessions(snapshot(false)).first { session ->
+                        session.records().any { it.id() == activityId }
+                    }
+                val groupContainsOther = group.records().any { it.id() == otherId }
+                if (choice == DuplicateRunChoice.SEPARATE) check(!groupContainsOther)
+                else {
+                    val keep = if (choice == DuplicateRunChoice.COUNT_THIS) activityId else otherId
+                    require(
+                        groupContainsOther &&
+                            group.counted.id() == keep &&
+                            group.records().mapNotNull { it.plannedWorkoutId() }.distinct().size <=
+                                1
+                    ) {
+                        "Another overlapping recording has a conflicting choice or workout link. Review the other recording first."
+                    }
+                }
+            }
+        }
+    }
+
+    private fun saveDuplicateChoice(id: String, peer: String, choice: DuplicateRunChoice?) {
+        val key = listOf(SqlValue.Text(id))
+        val actual =
+            ActivityJson.decode(
+                database
+                    .query("SELECT payload FROM activities WHERE id=?", key)
+                    .single()
+                    .single()
+                    .sqlText()
+            )
+        val updated =
+            if (choice == null) actual.duplicateChoices() - peer
+            else actual.duplicateChoices() + (peer to choice)
+        database.execute(
+            "UPDATE activities SET payload=? WHERE id=?",
+            listOf(SqlValue.Text(ActivityJson.encode(actual.withDuplicateChoices(updated)))) + key,
+        )
+    }
+
+    override fun deleteReviewedLocalDuplicate(activityId: String, otherId: String) {
+        database.transaction {
+            val local =
+                snapshot(false, onlyId = activityId).singleOrNull() ?: error("Run is unavailable.")
+            val kept =
+                snapshot(false, onlyId = otherId).singleOrNull()
+                    ?: error("The run to keep is unavailable.")
+            require(
+                isUserActivity(local) &&
+                    local.plannedWorkoutId() == null &&
+                    PhysicalRunSessions.possibleDuplicate(local, kept) &&
+                    PhysicalRunSessions.decision(local, kept) == DuplicateRunChoice.COUNT_OTHER &&
+                    PhysicalRunSessions.sessions(snapshot(false)).any { group ->
+                        group.counted.id() == otherId &&
+                            group.duplicates.any { it.id() == activityId }
+                    }
+            ) {
+                "Only a reviewed, unlinked local copy can be removed."
+            }
+            deleteActivity(activityId)
+        }
+    }
 
     override fun deleteActivity(id: String) =
         database.transaction {

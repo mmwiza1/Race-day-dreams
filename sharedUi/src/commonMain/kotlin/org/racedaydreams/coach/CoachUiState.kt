@@ -82,6 +82,12 @@ data class CoachUiState(
     val message: String? = null,
     val error: String? = null,
     val savedProfileRevision: Int = 0,
+    val disciplineColours:
+        Map<
+            org.racedaydreams.domain.settings.ColourDiscipline,
+            org.racedaydreams.domain.settings.AccentColour,
+        > =
+        emptyMap(),
 )
 
 // Preserve the original empty 84-day presentation window. This is not recorded health evidence.

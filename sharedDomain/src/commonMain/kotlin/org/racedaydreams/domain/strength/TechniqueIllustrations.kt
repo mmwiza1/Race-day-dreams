@@ -47,7 +47,7 @@ object TechniqueIllustrations {
     fun forExercise(id: String?): Artwork? {
         if (id == null) throw NullPointerException()
 
-        val expanded = ExpandedExerciseGuides.artwork(id)
+        val expanded = FocusedCatalogueAdditions.artwork(id) ?: ExpandedExerciseGuides.artwork(id)
         if (expanded != null) return expanded
         return when (id) {
             "dead-hang" ->

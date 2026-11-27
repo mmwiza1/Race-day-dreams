@@ -35,7 +35,7 @@ data class TechniqueGuide(
         fun forExercise(id: String?): TechniqueGuide? {
             if (id == null) throw NullPointerException()
 
-            val expanded = ExpandedExerciseGuides.guide(id)
+            val expanded = FocusedCatalogueAdditions.guide(id) ?: ExpandedExerciseGuides.guide(id)
             if (expanded != null) return expanded
             var pattern: String
             var setup: String

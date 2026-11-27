@@ -3,6 +3,9 @@ package org.racedaydreams.domain.strength
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import org.racedaydreams.domain.coaching.Immutable
+import org.racedaydreams.domain.strength.ExerciseMetadata.BodyArea
+import org.racedaydreams.domain.strength.ExerciseMetadata.Equipment
+import org.racedaydreams.domain.strength.ExerciseMetadata.Role
 import org.racedaydreams.domain.time.*
 
 /** Date-free one-off intentions. Selection reuses the planner; no programme or actual is saved. */
@@ -17,7 +20,30 @@ object GymNowWorkouts {
         fun title(): String = displayTitle
     }
 
-    data class Request(
+    enum class MuscleGroup(val label: String, private vararg val areas: BodyArea) {
+        CHEST("Chest", BodyArea.CHEST),
+        BACK("Back", BodyArea.UPPER_BACK, BodyArea.LATS),
+        SHOULDERS("Shoulders", BodyArea.SHOULDERS),
+        ARMS("Arms", BodyArea.BICEPS, BodyArea.TRICEPS, BodyArea.FOREARMS),
+        LEGS(
+            "Legs",
+            BodyArea.QUADS,
+            BodyArea.HAMSTRINGS,
+            BodyArea.GLUTES,
+            BodyArea.CALVES,
+            BodyArea.LOWER_LEG,
+            BodyArea.HIP_ADDUCTORS,
+            BodyArea.HIP_FLEXORS,
+        ),
+        CORE("Core", BodyArea.TRUNK);
+
+        fun matches(metadata: ExerciseMetadata): Boolean =
+            areas.any { it in metadata.primaryAreas() }
+    }
+
+    data class Request
+    @JvmOverloads
+    constructor(
         private val minutes: Int,
         private var equipment: Set<String>?,
         private val focus: Focus?,
@@ -25,6 +51,8 @@ object GymNowWorkouts {
         private val experience: GymProgramme.Experience?,
         private val priority: GymProgramme.Priority?,
         private val effort: GymProgramme.Effort?,
+        private var muscleGroups: Set<MuscleGroup> = emptySet(),
+        val variant: Int = 0,
     ) {
         init {
             require(!equipment.isNullOrEmpty()) {
@@ -40,6 +68,8 @@ object GymNowWorkouts {
                 "Choose a focus, goal, experience, priority and effort scale."
             }
             equipment = Immutable.copySet(equipment!!)
+            muscleGroups = Immutable.copySet(muscleGroups)
+            require(variant >= 0)
             GymProgramme.Settings(
                 goal,
                 priority,
@@ -51,6 +81,8 @@ object GymNowWorkouts {
                 effort,
             )
         }
+
+        fun muscleGroups(): Set<MuscleGroup> = muscleGroups
 
         fun minutes(): Int = minutes
 
@@ -102,6 +134,8 @@ object GymNowWorkouts {
         favourites: Set<String> = emptySet(),
         excluded: Set<String> = emptySet(),
     ): Suggestion {
+        if (request.muscleGroups().isNotEmpty())
+            return focusedWorkout(workoutId, createdAt, request, favourites, excluded)
         val frequency = if (request.focus() == Focus.FULL_BODY) 1 else 4
         val days =
             if (frequency == 1) Immutable.set(DayOfWeek.MONDAY)
@@ -124,7 +158,7 @@ object GymNowWorkouts {
                 request.effort(),
             )
         val reference =
-            GymProgrammeGenerator()
+            GymProgrammeGenerator(capabilities(request.equipment()))
                 .generate(
                     "one-off-reference",
                     1,
@@ -205,6 +239,166 @@ object GymNowWorkouts {
             explanation +=
                 " Suitable favourite exercises were preferred within the required movement roles."
         return Suggestion(definition, explanation, limitations)
+    }
+
+    private fun focusedWorkout(
+        workoutId: String?,
+        createdAt: Instant?,
+        request: Request,
+        favourites: Set<String>,
+        excluded: Set<String>,
+    ): Suggestion {
+        val selected = MuscleGroup.entries.filter { it in request.muscleGroups() }
+        val equipment = capabilities(request.equipment())
+        val candidates =
+            ExerciseCatalog.definitions().mapNotNull { definition ->
+                val id = definition.exercise().id()
+                val metadata = ExerciseMetadataCatalog.find(id) ?: return@mapNotNull null
+                metadata.takeIf {
+                    id !in excluded &&
+                        metadata.equipment().availableWith(equipment) &&
+                        metadata.suitability().appropriateFor(request.experience()) &&
+                        Role.CONDITIONING !in metadata.roles() &&
+                        Role.POWER !in metadata.roles()
+                }
+            }
+        val slotsByGroup =
+            selected.associateWith { group ->
+                candidates
+                    .filter(group::matches)
+                    .sortedWith(
+                        compareByDescending<ExerciseMetadata> { it.exerciseId() in favourites }
+                            .thenByDescending { Role.PRIMARY_STRENGTH in it.roles() }
+                            .thenBy { it.exerciseId() }
+                    )
+            }
+        val proposed = linkedSetOf<String>()
+        val gained = mutableSetOf<MuscleGroup>()
+        // Round-robin through the selected groups and fit the result once to the whole budget.
+        repeat(if (selected.size == 1) 4 else 3) { round ->
+            for (group in selected) {
+                val ordered = slotsByGroup.getValue(group)
+                if (round == 0 && group in gained || ordered.isEmpty()) continue
+                val window = minOf(ordered.size, 3)
+                val first = request.variant % window
+                val rotated =
+                    ordered.take(window).let { it.drop(first) + it.take(first) } +
+                        ordered.drop(window)
+                val chosen = rotated.firstOrNull { it.exerciseId() !in proposed } ?: continue
+                proposed.add(chosen.exerciseId())
+                gained.addAll(selected.filter { it.matches(chosen) })
+            }
+        }
+        val settings =
+            GymProgramme.Settings(
+                request.goal(),
+                request.priority(),
+                request.experience(),
+                Immutable.set(DayOfWeek.MONDAY),
+                1,
+                request.equipment(),
+                request.minutes(),
+                request.effort(),
+            )
+        val prescriptions =
+            GymProgrammeGenerator.prescriptionsForIds(
+                settings,
+                proposed.toList(),
+                favourites,
+                conservativeTimeBudget = true,
+            )
+        require(prescriptions.isNotEmpty()) {
+            "No exercise fits the selected muscle groups, equipment and experience."
+        }
+        val slots =
+            prescriptions.mapIndexed { index, prescription ->
+                val exercise = ExerciseCatalog.definition(prescription.exerciseId())!!.exercise()
+                GymWorkoutAdapter.prescribedSlot(
+                    "slot-$index",
+                    exercise,
+                    prescription,
+                    request.effort(),
+                )
+            }
+        val covered = slots.map { ExerciseMetadataCatalog.require(it.exercise().id()) }
+        val missing = selected.filter { group -> covered.none(group::matches) }
+        val limits =
+            if (missing.isEmpty()) emptyList()
+            else
+                listOf(
+                    "No main exercise for ${missing.joinToString { it.label }} fits this session. Try more time or equipment."
+                )
+        return Suggestion(
+            GymWorkoutDefinition(
+                workoutId,
+                1,
+                createdAt,
+                selected.joinToString(" + ") { it.label },
+                slots,
+            ),
+            "Focus on ${selected.joinToString { it.label.lowercase() }} in one ${request.minutes()}-minute workout. The targets use your goal and experience. Choose a manageable load.",
+            limits,
+        )
+    }
+
+    /** Uses the same explicit equipment capabilities as live substitution. */
+    fun capabilities(labels: Set<String>): Set<Equipment> {
+        if ("full gym" in labels) return Equipment.entries.toSet()
+        return buildSet {
+            for (label in labels) {
+                when (label) {
+                    "barbell" -> add(Equipment.BARBELL)
+                    "dumbbells" -> add(Equipment.DUMBBELLS)
+                    "kettlebells" -> add(Equipment.KETTLEBELLS)
+                    "squat rack" -> add(Equipment.SQUAT_RACK)
+                    "bench" -> add(Equipment.BENCH)
+                    "machines",
+                    "cables" -> {
+                        val group =
+                            if (label == "machines") ExerciseMetadata.EquipmentGroup.MACHINES
+                            else ExerciseMetadata.EquipmentGroup.CABLES
+                        Equipment.entries.filterTo(this) { it.group() == group }
+                    }
+                    "pull-up bar" -> add(Equipment.PULL_UP_BAR)
+                    "trap bar" -> add(Equipment.TRAP_BAR)
+                    "sled" -> add(Equipment.SLED)
+                    "resistance bands" -> add(Equipment.RESISTANCE_BAND)
+                    "band anchor" -> add(Equipment.SECURE_BAND_ANCHOR)
+                    "stable step" -> add(Equipment.STABLE_STEP)
+                }
+            }
+        }
+    }
+
+    fun alternatives(
+        request: Request,
+        definition: GymWorkoutDefinition,
+        slot: GymWorkoutDefinition.Slot,
+        excluded: Set<String>,
+        favourites: Set<String>,
+    ): List<ExerciseSubstitutionEngine.Suggestion> {
+        val used = definition.slots().map { it.exercise().id() }.toSet()
+        val original = ExerciseMetadataCatalog.find(slot.exercise().id()) ?: return emptyList()
+        val groups = request.muscleGroups().filter { it.matches(original) }
+        return ExerciseSubstitutionEngine.rank(
+                ExerciseSubstitutionEngine.Context(
+                    slot.exercise(),
+                    request.goal(),
+                    request.experience(),
+                    capabilities(request.equipment()),
+                    excluded + used,
+                    favourites,
+                    emptySet(),
+                    ExerciseSubstitutionEngine.Reason.ALTERNATIVES,
+                ),
+                20,
+            )
+            .filter {
+                val alternative = ExerciseMetadataCatalog.require(it.exercise().id())
+                it.exercise().measurement() == slot.exercise().measurement() &&
+                    groups.all { group -> group.matches(alternative) }
+            }
+            .take(6)
     }
 
     private fun goalLabel(goal: GymProgramme.Goal): String =

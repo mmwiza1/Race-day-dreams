@@ -70,6 +70,7 @@ data class ExerciseMetadata(
         SMITH_MACHINE,
         PULL_UP_BAR,
         SLED,
+        RESISTANCE_BANDS,
         OTHER,
     }
 
@@ -133,7 +134,13 @@ data class ExerciseMetadata(
         SANDBAG(EquipmentGroup.OTHER),
         SLED(EquipmentGroup.SLED),
         SLED_PULL_STRAP(EquipmentGroup.SLED),
-        WALL(EquipmentGroup.OTHER);
+        WALL(EquipmentGroup.OTHER),
+        RESISTANCE_BAND(EquipmentGroup.RESISTANCE_BANDS),
+        SECURE_BAND_ANCHOR(EquipmentGroup.RESISTANCE_BANDS),
+        PLYOMETRIC_BOX(EquipmentGroup.OTHER),
+        SLAM_BALL(EquipmentGroup.OTHER),
+        AIR_BIKE(EquipmentGroup.MACHINES),
+        SKI_ERG(EquipmentGroup.MACHINES);
 
         fun group(): EquipmentGroup = equipmentGroup
     }

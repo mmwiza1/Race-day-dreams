@@ -22,7 +22,13 @@ fun shortDate(date: LocalDate): String =
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DateInput(label: String, value: String, onChange: (String) -> Unit, optional: Boolean = false) {
+fun DateInput(
+    label: String,
+    value: String,
+    onChange: (String) -> Unit,
+    optional: Boolean = false,
+    latest: LocalDate? = null,
+) {
     var open by rememberSaveable { mutableStateOf(false) }
     val parsed = runCatching { LocalDate.parse(value) }.getOrNull()
     OutlinedButton(
@@ -42,7 +48,18 @@ fun DateInput(label: String, value: String, onChange: (String) -> Unit, optional
                     (parsed ?: LocalDate.now())
                         .atStartOfDay(ZoneOffset.UTC)
                         .toInstant()
-                        .toEpochMilli()
+                        .toEpochMilli(),
+                selectableDates =
+                    if (latest == null) DatePickerDefaults.AllDates
+                    else
+                        object : SelectableDates {
+                            override fun isSelectableDate(utcTimeMillis: Long): Boolean =
+                                Instant.ofEpochMilli(utcTimeMillis)
+                                    .atOffset(ZoneOffset.UTC)
+                                    .toLocalDate() <= latest
+
+                            override fun isSelectableYear(year: Int): Boolean = year <= latest.year
+                        },
             )
         DatePickerDialog(
             onDismissRequest = { open = false },

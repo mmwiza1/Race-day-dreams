@@ -14,6 +14,9 @@ import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.ExpandableSection
@@ -21,6 +24,7 @@ import org.racedaydreams.coach.SharedBackupSettings
 import org.racedaydreams.coach.SharedPrimaryFocusSettings
 import org.racedaydreams.coach.documents.AppleBackupDocuments
 import org.racedaydreams.domain.storage.DetailRetention
+import org.racedaydreams.recording.AppleRecordingDiagnostics
 import org.racedaydreams.storage.LocalBackupOperations.ReviewedBackup
 import org.racedaydreams.storage.SqliteRecordingInventory
 import platform.UIKit.UIViewController
@@ -39,6 +43,24 @@ fun AppleSettingsScreen(
     val scope = rememberCoroutineScope()
     var exporting by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
+    var diagnosticPreview by remember { mutableStateOf<String?>(null) }
+    var diagnosticRuns by remember { mutableStateOf<List<JsonObject>?>(null) }
+    fun previewReport(run: JsonObject? = null) {
+        val report =
+            session.backupDocuments.diagnosticPreview(
+                state.healthAvailability,
+                session.recording.permission.value,
+                session.recording.preciseLocationGranted(),
+                run,
+            )
+        diagnosticPreview =
+            Json { prettyPrint = true }
+                .parseToJsonElement(report)
+                .let {
+                    Json { prettyPrint = true }
+                        .encodeToString(kotlinx.serialization.json.JsonElement.serializer(), it)
+                }
+    }
 
     fun export(kind: AppleBackupDocuments.Kind) {
         if (exporting) return
@@ -148,6 +170,18 @@ fun AppleSettingsScreen(
             health()
         }
         ExpandableSection(
+            "Appearance",
+            "Discipline colours",
+            "settings-appearance",
+            lastOpened = lastOpened,
+        ) {
+            org.racedaydreams.coach.theme.DisciplineColourSettings(
+                state.disciplineColours,
+                state.busy,
+                session.services.settings::colour,
+            )
+        }
+        ExpandableSection(
             "Data and storage",
             "Backup, restore, GPX import, recording storage and diagnostics",
             "settings-data",
@@ -197,40 +231,65 @@ fun AppleSettingsScreen(
             }
             AppleRecordingStorage(session.backupDocuments)
             Text(
-                "Diagnostic reports contain app and iOS versions and access status. They exclude workouts, routes, health measurements and notes."
+                "Basic diagnostics show app, device and permission information. Recording reports add session and GPS delivery evidence without coordinates or health measurements."
             )
+            TextButton(onClick = { previewReport() }, enabled = !exporting) {
+                Text("Review basic diagnostics")
+            }
             TextButton(
-                enabled = !state.busy && !importing && !exporting,
                 onClick = {
-                    exporting = true
-                    message = null
-                    scope.launch {
-                        try {
-                            session.backupDocuments.exportDiagnostics(
-                                state.healthAvailability,
-                                session.recording.permission.value,
-                                presenter,
-                            ) { outcome ->
+                    diagnosticRuns =
+                        if (diagnosticRuns == null) AppleRecordingDiagnostics.recent() else null
+                },
+                enabled = !exporting,
+            ) {
+                Text(
+                    if (diagnosticRuns == null) "Find recording troubleshooting reports"
+                    else "Hide recording reports"
+                )
+            }
+            diagnosticRuns?.let { runs ->
+                if (runs.isEmpty()) Text("No troubleshooting reports are available yet.")
+                runs.forEach { run ->
+                    TextButton(onClick = { previewReport(run) }) {
+                        Text(
+                            "Review recording from ${run["startedAt"]?.jsonPrimitive?.content.orEmpty()}"
+                        )
+                    }
+                }
+            }
+            diagnosticPreview?.let { report ->
+                org.racedaydreams.coach.DiagnosticReview(
+                    report,
+                    dismiss = { diagnosticPreview = null },
+                ) {
+                    if (!state.busy && !importing && !exporting) {
+
+                        diagnosticPreview = null
+                        exporting = true
+                        scope.launch {
+                            try {
+                                session.backupDocuments.exportDiagnostics(report, presenter) {
+                                    outcome ->
+                                    exporting = false
+                                    message =
+                                        when (outcome) {
+                                            AppleBackupDocuments.Outcome.SAVED ->
+                                                "Diagnostic report saved."
+                                            AppleBackupDocuments.Outcome.CANCELLED ->
+                                                "Diagnostic export cancelled."
+                                        }
+                                }
+                            } catch (cancelled: CancellationException) {
                                 exporting = false
-                                message =
-                                    when (outcome) {
-                                        AppleBackupDocuments.Outcome.SAVED ->
-                                            "Diagnostic report saved."
-                                        AppleBackupDocuments.Outcome.CANCELLED ->
-                                            "Diagnostic export cancelled."
-                                    }
+                                throw cancelled
+                            } catch (_: Exception) {
+                                exporting = false
+                                message = "Could not export the diagnostic report."
                             }
-                        } catch (cancelled: CancellationException) {
-                            exporting = false
-                            throw cancelled
-                        } catch (failure: Exception) {
-                            exporting = false
-                            message = failure.message ?: "Could not export the diagnostic report."
                         }
                     }
-                },
-            ) {
-                Text("Export diagnostic report")
+                }
             }
         }
         ExpandableSection(

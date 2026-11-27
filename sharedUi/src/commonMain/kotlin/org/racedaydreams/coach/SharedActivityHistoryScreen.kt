@@ -112,8 +112,11 @@ fun SharedActivityHistoryScreen(
                         fontWeight = FontWeight.SemiBold,
                     )
                     val exercises = session.exercises().size
+                    val count = "$exercises ${if (exercises == 1) "exercise" else "exercises"}"
                     Text(
-                        "${session.duration().getSeconds() / 60} min · $exercises ${if (exercises == 1) "exercise" else "exercises"}",
+                        if (session.hasRecordedDuration())
+                            "${session.duration().getSeconds() / 60} min · $count"
+                        else count,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                     )

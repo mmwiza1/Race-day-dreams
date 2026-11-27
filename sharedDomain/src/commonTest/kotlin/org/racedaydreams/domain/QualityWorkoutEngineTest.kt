@@ -382,4 +382,76 @@ class QualityWorkoutEngineTest {
         val steady = quality(plan(RaceDistance.TEN_K, 16, baseline(30.0, 10.0)))
         assertTrue(steady.first().date().toEpochDay() < q.first().date().toEpochDay())
     }
+
+    /** The audit R-02 runner: 30 km a week, 12 km longest, eight consistent weeks, a 10K result. */
+    private fun twoDayPlan(requested: Int, distribution: String, strategy: TrainingStrategy) =
+        OriginalTrainingPlanGenerator()
+            .generate(
+                PlanRequest(
+                    UserProfile(
+                        RaceGoal(
+                            RaceDistance.HALF_MARATHON,
+                            "Race",
+                            raceDay(25),
+                            GoalMode.FINISH,
+                            null,
+                        ),
+                        TrainingPreferences(
+                            strategy,
+                            setOf(DayOfWeek.MONDAY, DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
+                            requested,
+                            DayOfWeek.MONDAY,
+                            emptySet(),
+                            ScheduleType.FIXED,
+                            UnitSystem.METRIC,
+                        ),
+                        false,
+                    ),
+                    baseline(30.0, 12.0, 45),
+                    start,
+                    emptySet(),
+                    emptyList(),
+                    null,
+                    distribution,
+                )
+            )
+
+    @Test
+    fun equivalentTwoDaySchedulesGetTheSameIntensity() {
+        // Audit R-02: three requested days reduced to two by Fewer longer runs used to get 19
+        // structured sessions, while choosing two days directly got none. Intensity now follows
+        // the frequency the plan actually schedules.
+        for (strategy in listOf(TrainingStrategy.BALANCED, TrainingStrategy.PERFORMANCE)) {
+            val reduced = twoDayPlan(3, "FEWER_LONGER", strategy)
+            val direct = twoDayPlan(2, "BALANCED", strategy)
+            fun runsPerWeek(p: TrainingPlan) =
+                p.workouts()
+                    .filter { it.category() != WorkoutCategory.RACE }
+                    .groupBy { (it.date().toEpochDay() - start.toEpochDay()) / 7 }
+                    .values
+                    .maxOf { it.size }
+            // Both really are two-day schedules.
+            assertEquals(2, runsPerWeek(reduced), strategy.name)
+            assertEquals(2, runsPerWeek(direct), strategy.name)
+            // The same intensity: no structured sessions, weekly strides on the easy run, and an
+            // explanation that says why two days don't unlock sessions.
+            assertEquals(quality(direct).size, quality(reduced).size, strategy.name)
+            assertTrue(quality(reduced).isEmpty(), strategy.name)
+            for (p in listOf(reduced, direct)) {
+                val strides = p.workouts().filter(::hasStrides)
+                assertTrue(strides.size >= 20, "${strategy.name} strides ${strides.size}")
+                assertTrue(strides.none { it.category() == WorkoutCategory.LONG_RUN })
+                assertTrue(strides.first().note()!!.contains("need at least three running days"))
+            }
+        }
+        // The same runner on three effective days still gets one structured session a week.
+        val three = twoDayPlan(3, "BALANCED", TrainingStrategy.PERFORMANCE)
+        assertTrue(quality(three).isNotEmpty())
+        assertTrue(
+            quality(three)
+                .groupBy { (it.date().toEpochDay() - start.toEpochDay()) / 7 }
+                .values
+                .all { it.size == 1 }
+        )
+    }
 }

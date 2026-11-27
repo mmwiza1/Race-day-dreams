@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import org.racedaydreams.domain.activity.ActivityRecord;
 import org.racedaydreams.domain.activity.ActivityRepository;
 import org.racedaydreams.domain.activity.BestEffortCalculator;
+import org.racedaydreams.domain.activity.DuplicateRunChoice;
 import org.racedaydreams.domain.activity.RecordedResult;
+import org.racedaydreams.storage.SqliteActivities;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -152,7 +154,9 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                                     a.samples(),
                                     a.laps(),
                                     cursor.getString(5),
-                                    a.shoeId());
+                                    a.shoeId(),
+                                    a.duplicateChoices(),
+                                    a.environment());
                 if (includeSamples) a = RecordingStore.withRetainedSamples(db, a);
                 out.add(a);
             }
@@ -180,7 +184,21 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                 a.samples(),
                 a.laps(),
                 a.plannedWorkoutId(),
-                shoe);
+                shoe,
+                a.duplicateChoices(),
+                a.environment());
+    }
+
+    @Override
+    public void reviewDuplicateRun(String activityId, String otherId, DuplicateRunChoice choice) {
+        new SqliteActivities(new AndroidSqlConnection(this::write), Instant::now)
+                .reviewDuplicateRun(activityId, otherId, choice);
+    }
+
+    @Override
+    public void deleteReviewedLocalDuplicate(String activityId, String otherId) {
+        new SqliteActivities(new AndroidSqlConnection(this::write), Instant::now)
+                .deleteReviewedLocalDuplicate(activityId, otherId);
     }
 
     public void upsertManualActivity(ActivityRecord activity) {
@@ -241,8 +259,8 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
         boolean existed = false;
         try (Cursor existing =
                 db.rawQuery(
-                        "SELECT id,provider,record_id FROM activities WHERE id=? OR (provider=? AND"
-                                + " record_id=?)",
+                        "SELECT id,provider,record_id,payload FROM activities WHERE id=? OR"
+                                + " (provider=? AND record_id=?)",
                         new String[] {a.id(), a.source().provider(), a.source().recordId()})) {
             while (existing.moveToNext()) {
                 existed = true;
@@ -251,6 +269,10 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                         || !existing.getString(2).equals(a.source().recordId()))
                     throw new IllegalArgumentException(
                             "Activity identity conflicts with existing data.");
+                var prior = FeatureJson.activity(FeatureJson.object(existing.getString(3)));
+                var choices = new java.util.LinkedHashMap<>(prior.duplicateChoices());
+                choices.putAll(a.duplicateChoices());
+                a = a.withDuplicateChoices(choices);
             }
         }
         ContentValues v = values("id", a.id());
@@ -412,7 +434,9 @@ public final class SqliteActivityRepository extends SqliteStoreAccess
                 java.util.Collections.emptyList(),
                 a.laps(),
                 a.plannedWorkoutId(),
-                a.shoeId());
+                a.shoeId(),
+                a.duplicateChoices(),
+                a.environment());
     }
 
     static boolean isUserActivity(ActivityRecord a) {

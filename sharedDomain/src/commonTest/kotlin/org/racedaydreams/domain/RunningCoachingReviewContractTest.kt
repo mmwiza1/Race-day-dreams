@@ -348,6 +348,35 @@ class RunningCoachingReviewContractTest {
     }
 
     @Test
+    fun mirroredEffortDoesNotTriggerARepeatedHardSessionAdjustment() {
+        val past = workout("past", today.minusDays(1))
+        val future = workout("future", today.plusDays(2), WorkoutCategory.TEMPO_THRESHOLD_RUN)
+        val plan = version(listOf(past, future))
+        val native = run("native", past, rpe = 7.0)
+        val watch =
+            native.copy(
+                id = "watch",
+                source = SourceIdentity("health-connect", "watch", "com.fitbit.FitbitMobile"),
+            )
+        fun review(choice: DuplicateRunChoice?) =
+            AdaptiveCoaching.review(
+                plan,
+                listOf(
+                    if (choice == null) native
+                    else native.withDuplicateChoices(mapOf(watch.id() to choice)),
+                    watch,
+                ),
+                emptyList(),
+                emptyList(),
+                today,
+                now,
+            )
+        assertNull(review(null))
+        assertNull(review(DuplicateRunChoice.COUNT_OTHER))
+        assertNotNull(review(DuplicateRunChoice.SEPARATE))
+    }
+
+    @Test
     fun lowCompletionAndHighEffortOffersKeepWithoutAutomaticActivation() {
         val past = workout("past", today.minusDays(1))
         val future = workout("future", today.plusDays(2), WorkoutCategory.TEMPO_THRESHOLD_RUN)
