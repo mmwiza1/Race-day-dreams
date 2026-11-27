@@ -1,6 +1,6 @@
 # UI Redesign v2 handoff
 
-**Phase 5A visual remediation is active. The owner review gate follows 5A.2 Strength.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
+**Phase 5A.1 and 5A.2 are implemented. The owner visual review gate is at 5A.2 Strength.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
 
 ## Eight-piece roadmap
 
@@ -139,10 +139,27 @@ All six approved images were reviewed alongside the published app and the curren
   differentiated action roles and tabular metric typography. The existing Strength
   header and previous-set action demonstrate the foundation in both themes. The
   debug build and two API 28 historical logging tests passed. The table and dense
-  logging workspace are still outstanding. [Before, target and after](design-review/5a-1-foundations/README.md).
+  logging workspace followed in 5A.2. [Before, target and after](design-review/5a-1-foundations/README.md).
+
+### 5A.2 Strength
+
+- Implementation `3489046d76a0b2c4f46a868d621f8da2aa17ff79` gives the exercise and
+  current set a dedicated workspace. Draft and actual sets use separate columns
+  for previous performance, load and the exercise-specific measurement. Historical
+  rows open for editing and compact menus support duplication and removal. Bodyweight,
+  timed and distance exercise rows follow their own measurements.
+- Gym Now and planned workouts keep the next-set editor, planned progress and
+  existing workout controls. Saved set and history reviews share the same data
+  presentation. Programmes, actual-set data and all storage contracts are unchanged.
+- [Strength review](design-review/5a-2-strength/README.md) includes published,
+  target and actual redesign frames, the compact interaction states and verification.
+  The published gallery has no matching dark historical-draft or completion frame.
+  The debug app and instrumentation build, lint, scoped formatting, 48 focused JVM
+  storage tests and 14 API 28 scenario and theme combinations passed. Native iOS,
+  physical devices and manual TalkBack/VoiceOver remain unverified.
 
 ## Next safe step
 
-Complete 5A.2 Strength, publish its actual-render evidence, then wait for owner
-approval before 5A.3, 5A.4 or Phase 6. Use the existing branch and the
-[continuation guide](../CONTINUE_CODEX.md).
+Wait for explicit owner visual approval of 5A.2 Strength. Then continue with 5A.3
+Running and Today on the existing branch. Bouldering remediation and Phase 6
+remain outside this checkpoint. Use the [continuation guide](../CONTINUE_CODEX.md).

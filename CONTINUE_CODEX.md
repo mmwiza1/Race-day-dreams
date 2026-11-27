@@ -23,9 +23,13 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 - 5A.1 foundation implementation is `76a2af5045ba965a644f1ac7d9bfedd8fe412b90`. Read the
   [review evidence](docs/design-review/5a-1-foundations/README.md) and
   [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md).
-- Continue with 5A.2 Strength. Push the checkpoint and stop for owner review. Running
-  and Today, Bouldering remediation and Phase 6 follow a later explicit approval.
-  This task authorises branch pushes. No PR, main merge, release or manual CI run.
+- 5A.2 Strength implementation is `3489046d76a0b2c4f46a868d621f8da2aa17ff79`. The
+  historical, live and planned loggers and recorded-workout review share a set
+  table and activity-focused layout. The [Strength comparisons](docs/design-review/5a-2-strength/README.md)
+  record actual Android captures, the published baseline, the approved references
+  and focused verification.
+- Stop for owner review at 5A.2. Running and Today, Bouldering remediation and
+  Phase 6 follow a later explicit approval. No PR, main merge, release or manual CI run.
 
 ## Previous task — Parts 1–4 integration and 0.17.0-test1 publication
 
