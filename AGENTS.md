@@ -43,9 +43,10 @@ When `CONTINUE_CODEX.md` is present, treat its generic continuation rules as per
 
 ## Mandatory UI design and visual acceptance
 
-Follow [docs/UI_DESIGN_STANDARDS.md](docs/UI_DESIGN_STANDARDS.md) for every new screen or
-meaningful UI change. Inspect the actual rendered screen and relevant interaction states using the
-checklist, and record the evidence and any remaining defects or verification limits.
+Follow [docs/UI_DESIGN_STANDARDS.md](docs/UI_DESIGN_STANDARDS.md) and consult the
+[owner-approved visual benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md) for every new
+screen or meaningful UI change. Answer all eight mandatory acceptance questions using actual
+renders of the relevant interaction states. Record the evidence, defects and verification limits.
 
 ## AI development sessions — permanent owner rules (24 November 2026)
 

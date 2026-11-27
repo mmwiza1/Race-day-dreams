@@ -15,7 +15,28 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — Parts 1–4 integration and 0.17.0-test1 publication
+## Active task — UI Redesign v2, Piece 1
+
+- The owner approved the [visual benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md)
+  on 27 November 2026. Use only `feature/rdd-ui-v2` for this redesign. The branch was
+  created from published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` in
+  `/workspace/scratch/rdd-ui-v2`. Use one development session.
+- Piece 1 is complete. The six original PNGs are in `docs/design-reference/`, and
+  [the standards](docs/UI_DESIGN_STANDARDS.md) now require eight acceptance questions
+  and actual-render review. This checkpoint changes documentation and references only.
+- [Redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md) records the roadmap, its sequencing
+  assumption, validation scope and next step. Stop for review. Start Piece 2 only after
+  explicit owner approval. This checkpoint authorises a branch push only.
+
+## Previous task — Parts 1–4 integration and 0.17.0-test1 publication
+
+- Completed. [PR #55](https://github.com/mmwiza1/Race-day-dreams/pull/55) was merged as
+  `ce2efe6806caca0eeb26530f1edc20e1b31944ac`. The
+  [merged-main workflow](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45959066129)
+  passed after a focused retry for an iOS UI-test build timeout. The signed APK, update
+  manifest and iOS developer downloads were verified on the
+  [rolling release](https://github.com/mmwiza1/Race-day-dreams/releases/tag/development).
+  The following entries are historical. Physical checks and independent audits remain separate.
 
 - On 26 November the owner authorised pushing the existing reliability branch, opening
   one integration PR against `main`, merging after all mandatory exact-head checks and
