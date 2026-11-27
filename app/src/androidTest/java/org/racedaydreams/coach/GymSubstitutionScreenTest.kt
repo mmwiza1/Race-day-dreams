@@ -96,9 +96,9 @@ class GymSubstitutionScreenTest {
             model.changeSubstitutionEquipment(setOf(Equipment.DUMBBELLS, Equipment.BENCH))
         }
         await { model.state.value.substitution?.equipment?.size == 2 }
-        chooseInSheet("Choose ${exerciseName("dumbbell-bench-press")}")
+        chooseInSheet("Choose ${exerciseName("dumbbell-floor-press")}")
         compose
-            .onNodeWithText("Use ${exerciseName("dumbbell-bench-press")} just for today?")
+            .onNodeWithText("Use ${exerciseName("dumbbell-floor-press")} just for today?")
             .assertIsDisplayed()
         assertEquals("bench-press", execution().slots().single().exercise().id())
         assertEquals("80", model.state.value.form.kilograms)
@@ -117,14 +117,14 @@ class GymSubstitutionScreenTest {
                             ?.slots()
                             ?.singleOrNull()
                             ?.exercise()
-                            ?.id() == "dumbbell-bench-press"
+                            ?.id() == "dumbbell-floor-press"
                     if (!state.busy && replaced && state.form.id == unsubmittedId)
                         prematureIdle.incrementAndGet()
                 }
             }
         try {
             compose.onNodeWithText("Use just for today").performClick()
-            await { execution().slots().single().exercise().id() == "dumbbell-bench-press" }
+            await { execution().slots().single().exercise().id() == "dumbbell-floor-press" }
             assertEquals("Idle must follow replacement form cleanup", 0, prematureIdle.get())
         } finally {
             observer.cancel()
@@ -153,7 +153,7 @@ class GymSubstitutionScreenTest {
         compose.onNodeWithText("Save actual set").performScrollTo().performClick()
         await { execution().actualSets().size == 2 }
         val entered = execution().actualSets().last()
-        assertEquals("dumbbell-bench-press", entered.exercise().id())
+        assertEquals("dumbbell-floor-press", entered.exercise().id())
         assertEquals(30.0, entered.actual().kilograms(), 0.0)
         assertEquals(firstActual, execution().actualSets().first())
         compose

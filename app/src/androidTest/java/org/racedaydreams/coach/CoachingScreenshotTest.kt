@@ -953,7 +953,9 @@ class CoachingScreenshotTest {
         compose.waitForIdle()
         await("Log strength workout")
         click("Log strength workout")
-        alignHeading("Last time")
+        compose.onNodeWithText("Use previous sets").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("Last time").assertIsDisplayed()
+        compose.onNodeWithText("Completed strength workout").assertIsDisplayed()
         capture("strength-log-previous")
         compose.onNodeWithText("Back Squat").performScrollTo().performClick()
         compose.onNodeWithTag("exercise-search").performTextReplacement("Plank")
@@ -964,6 +966,7 @@ class CoachingScreenshotTest {
             .performTextReplacement("1:30")
         compose.waitForIdle()
         capture("strength-log-timed")
+        compose.onNodeWithText("Clear set entry").performScrollTo().performClick()
         compose
             .onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction())
             .performScrollTo()

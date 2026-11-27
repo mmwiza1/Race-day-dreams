@@ -36,8 +36,16 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
   Local Android lint and the non-debuggable release APK check passed. The
   [unsigned iPhone compile](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45891449399/job/140155027188)
   exposed a Core Location enum reference that Android cannot compile-check; the candidate now
-  uses the value scoped under its Kotlin/Native enum type. Await the full gates on the new head.
-  Draft gates cover initial integration; mark ready for the full gates. When
+  uses the value scoped under its Kotlin/Native enum type.
+- Ready candidate `013585be` passed [Apple shared, simulator UI and unsigned device](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45892236357).
+  The [Android matrix](https://github.com/mmwiza1/Race-day-dreams/actions/runs/45892236302)
+  reported three common fixture failures in workout capture, artwork dimensions and exercise
+  ranking. API 35 also timed out saving the bouldering fixture and API 28 timed out saving
+  manual weight. The test corrections cover the updated form and reviewed assets, preserve the
+  substitution lifecycle assertions, and close the keyboard before save taps. The first local
+  focused run passed artwork and substitution before an Android system crash. Run the full
+  Android and Apple checks on the corrected head.
+- PR #55 is ready. When
   API 35 publishes canonical screenshots, fetch the resulting commit and validate the
   actual source fingerprint, screenshot evidence and checks on the final PR head.
 - Squash merge only when the full Android and Apple gates pass on the final head.
