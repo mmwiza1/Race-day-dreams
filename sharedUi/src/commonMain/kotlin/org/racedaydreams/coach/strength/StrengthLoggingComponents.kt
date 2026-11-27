@@ -15,17 +15,17 @@ import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.ActivityHeading
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.Glyph
-import org.racedaydreams.coach.Panel
 
 /** The selected exercise, its most recent performance and any actions for that exercise. */
 @Composable
 fun StrengthExerciseHeader(
     exercise: String,
     previous: String?,
+    progress: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-    Panel {
-        ActivityHeading(exercise, Glyph.DUMBBELL)
+    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+        ActivityHeading(exercise, Glyph.DUMBBELL, context = progress)
         if (previous != null) {
             Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
                 Text("Last time", style = MaterialTheme.typography.labelMedium)
@@ -44,7 +44,7 @@ fun StrengthSetFields(
     amount: @Composable (Modifier) -> Unit,
 ) {
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        if (load != null && maxWidth >= 280.dp && LocalDensity.current.fontScale < 1.5f) {
+        if (load != null && maxWidth >= 240.dp && LocalDensity.current.fontScale < 1.5f) {
             Row(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
                 load(Modifier.weight(1f))
                 amount(Modifier.weight(1f))
@@ -54,39 +54,6 @@ fun StrengthSetFields(
                 load?.invoke(Modifier.fillMaxWidth())
                 amount(Modifier.fillMaxWidth())
             }
-        }
-    }
-}
-
-/** Compact evidence row. The caller labels the group according to its persistence state. */
-@Composable
-fun StrengthSetRow(
-    number: Int,
-    value: String,
-    detail: String? = null,
-    editing: Boolean = false,
-    actions: (@Composable () -> Unit)? = null,
-) {
-    val scheme = MaterialTheme.colorScheme
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        color = if (editing) scheme.primaryContainer else scheme.surfaceContainerHigh,
-        contentColor = if (editing) scheme.onPrimaryContainer else scheme.onSurface,
-    ) {
-        Row(
-            Modifier.heightIn(min = CoachSpace.Touch)
-                .padding(
-                    start = CoachSpace.Card,
-                    end = if (actions == null) CoachSpace.Card else 0.dp,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(Modifier.weight(1f).padding(vertical = CoachSpace.Related)) {
-                Text("$number: $value", style = MaterialTheme.typography.bodyLarge)
-                detail?.let { Text(it, style = MaterialTheme.typography.labelMedium) }
-            }
-            actions?.invoke()
         }
     }
 }

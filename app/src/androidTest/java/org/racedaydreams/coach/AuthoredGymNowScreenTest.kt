@@ -1,10 +1,13 @@
 package org.racedaydreams.coach
 
 import android.app.Application
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -19,7 +22,10 @@ import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.racedaydreams.coach.strength.*
+import org.racedaydreams.coach.theme.DisciplineAppearance
+import org.racedaydreams.coach.theme.RaceDayTheme
 import org.racedaydreams.data.*
+import org.racedaydreams.domain.settings.ColourDiscipline
 import org.racedaydreams.domain.strength.*
 
 /** Real typed programmes, native execution and SQLite; prescriptions never populate actuals. */
@@ -80,6 +86,8 @@ class AuthoredGymNowScreenTest {
             model.saveSet()
         }
         await { execution()!!.actualSets().size == 1 }
+        compose.onNodeWithText("Saved sets").performScrollTo().assertIsDisplayed()
+        capturePart2(app, "gym-planned-set")
         compose.runOnIdle { model.finish(true) }
         await { execution()!!.status() == GymExecution.Status.FINISHED }
         val actual = io { CoachingStore(app).strength().single() }
@@ -354,13 +362,28 @@ class AuthoredGymNowScreenTest {
             CompositionLocalProvider(
                 LocalDensity provides Density(density.density, if (largeDark) 2f else 1f)
             ) {
-                MaterialTheme(
-                    colorScheme = if (largeDark) darkColorScheme() else MaterialTheme.colorScheme
-                ) {
-                    shown.value?.let { feature ->
-                        if (page.value == "hub")
-                            GymNowScreen(feature, { page.value = "workout" }, {}, {}, plannedDate)
-                        else GymWorkoutScreen(feature) { page.value = "hub" }
+                val dark =
+                    largeDark ||
+                        androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                            .getString("part2Evidence") == "dark"
+                RaceDayTheme(darkTheme = dark, dynamicColour = false) {
+                    DisciplineAppearance(emptyMap(), ColourDiscipline.STRENGTH) {
+                        Surface(
+                            Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background,
+                        ) {
+                            shown.value?.let { feature ->
+                                if (page.value == "hub")
+                                    GymNowScreen(
+                                        feature,
+                                        { page.value = "workout" },
+                                        {},
+                                        {},
+                                        plannedDate,
+                                    )
+                                else GymWorkoutScreen(feature) { page.value = "hub" }
+                            }
+                        }
                     }
                 }
             }

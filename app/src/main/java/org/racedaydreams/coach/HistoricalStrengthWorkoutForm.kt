@@ -3,7 +3,6 @@ package org.racedaydreams.coach
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -12,6 +11,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,9 +19,11 @@ import androidx.compose.ui.unit.dp
 import java.time.*
 import java.util.UUID
 import org.racedaydreams.coach.strength.StrengthDetailsToggle
+import org.racedaydreams.coach.strength.StrengthEntryField
 import org.racedaydreams.coach.strength.StrengthExerciseHeader
+import org.racedaydreams.coach.strength.StrengthRowState
 import org.racedaydreams.coach.strength.StrengthSetFields
-import org.racedaydreams.coach.strength.StrengthSetRow
+import org.racedaydreams.coach.strength.StrengthSetTable
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.body.MassUnit
 import org.racedaydreams.domain.strength.StrengthMeasurements
@@ -61,6 +63,7 @@ internal fun StrengthForm(
     var notes by rememberSaveable { mutableStateOf(editing?.notes().orEmpty()) }
     var sessionDetails by rememberSaveable { mutableStateOf(false) }
     var setDetails by rememberSaveable { mutableStateOf(false) }
+    var setError by rememberSaveable { mutableStateOf<String?>(null) }
     var copied by rememberSaveable { mutableStateOf(false) }
     var confirmReuse by rememberSaveable { mutableStateOf(false) }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
@@ -131,6 +134,7 @@ internal fun StrengthForm(
     LaunchedEffect(s.error) { if (s.error != null) saving = false }
 
     fun clearEntry() {
+        setError = null
         load = ""
         measure = ""
         effort = ""
@@ -141,6 +145,7 @@ internal fun StrengthForm(
     }
 
     fun readIntoEntry(set: ActualSet, index: Int? = null) {
+        setError = null
         load = if (profile.usesLoad()) unit.fromKilograms(set.kilograms()).toString() else ""
         measure =
             set.durationSeconds()?.toString()
@@ -185,6 +190,7 @@ internal fun StrengthForm(
     }
 
     fun reuse() {
+        setError = null
         clearEntry()
         sets =
             ArrayList(
@@ -197,11 +203,10 @@ internal fun StrengthForm(
     }
 
     Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Card)) {
-        ScreenHeader(
-            Discipline.STRENGTH,
-            Glyph.DUMBBELL,
-            if (editing != null) "Workout history" else "Past workout",
+        Text(
             if (editing != null) "Edit strength workout" else "Log strength workout",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.semantics { heading() },
         )
         DateInput("Session date", date, { date = it }, latest = today)
         StrengthExerciseHeader(
@@ -213,20 +218,27 @@ internal fun StrengthForm(
                     if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC,
                 )
             },
+            progress =
+                if (sets.isEmpty()) null
+                else "${sets.size} draft ${if (sets.size == 1) "set" else "sets"}",
         ) {
-            ExercisePicker(
-                s,
-                selected,
-                { switchExercise(it) },
-                "Change exercise",
-                showExclusionNotice = true,
-            )
-            if (previous != null) {
-                ActivityAction(
-                    "Use previous sets",
-                    onClick = { if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true },
-                    role = ActivityActionRole.SECONDARY,
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                ExercisePicker(
+                    s,
+                    selected,
+                    { switchExercise(it) },
+                    "Change exercise",
+                    showExclusionNotice = true,
+                    modifier = Modifier,
                 )
+                if (previous != null)
+                    ActivityAction(
+                        "Use previous sets",
+                        onClick = {
+                            if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true
+                        },
+                        role = ActivityActionRole.SECONDARY,
+                    )
             }
         }
         if (confirmReuse)
@@ -255,75 +267,57 @@ internal fun StrengthForm(
                     "Copied as a draft. Keep only the sets you actually did.",
                     style = MaterialTheme.typography.bodySmall,
                 )
-            Column(
-                Modifier.testTag("draft-strength-sets"),
-                verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
-            ) {
-                sets.forEachIndexed { index, line ->
-                    val set = decodeSet(line)
-                    val number = index + 1
-                    val editable = editingSet == null && !dirty
-                    var showActions by remember(set.id()) { mutableStateOf(false) }
-                    StrengthSetRow(
-                        number,
-                        StrengthMeasurements.display(
-                            set,
-                            unit,
-                            if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC,
-                        ),
-                        detail =
-                            when {
-                                editingSet == index -> "Editing this set"
-                                set.warmUp() -> "Warm-up"
-                                else -> null
+            val decoded = sets.map(::decodeSet)
+            val editable = editingSet == null && !dirty
+            StrengthSetTable(
+                exercise = exercise,
+                mass = unit,
+                sets = decoded,
+                state = StrengthRowState.DRAFT,
+                modifier = Modifier.testTag("draft-strength-sets"),
+                previous = previous?.sets().orEmpty(),
+                yards = imperial,
+                editing = editingSet,
+                onEdit = if (editable) ({ index -> readIntoEntry(decoded[index], index) }) else null,
+            ) { index ->
+                val number = index + 1
+                var showActions by remember(decoded[index].id()) { mutableStateOf(false) }
+                Box {
+                    IconButton(
+                        onClick = { showActions = true },
+                        enabled = editable,
+                        modifier =
+                            Modifier.size(CoachSpace.Touch).semantics {
+                                contentDescription = "Set $number options"
                             },
-                        editing = editingSet == index,
                     ) {
-                        TextButton(
-                            onClick = { readIntoEntry(set, index) },
-                            modifier =
-                                Modifier.heightIn(min = CoachSpace.Touch).semantics {
-                                    contentDescription = "Edit set $number"
-                                },
-                            enabled = editable,
-                        ) {
-                            Text("Edit")
-                        }
-                        Box {
-                            IconButton(
-                                onClick = { showActions = true },
-                                enabled = editable,
-                                modifier =
-                                    Modifier.size(CoachSpace.Touch).semantics {
-                                        contentDescription = "Set $number options"
-                                    },
-                            ) {
-                                Text(
-                                    "⋮",
-                                    Modifier.clearAndSetSemantics {},
-                                    style = MaterialTheme.typography.titleLarge,
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showActions,
-                                onDismissRequest = { showActions = false },
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Remove set $number") },
-                                    onClick = {
-                                        showActions = false
-                                        sets = ArrayList(sets.filterIndexed { i, _ -> i != index })
-                                    },
-                                )
-                            }
-                        }
+                        Text(
+                            "⋮",
+                            Modifier.clearAndSetSemantics {},
+                            style = MaterialTheme.typography.titleLarge,
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showActions,
+                        onDismissRequest = { showActions = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Remove set $number") },
+                            onClick = {
+                                showActions = false
+                                sets = ArrayList(sets.filterIndexed { i, _ -> i != index })
+                            },
+                        )
                     }
                 }
             }
         }
         val operation = editingSet
-        Panel {
-            SectionTitle(if (operation == null) "Current set" else "Editing set ${operation + 1}")
+        Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+            SectionTitle(
+                if (operation == null) "Current set" else "Editing set ${operation + 1}",
+                if (operation == null) "Set ${sets.size + 1}" else null,
+            )
             val weightLabel =
                 if (selected == "farmers-carry" || selected == "suitcase-carry") "Load per hand"
                 else "Weight"
@@ -407,7 +401,19 @@ internal fun StrengthForm(
                     },
                 )
             }
-            FilledTonalButton(
+            setError?.let { message ->
+                Surface(
+                    color = MaterialTheme.colorScheme.errorContainer,
+                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    shape = MaterialTheme.shapes.small,
+                    modifier =
+                        Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
+                ) {
+                    Text(message, Modifier.padding(CoachSpace.Card))
+                }
+            }
+            ActivityAction(
+                if (operation == null) "Add set" else "Update set",
                 onClick = {
                     try {
                         val usingRir = rir && profile.usesReps()
@@ -434,14 +440,16 @@ internal fun StrengthForm(
                         dirty = false
                         editingSet = null
                         error = null
+                        setError = null
                     } catch (e: IllegalArgumentException) {
-                        error = e.message ?: "Check your weight, amount and effort."
+                        setError =
+                            if (e is NumberFormatException)
+                                "Enter a number for each set measurement."
+                            else e.message ?: "Check the set measurements and effort."
                     }
                 },
-                modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
-            ) {
-                Text(if (operation == null) "Add set" else "Update set")
-            }
+                modifier = Modifier.fillMaxWidth(),
+            )
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (operation != null || dirty) {
                     TextButton(
@@ -472,9 +480,6 @@ internal fun StrengthForm(
             }
         }
 
-        if (sets.isNotEmpty() && editingSet == null && !dirty)
-            ExercisePicker(s, selected, { switchExercise(it) }, "Choose another exercise")
-
         val otherBlocks = blocks.withIndex().filter { it.index != activeIndex }
         if (otherBlocks.isNotEmpty()) {
             Text("Other exercises in this workout", style = MaterialTheme.typography.titleSmall)
@@ -499,6 +504,15 @@ internal fun StrengthForm(
         }
         if (sessionDetails)
             Panel {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip)) {
+                    MassUnit.entries.forEach { choice ->
+                        CoachFilterChip(
+                            selected = s.massUnit == choice,
+                            onClick = { model.settings.setting("mass.unit", choice.name) },
+                            label = { Text(choice.name.lowercase()) },
+                        )
+                    }
+                }
                 CoachInput("Duration (minutes)", minutes, { minutes = it }, true)
                 CoachInput("Session RPE 0–10 (optional)", rpe, { rpe = it }, true)
                 CoachInput("Notes (optional)", notes, { notes = it })
@@ -582,15 +596,7 @@ private fun SetInput(
     modifier: Modifier,
     keyboard: KeyboardType = KeyboardType.Decimal,
 ) {
-    OutlinedTextField(
-        value = text,
-        onValueChange = change,
-        modifier = modifier,
-        label = { Text(label) },
-        shape = MaterialTheme.shapes.medium,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-    )
+    StrengthEntryField(label, text, change, keyboard, modifier)
 }
 
 internal fun historicalStrengthTiming(

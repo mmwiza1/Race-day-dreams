@@ -176,7 +176,11 @@ class CoachingInteractionTest {
             ZoneId.systemDefault().rules.getOffset(Instant.now()), Duration.ofMinutes(30),
             null, "", listOf(org.racedaydreams.domain.strength.StrengthSession.ExerciseSets(
                 requireNotNull(org.racedaydreams.domain.strength.ExerciseCatalog.definition("back-squat")).exercise(),
-                listOf(org.racedaydreams.domain.strength.StrengthSession.SetEntry("original-set", 5, 80.0, null, false)),
+                listOf(
+                    org.racedaydreams.domain.strength.StrengthSession.SetEntry("original-set", 5, 80.0, null, false),
+                    org.racedaydreams.domain.strength.StrengthSession.SetEntry("original-set-2", 5, 80.0, null, false),
+                    org.racedaydreams.domain.strength.StrengthSession.SetEntry("original-set-3", 4, 82.5, null, false),
+                ),
             )),
         )
         CoachingStore(context).saveStrength(original)
@@ -195,13 +199,17 @@ class CoachingInteractionTest {
         compose.onNodeWithText("Session details (optional)").assertExists()
         compose.onNodeWithText("Duration (minutes)").assertDoesNotExist()
         capturePart2(context, "historical-entry")
+        compose.onNodeWithText("Add set").performScrollTo().performClick()
+        compose.onNodeWithText("Enter a number for each set measurement.").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "strength-entry-error")
         compose.onNodeWithText("Use last working set values").performScrollTo().performClick()
-        compose.onNodeWithText("1: 80.0 kg × 5 reps").assertDoesNotExist()
+        compose.onNodeWithTag("strength-set-draft-1").assertDoesNotExist()
         compose.onNodeWithText("Clear set entry").performScrollTo().performClick()
         reuse.performScrollTo().performClick()
         compose.onNodeWithText("Draft sets").assertExists()
         compose.onNodeWithText("Copied as a draft. Keep only the sets you actually did.").assertExists()
-        compose.onNodeWithText("1: 80.0 kg × 5 reps").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithTag("strength-set-draft-1").performScrollTo().assertIsDisplayed()
+            .assert(hasContentDescription("Load (kg) 80") and hasContentDescription("Reps 5"))
         capturePart2(context, "historical-draft")
         compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick()
         val setsBeforeSave = CoachingStore(context).strength().single()
@@ -218,9 +226,10 @@ class CoachingInteractionTest {
         Assert.assertFalse(logged.hasRecordedDuration())
         Assert.assertNull(logged.rpe())
         val newSets = logged.exercises().single().sets()
-        Assert.assertEquals(listOf(80.0, 80.0), newSets.map { it.kilograms() })
-        Assert.assertEquals(2, newSets.map { it.id() }.toSet().size)
-        Assert.assertTrue(newSets.none { it.id() == "original-set" })
+        Assert.assertEquals(listOf(80.0, 80.0, 82.5, 82.5), newSets.map { it.kilograms() })
+        Assert.assertEquals(listOf(5, 5, 4, 4), newSets.map { it.reps() })
+        Assert.assertEquals(4, newSets.map { it.id() }.toSet().size)
+        Assert.assertTrue(newSets.none { it.id() in original.exercises().single().sets().map { old -> old.id() } })
         Assert.assertEquals(original, CoachingStore(context).strength().last())
 
     }

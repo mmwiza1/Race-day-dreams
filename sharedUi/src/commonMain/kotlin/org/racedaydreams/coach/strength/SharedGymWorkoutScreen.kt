@@ -11,14 +11,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,18 +33,23 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.ActivityAction
+import org.racedaydreams.coach.ActivityActionRole
+import org.racedaydreams.coach.ActivityHeading
 import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.CoachSpace
-import org.racedaydreams.coach.Panel
+import org.racedaydreams.coach.Glyph
 import org.racedaydreams.coach.SectionTitle
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
 import org.racedaydreams.coach.WhyDetails
+import org.racedaydreams.coach.activityNumberStyle
 import org.racedaydreams.domain.strength.ExerciseSearch
 import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
 import org.racedaydreams.domain.strength.GymExecution
+import org.racedaydreams.domain.strength.GymRestTimer
 import org.racedaydreams.domain.strength.StrengthExercise
 import org.racedaydreams.domain.strength.StrengthSession
 
@@ -96,13 +99,13 @@ fun SharedGymWorkoutScreen(
         TextButton(onClick = onBack, modifier = Modifier.heightIn(min = 48.dp)) {
             Text(if (terminal) "Back to Strength" else "Back to Gym Now")
         }
-        CoachHeading(
+        val workoutTitle =
             when (execution?.status()) {
                 GymExecution.Status.FINISHED -> "Workout saved"
                 GymExecution.Status.DISCARDED -> "Workout discarded"
                 else -> execution?.prescription()?.title() ?: "Gym workout"
             }
-        )
+        if (terminal) ActivityHeading(workoutTitle, Glyph.DUMBBELL) else CoachHeading(workoutTitle)
         if (state.loading || state.busy) CircularProgressIndicator()
         state.error?.let { SemanticCard(Tile.Warning) { Text(it) } }
         state.notice?.let { SemanticCard(Tile.Insight) { Text(it) } }
@@ -118,13 +121,10 @@ fun SharedGymWorkoutScreen(
                 }
             }
         } else if (terminal) {
-            SemanticCard(
-                if (execution.status() == GymExecution.Status.FINISHED) Tile.Progress
-                else Tile.Neutral
-            ) {
+            Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
                 Text(
                     execution.prescription()?.title() ?: "Your workout",
-                    style = MaterialTheme.typography.headlineSmall,
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 if (execution.status() == GymExecution.Status.FINISHED) {
                     val working = execution.actualSets().count { !it.actual().warmUp() }
@@ -166,32 +166,36 @@ fun SharedGymWorkoutScreen(
                     .actualSets()
                     .groupBy { it.exercise() }
                     .forEach { (exercise, rows) ->
-                        SemanticCard(Tile.Strength) {
-                            Text(exercise.name(), style = MaterialTheme.typography.titleMedium)
-                            rows.forEachIndexed { index, row ->
-                                StrengthSetRow(index + 1, formatActual(row.actual(), exercise))
-                            }
-                        }
+                        Text(exercise.name(), style = MaterialTheme.typography.titleMedium)
+                        StrengthSetTable(
+                            exercise,
+                            state.massUnit,
+                            rows.map { it.actual() },
+                            StrengthRowState.SAVED,
+                        )
                     }
             }
             Button(onClick = onBack, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp)) {
                 Text("Done")
             }
         } else {
-            SemanticCard(Tile.Strength) {
-                Text(
-                    gymStatusLabel(execution.status()),
-                    style = MaterialTheme.typography.titleMedium,
-                )
-                Text(
-                    formatElapsed(execution.activeMillis()),
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier =
-                        Modifier.semantics {
-                            contentDescription =
-                                "Active workout time ${formatElapsed(execution.activeMillis())}"
-                        },
-                )
+            Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                    Text(
+                        gymStatusLabel(execution.status()),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    val activeTime = formatElapsed(execution.activeMillis())
+                    Text(
+                        activeTime,
+                        style = activityNumberStyle(),
+                        modifier =
+                            Modifier.semantics {
+                                contentDescription = "Active workout time $activeTime"
+                            },
+                    )
+                }
                 Text("Recorded elapsed ${formatElapsed(execution.recordedElapsedMillis())}")
                 if (execution.status() == GymExecution.Status.RECOVERY_REQUIRED) {
                     Text(
@@ -222,61 +226,44 @@ fun SharedGymWorkoutScreen(
                             }
                             .firstOrNull()
                     }
+                val working = currentSets.count { !it.actual().warmUp() }
+                val target = slot.target()
+                val progress =
+                    if (target == null)
+                        "$working working ${if (working == 1) "set" else "sets"} saved"
+                    else "$working of ${target.sets()} target working sets saved"
                 StrengthExerciseHeader(
                     slot.exercise().name(),
                     previous?.lastOrNull()?.let { formatActual(it, slot.exercise()) },
+                    progress =
+                        "Exercise ${execution.slots().indexOf(slot) + 1} of ${execution.slots().size} · $progress",
                 ) {
-                    Text(formatExercise(slot.exercise()))
-                    SharedPlainWorkoutTarget(slot, formatTarget)
-                    val working = currentSets.count { !it.actual().warmUp() }
-                    val target = slot.target()
-                    Text(
-                        if (target == null)
-                            "$working working ${if (working == 1) "set" else "sets"} saved"
-                        else "$working of ${target.sets()} target working sets saved"
-                    )
-                    Text(
-                        "Targets are guidance. Log what you actually did.",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
-                    if (active) {
-                        OutlinedButton(
-                            onClick = {
-                                model.openSubstitutions(
-                                    ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY
-                                )
-                            },
-                            enabled = enabled,
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                        ) {
-                            Text("Equipment busy?")
+                    if (active)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                            ActivityAction(
+                                "Equipment busy?",
+                                onClick = {
+                                    model.openSubstitutions(
+                                        ExerciseSubstitutionEngine.Reason.EQUIPMENT_BUSY
+                                    )
+                                },
+                                enabled = enabled,
+                                role = ActivityActionRole.SECONDARY,
+                            )
+                            ActivityAction(
+                                "Swap exercise",
+                                onClick = {
+                                    model.openSubstitutions(
+                                        ExerciseSubstitutionEngine.Reason.ALTERNATIVES
+                                    )
+                                },
+                                enabled = enabled,
+                                role = ActivityActionRole.TERTIARY,
+                            )
                         }
-                        TextButton(
-                            onClick = {
-                                model.openSubstitutions(
-                                    ExerciseSubstitutionEngine.Reason.ALTERNATIVES
-                                )
-                            },
-                            enabled = enabled,
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                        ) {
-                            Text("Swap exercise")
-                        }
-                    }
-                    if (previous != null && previous.size > 1) {
-                        WhyDetails("Previous working sets") {
-                            previous.take(6).forEachIndexed { index, set ->
-                                StrengthSetRow(index + 1, formatActual(set, slot.exercise()))
-                            }
-                            if (previous.size > 6)
-                                Text("${previous.size - 6} more working sets in that workout")
-                        }
-                    }
                 }
 
                 if (active) {
-                    restControls(slot, enabled)
-                    warmupGuidance(slot, enabled)
                     if (slot.supersetGroup() != null)
                         SemanticCard(Tile.Strength) {
                             Text("Superset", style = MaterialTheme.typography.titleLarge)
@@ -318,20 +305,27 @@ fun SharedGymWorkoutScreen(
                         }
                 }
 
+                val timerVisible =
+                    state.restTimer?.phase() in
+                        setOf(GymRestTimer.Phase.RUNNING, GymRestTimer.Phase.PAUSED)
+                if (active && timerVisible) restControls(slot, enabled)
+
                 if (currentSets.isNotEmpty()) {
                     Text(
                         "Saved sets",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
                     )
-                    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
-                        currentSets.forEachIndexed { index, set ->
-                            StrengthSetRow(index + 1, formatActual(set.actual(), set.exercise()))
-                        }
-                    }
+                    StrengthSetTable(
+                        slot.exercise(),
+                        state.massUnit,
+                        currentSets.map { it.actual() },
+                        StrengthRowState.SAVED,
+                        previous = previous.orEmpty(),
+                    )
                 }
 
-                Panel {
+                Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
                     SectionTitle("Current set", "Set ${currentSets.size + 1}")
                     val profile = slot.exercise().measurement()
                     val hasLoad =
@@ -460,6 +454,23 @@ fun SharedGymWorkoutScreen(
                     if (!active) Text("Resume the workout before recording another set.")
                 }
 
+                if (active && !timerVisible) restControls(slot, enabled)
+                Text(formatExercise(slot.exercise()), style = MaterialTheme.typography.bodySmall)
+                SharedPlainWorkoutTarget(slot, formatTarget)
+                if (previous != null && previous.size > 1) {
+                    WhyDetails("Previous working sets") {
+                        StrengthSetTable(
+                            slot.exercise(),
+                            state.massUnit,
+                            previous.take(6),
+                            StrengthRowState.PREVIOUS,
+                        )
+                        if (previous.size > 6)
+                            Text("${previous.size - 6} more working sets in that workout")
+                    }
+                }
+                if (active) warmupGuidance(slot, enabled)
+
                 if (beforeSwap.isNotEmpty()) {
                     SemanticCard(Tile.Neutral) {
                         Text("Before this swap", style = MaterialTheme.typography.titleMedium)
@@ -470,7 +481,12 @@ fun SharedGymWorkoutScreen(
                             .groupBy { it.exercise() }
                             .forEach { (exercise, sets) ->
                                 Text(exercise.name(), style = MaterialTheme.typography.titleSmall)
-                                sets.forEach { Text(formatActual(it.actual(), exercise)) }
+                                StrengthSetTable(
+                                    exercise,
+                                    state.massUnit,
+                                    sets.map { it.actual() },
+                                    StrengthRowState.SAVED,
+                                )
                             }
                     }
                 }
@@ -483,54 +499,45 @@ fun SharedGymWorkoutScreen(
                 }
             }
 
-            if (active) {
-                OutlinedButton(
-                    onClick = { chooseExercise = true },
-                    enabled = enabled && execution.slots().size < 100,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                ) {
-                    Text("Add exercise")
-                }
-            }
-            if (execution.slots().size > 1) {
-                Text("Exercises in this workout", style = MaterialTheme.typography.titleMedium)
-                execution.slots().forEach { exerciseSlot ->
-                    OutlinedButton(
-                        onClick = { model.select(exerciseSlot.id()) },
-                        enabled =
-                            enabled && active && exerciseSlot.id() != execution.selectedSlotId(),
-                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
-                    ) {
-                        Text(
-                            (if (exerciseSlot.id() == execution.selectedSlotId()) "Current · "
-                            else "") + exerciseSlot.exercise().name()
+            if (active || execution.slots().size > 1) {
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                    if (execution.slots().size > 1)
+                        for (exerciseSlot in execution.slots()) {
+                            val current = exerciseSlot.id() == execution.selectedSlotId()
+                            CoachFilterChip(
+                                selected = current,
+                                enabled = enabled && active && !current,
+                                onClick = { model.select(exerciseSlot.id()) },
+                                label = {
+                                    Text(
+                                        (if (current) "Current · " else "") +
+                                            exerciseSlot.exercise().name()
+                                    )
+                                },
+                            )
+                        }
+                    if (active)
+                        ActivityAction(
+                            "Add exercise",
+                            onClick = { chooseExercise = true },
+                            enabled = enabled && execution.slots().size < 100,
+                            role = ActivityActionRole.SECONDARY,
                         )
-                    }
                 }
             }
-            if (active) {
-                OutlinedButton(
-                    onClick = model::pause,
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related)) {
+                ActivityAction(
+                    if (active) "Pause workout" else "Resume workout",
+                    onClick = { if (active) model.pause() else model.resume() },
                     enabled = enabled,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                ) {
-                    Text("Pause workout")
-                }
-            } else {
-                Button(
-                    onClick = model::resume,
-                    enabled = enabled,
-                    modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-                ) {
-                    Text("Resume workout")
-                }
-            }
-            Button(
-                onClick = { model.finish() },
-                enabled = enabled && execution.actualSets().isNotEmpty(),
-                modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
-            ) {
-                Text("Finish and save workout")
+                    role = if (active) ActivityActionRole.TERTIARY else ActivityActionRole.PRIMARY,
+                )
+                ActivityAction(
+                    "Finish and save workout",
+                    onClick = { model.finish() },
+                    enabled = enabled && execution.actualSets().isNotEmpty(),
+                    role = ActivityActionRole.SECONDARY,
+                )
             }
             TextButton(
                 onClick = { discardConfirmation = true },
@@ -734,16 +741,7 @@ private fun GymActualField(
     enabled: Boolean,
     modifier: Modifier = Modifier.fillMaxWidth(),
 ) {
-    OutlinedTextField(
-        value,
-        change,
-        label = { Text(label) },
-        shape = MaterialTheme.shapes.medium,
-        enabled = enabled,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-        modifier = modifier,
-    )
+    StrengthEntryField(label, value, change, keyboard, modifier, enabled)
 }
 
 private fun gymOriginLabel(origin: GymExecution.Origin): String =

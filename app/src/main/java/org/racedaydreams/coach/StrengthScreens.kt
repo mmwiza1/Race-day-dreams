@@ -11,7 +11,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.time.*
 import java.util.UUID
-import org.racedaydreams.coach.strength.StrengthSetRow
+import org.racedaydreams.coach.strength.StrengthRowState
+import org.racedaydreams.coach.strength.StrengthSetTable
 import org.racedaydreams.domain.strength.*
 
 @Composable fun StrengthScreen(state:CoachUiState,model:CoachViewModel,planned:String?=null, section:String="log", sourceId:String?=null){
@@ -25,7 +26,8 @@ import org.racedaydreams.domain.strength.*
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
     CoachPage{
         if (!logging || section != "log") CoachHeading("Strength")
-        Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->CoachFilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
+        if (section != "log" || !logging)
+            Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->CoachFilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
         if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}")
         if(section=="log" && !logging) {
             val today=LocalDate.now()
@@ -34,13 +36,13 @@ import org.racedaydreams.domain.strength.*
         }
         if(section=="log"){
         if (logging) {
-            TextButton(onClick = { logging = false }, modifier = Modifier.heightIn(min = CoachSpace.Touch)) {
-                Text("Hide workout form")
-            }
             StrengthForm(state, model, plannedDate) {
                 logging = false
                 routineDate = null
                 savedWorkout = true
+            }
+            TextButton(onClick = { logging = false }, modifier = Modifier.heightIn(min = CoachSpace.Touch)) {
+                Text("Hide workout form")
             }
         } else {
             if (savedWorkout) StrengthSavedNotice()
@@ -103,17 +105,10 @@ import org.racedaydreams.domain.strength.*
             s.exercises().forEach{b->
                 Text(b.exercise().name(),style=MaterialTheme.typography.titleMedium)
                 Text("${b.sets().size} sets",style=MaterialTheme.typography.labelMedium)
-                b.sets().forEachIndexed { i, set ->
-                    StrengthSetRow(
-                        i + 1,
-                        StrengthMeasurements.display(set, state.massUnit, state.profile?.preferences()?.units() ?: org.racedaydreams.domain.UnitSystem.METRIC),
-                        listOfNotNull(
-                            "Warm-up".takeIf { set.warmUp() },
-                            set.repetitionsInReserve()?.let { "RIR ${decimal(it)}" }
-                                ?: set.rpe()?.let { "RPE ${decimal(it)}" },
-                        ).joinToString(" · ").takeIf { it.isNotEmpty() },
-                    )
-                }
+                StrengthSetTable(
+                    b.exercise(), state.massUnit, b.sets(), StrengthRowState.SAVED,
+                    yards = state.profile?.preferences()?.units() == org.racedaydreams.domain.UnitSystem.IMPERIAL,
+                )
             }
             if(s.notes().isNotBlank())Text(s.notes())
             var editing by rememberSaveable(s.id()){mutableStateOf(sourceId==s.id())}
@@ -144,10 +139,11 @@ internal fun ExercisePicker(
     onSelect: (String) -> Unit,
     buttonLabel: String? = null,
     showExclusionNotice: Boolean = buttonLabel == null,
+    modifier: Modifier = Modifier.fillMaxWidth(),
 ) {
     var menu by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
-    OutlinedButton(onClick = { menu = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+    OutlinedButton(onClick = { menu = true }, modifier = modifier.heightIn(min = 48.dp)) {
         Text(buttonLabel ?: state.exercises.firstOrNull { it.id() == selected }?.name() ?: "Choose exercise")
     }
     if (showExclusionNotice && state.exerciseExclusions.any { it.exerciseId() == selected }) {

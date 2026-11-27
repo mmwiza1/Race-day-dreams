@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -53,11 +52,14 @@ import org.racedaydreams.coach.strength.GymNowScreen
 import org.racedaydreams.coach.strength.GymNowViewModel
 import org.racedaydreams.coach.strength.GymWorkoutBuilderScreen
 import org.racedaydreams.coach.strength.GymWorkoutScreen
+import org.racedaydreams.coach.theme.DisciplineAppearance
+import org.racedaydreams.coach.theme.RaceDayTheme
 import org.racedaydreams.data.CoachingStore
 import org.racedaydreams.data.DevelopmentStore
 import org.racedaydreams.data.GymProgrammeStore
 import org.racedaydreams.data.SqliteGymExecutionRepository
 import org.racedaydreams.data.SqliteUserPreferencesRepository
+import org.racedaydreams.domain.settings.ColourDiscipline
 import org.racedaydreams.domain.strength.ExerciseCatalog
 import org.racedaydreams.domain.strength.GymExecution
 import org.racedaydreams.domain.strength.GymProgramme
@@ -133,7 +135,10 @@ class GymNowScreenTest {
         val dark =
             androidx.test.platform.app.InstrumentationRegistry.getArguments()
                 .getString("part2Evidence") == "dark"
-        install(largeDark = dark)
+        val standard =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("standardText") == "true"
+        install(largeDark = dark && !standard, darkTheme = dark)
         click("Start open workout")
         await { execution()?.origin() == GymExecution.Origin.FREE }
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -162,6 +167,13 @@ class GymNowScreenTest {
         assertEquals("", model.state.value.form.repetitions)
         assertEquals("", model.state.value.form.effort)
         compose.onNodeWithText("Saved sets").performScrollTo().assertIsDisplayed()
+        compose
+            .onNodeWithTag("strength-set-saved-1")
+            .assertIsDisplayed()
+            .assert(
+                androidx.compose.ui.test.hasContentDescription("Load (kg) 65") and
+                    androidx.compose.ui.test.hasContentDescription("Reps 7")
+            )
         capturePart2(application, "gym-saved-set")
         val entered = execution()!!.actualSets().single().actual()
         assertEquals(65.0, entered.kilograms(), 0.0)
@@ -186,6 +198,75 @@ class GymNowScreenTest {
         assertTrue(io { DevelopmentStore(application).gymLinks().isEmpty() })
         assertFalse(io { SqliteUserPreferencesRepository(application).load().isPresent })
         assertNull(io { GymProgrammeStore(application).current() })
+    }
+
+    @Test
+    fun structuredSetRowsKeepBodyweightTimeAndCarryMeasurementsDistinct() {
+        val bodyweight = requireNotNull(ExerciseCatalog.definition("push-up")).exercise()
+        val timed = requireNotNull(ExerciseCatalog.definition("plank")).exercise()
+        val carry = requireNotNull(ExerciseCatalog.definition("farmers-carry")).exercise()
+        val saved = org.racedaydreams.coach.strength.StrengthRowState.SAVED
+        val kg = org.racedaydreams.domain.body.MassUnit.KG
+        val timedSet =
+            org.racedaydreams.domain.strength.StrengthSession.SetEntry(
+                "time",
+                0,
+                0.0,
+                null,
+                false,
+                75L,
+                null,
+            )
+        val carrySet =
+            org.racedaydreams.domain.strength.StrengthSession.SetEntry(
+                "carry",
+                0,
+                24.0,
+                null,
+                false,
+                null,
+                18.288,
+            )
+        val bodyweightSet =
+            org.racedaydreams.domain.strength.StrengthSession.SetEntry("body", 8, 0.0, null, false)
+        compose.setContent {
+            RaceDayTheme(dynamicColour = false) {
+                CoachPage {
+                    org.racedaydreams.coach.strength.StrengthSetTable(
+                        bodyweight,
+                        kg,
+                        listOf(bodyweightSet),
+                        saved,
+                    )
+                    org.racedaydreams.coach.strength.StrengthSetTable(
+                        timed,
+                        kg,
+                        listOf(timedSet),
+                        saved,
+                    )
+                    org.racedaydreams.coach.strength.StrengthSetTable(
+                        carry,
+                        kg,
+                        listOf(carrySet),
+                        saved,
+                        yards = true,
+                    )
+                }
+            }
+        }
+        val cells = listOf("Reps 8", "Time 1 minute and 15 seconds", "Distance (yd) 20")
+        for (cell in cells) {
+            compose
+                .onNode(androidx.compose.ui.test.hasContentDescription(cell))
+                .performScrollTo()
+                .assertIsDisplayed()
+        }
+        compose
+            .onNode(androidx.compose.ui.test.hasContentDescription("Per hand (kg) 24"))
+            .assertIsDisplayed()
+        compose
+            .onNode(androidx.compose.ui.test.hasContentDescription("Load (kg) 0"))
+            .assertDoesNotExist()
     }
 
     @Test
@@ -589,6 +670,7 @@ class GymNowScreenTest {
     private fun install(
         retained: SavedStateHandle = SavedStateHandle(),
         largeDark: Boolean = false,
+        darkTheme: Boolean = largeDark,
     ) {
         compose.runOnIdle {
             model = createModel(retained)
@@ -600,26 +682,29 @@ class GymNowScreenTest {
                 LocalDensity provides
                     Density(density.density, if (largeDark) 2f else density.fontScale)
             ) {
-                MaterialTheme(
-                    colorScheme = if (largeDark) darkColorScheme() else MaterialTheme.colorScheme
-                ) {
-                    Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                        shown.value?.let { feature ->
-                            when (page.value) {
-                                "hub" ->
-                                    GymNowScreen(
-                                        feature,
-                                        { page.value = "workout" },
-                                        { page.value = "builder" },
-                                        {},
-                                    )
-                                "builder" ->
-                                    GymWorkoutBuilderScreen(
-                                        feature,
-                                        { page.value = "workout" },
-                                        { page.value = "hub" },
-                                    )
-                                "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                RaceDayTheme(darkTheme = darkTheme, dynamicColour = false) {
+                    DisciplineAppearance(emptyMap(), ColourDiscipline.STRENGTH) {
+                        Surface(
+                            Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background,
+                        ) {
+                            shown.value?.let { feature ->
+                                when (page.value) {
+                                    "hub" ->
+                                        GymNowScreen(
+                                            feature,
+                                            { page.value = "workout" },
+                                            { page.value = "builder" },
+                                            {},
+                                        )
+                                    "builder" ->
+                                        GymWorkoutBuilderScreen(
+                                            feature,
+                                            { page.value = "workout" },
+                                            { page.value = "hub" },
+                                        )
+                                    "workout" -> GymWorkoutScreen(feature) { page.value = "hub" }
+                                }
                             }
                         }
                     }
