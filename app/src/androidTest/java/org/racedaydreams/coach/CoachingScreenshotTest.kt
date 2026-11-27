@@ -955,9 +955,9 @@ class CoachingScreenshotTest {
         click("Log strength workout")
         compose.onNodeWithText("Use previous sets").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Last time").assertIsDisplayed()
-        compose.onNodeWithText("Completed strength workout").assertIsDisplayed()
+        compose.onNode(hasText("Log strength workout") and isHeading()).assertIsDisplayed()
         capture("strength-log-previous")
-        compose.onNodeWithText("Back Squat").performScrollTo().performClick()
+        compose.onNodeWithText("Change exercise").performScrollTo().performClick()
         compose.onNodeWithTag("exercise-search").performTextReplacement("Plank")
         compose.onNode(hasText("Plank") and hasClickAction() and !hasSetTextAction()).performClick()
         compose
@@ -5075,7 +5075,10 @@ class CoachingScreenshotTest {
             .performScrollTo()
             .performTextReplacement(kilograms)
         compose.onNodeWithText("Actual repetitions").performScrollTo().performTextReplacement(reps)
-        compose.onNodeWithText("RPE · optional").performScrollTo().performTextReplacement("7")
+        val effort = compose.onNodeWithText("RPE · optional")
+        if (compose.onAllNodesWithText("RPE · optional").fetchSemanticsNodes().isEmpty())
+            compose.onNodeWithText("Warm-up and effort (optional)").performScrollTo().performClick()
+        effort.performScrollTo().performTextReplacement("7")
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithText("Save actual set").performScrollTo().performClick()
         awaitGymReady { it.view?.accepted()?.execution()?.actualSets()?.size == expectedSets }

@@ -162,11 +162,14 @@ class AuthoredGymNowScreenTest {
         compose.runOnIdle { page.value = "hub" }
         compose.onNodeWithText("Completed").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Start early").assertDoesNotExist()
-        var reopened = false
-        compose.runOnIdle { model.startPlanned("session") { reopened = true } }
-        compose.waitUntil(20_000) { !model.state.value.busy }
-        assertFalse("A completed workout reopened", reopened)
-        assertTrue(model.state.value.error.orEmpty().contains("already completed"))
+        val reopened = mutableStateOf(false)
+        compose.runOnIdle { model.startPlanned("session") { reopened.value = true } }
+        compose.waitUntil(20_000) { reopened.value || model.state.value.error != null }
+        assertFalse("A completed workout reopened", reopened.value)
+        assertTrue(
+            "Expected a duplicate-completion rejection, got ${model.state.value.error}",
+            model.state.value.error.orEmpty().contains("already completed"),
+        )
         assertNull(model.state.value.view?.pending())
         val rejected =
             GymExecutionEngine.start(

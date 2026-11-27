@@ -5,9 +5,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import java.time.*
 import java.util.UUID
+import org.racedaydreams.coach.strength.StrengthSetRow
 import org.racedaydreams.domain.strength.*
 
 @Composable fun StrengthScreen(state:CoachUiState,model:CoachViewModel,planned:String?=null, section:String="log", sourceId:String?=null){
@@ -15,14 +19,14 @@ import org.racedaydreams.domain.strength.*
     val plannedDate=routineDate?.let{runCatching{LocalDate.parse(it)}.getOrNull()}
     var logging by rememberSaveable(planned){mutableStateOf(plannedDate!=null)};var historical by rememberSaveable{mutableStateOf(false)}
 
+    var savedWorkout by rememberSaveable { mutableStateOf(false) }
     val progression=remember(state.strengthSessions){StrengthAnalytics.progression(state.strengthSessions)}
     val timeline=remember(state.strengthSessions,state.historicalStrength){StrengthProgression.timeline(state.strengthSessions,state.historicalStrength)}
     fun mass(kg:Double)="${decimal(state.massUnit.fromKilograms(kg))} ${state.massUnit.name.lowercase()}"
     CoachPage{
-        CoachHeading("Strength")
-        Text("Your strength training, records and progression.")
+        if (!logging || section != "log") CoachHeading("Strength")
         Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){org.racedaydreams.domain.body.MassUnit.entries.forEach{u->CoachFilterChip(selected=state.massUnit==u,onClick={model.settings.setting("mass.unit",u.name)},label={Text(u.name.lowercase())})}}
-        if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}. Log what you actually did.")
+        if(plannedDate!=null)Text("Planned strength · ${friendlyDate(plannedDate)}")
         if(section=="log" && !logging) {
             val today=LocalDate.now()
             val upcoming=(0L..6L).map{today.plusDays(it)}.firstOrNull { day -> state.profile?.preferences()?.gymDays()?.contains(day.dayOfWeek)==true && state.strengthSessions.none{it.startedAt().atOffset(it.offset()).toLocalDate()==day} && state.strengthPlannedDates.values.none{it==day} }
@@ -33,10 +37,16 @@ import org.racedaydreams.domain.strength.*
             TextButton(onClick = { logging = false }, modifier = Modifier.heightIn(min = CoachSpace.Touch)) {
                 Text("Hide workout form")
             }
-            StrengthForm(state, model, plannedDate) { logging = false; routineDate = null }
+            StrengthForm(state, model, plannedDate) {
+                logging = false
+                routineDate = null
+                savedWorkout = true
+            }
         } else {
+            if (savedWorkout) StrengthSavedNotice()
             CoachButton("Log strength workout") {
                 routineDate = null
+                savedWorkout = false
                 logging = true
             }
         }
@@ -78,6 +88,7 @@ import org.racedaydreams.domain.strength.*
         }
         if(section=="history"){
         CoachHeading("Latest sessions")
+        if (savedWorkout) StrengthSavedNotice()
         var historyLimit by rememberSaveable{mutableIntStateOf(20)}
         if(state.strengthSessions.isEmpty())Text("No strength workouts yet. Log your first workout from Strength.")
         state.strengthSessions.filter{sourceId==null||it.id()==sourceId}.sortedByDescending{it.startedAt()}.take(historyLimit).forEach{s->CoachCard{
@@ -88,15 +99,31 @@ import org.racedaydreams.domain.strength.*
             WhyDetails(requireNotNull(context.reasons()).joinToString("\n"),"Why this strength context?")
             val newRecords=progression.filter{r->r.sessionId()==s.id()&&r.category()!="Estimated 1RM"&&timeline.none{it.sessionId()==null&&it.exerciseId()==r.exerciseId()&&it.category()==r.category()&&it.value()>=r.value()}}
             if(newRecords.isNotEmpty())Text("PB evidence recorded · ${newRecords.map{it.exerciseId()}.distinct().size} exercises",style=MaterialTheme.typography.titleSmall)
+            SectionTitle("Recorded sets")
             s.exercises().forEach{b->
                 Text(b.exercise().name(),style=MaterialTheme.typography.titleMedium)
                 Text("${b.sets().size} sets",style=MaterialTheme.typography.labelMedium)
-                b.sets().forEachIndexed{i,set->Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween){Text("${i+1}. ${StrengthMeasurements.display(set,state.massUnit,state.profile?.preferences()?.units()?:org.racedaydreams.domain.UnitSystem.METRIC)}");Text(set.repetitionsInReserve()?.let{"RIR ${decimal(it)}"}?:set.rpe()?.let{"RPE ${decimal(it)}"}?:"Effort —")}}
+                b.sets().forEachIndexed { i, set ->
+                    StrengthSetRow(
+                        i + 1,
+                        StrengthMeasurements.display(set, state.massUnit, state.profile?.preferences()?.units() ?: org.racedaydreams.domain.UnitSystem.METRIC),
+                        listOfNotNull(
+                            "Warm-up".takeIf { set.warmUp() },
+                            set.repetitionsInReserve()?.let { "RIR ${decimal(it)}" }
+                                ?: set.rpe()?.let { "RPE ${decimal(it)}" },
+                        ).joinToString(" · ").takeIf { it.isNotEmpty() },
+                    )
+                }
             }
             if(s.notes().isNotBlank())Text(s.notes())
             var editing by rememberSaveable(s.id()){mutableStateOf(sourceId==s.id())}
-            TextButton(onClick={editing=!editing}){Text("Edit source workout")}
-            if(editing)key(s.id()){StrengthForm(state,model,state.strengthPlannedDates[s.id()],s){editing=false}}
+            TextButton(onClick={editing=!editing; if (editing) savedWorkout = false}){Text("Edit source workout")}
+            if(editing)key(s.id()){
+                StrengthForm(state,model,state.strengthPlannedDates[s.id()],s){
+                    editing=false
+                    savedWorkout = true
+                }
+            }
             TextButton(onClick={model.strength.deleteStrength(s.id())}){Text("Delete session and recalculate PBs")}
         }}
         if(state.strengthSessions.size>historyLimit)TextButton(onClick={historyLimit+=20}){Text("Load more workouts")}
@@ -104,13 +131,26 @@ import org.racedaydreams.domain.strength.*
     }
 }
 @Composable
-internal fun ExercisePicker(state: CoachUiState, selected: String, onSelect: (String) -> Unit, buttonLabel: String? = null) {
+private fun StrengthSavedNotice() {
+    SemanticCard(Tile.Progress) {
+        Text("Workout saved", modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+    }
+}
+
+@Composable
+internal fun ExercisePicker(
+    state: CoachUiState,
+    selected: String,
+    onSelect: (String) -> Unit,
+    buttonLabel: String? = null,
+    showExclusionNotice: Boolean = buttonLabel == null,
+) {
     var menu by remember { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
     OutlinedButton(onClick = { menu = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
         Text(buttonLabel ?: state.exercises.firstOrNull { it.id() == selected }?.name() ?: "Choose exercise")
     }
-    if (buttonLabel == null && state.exerciseExclusions.any { it.exerciseId() == selected }) {
+    if (showExclusionNotice && state.exerciseExclusions.any { it.exerciseId() == selected }) {
         Text("Excluded from recommendations. Existing actuals remain editable; search to choose it explicitly.", style = MaterialTheme.typography.bodySmall)
     }
     if (menu) AlertDialog(

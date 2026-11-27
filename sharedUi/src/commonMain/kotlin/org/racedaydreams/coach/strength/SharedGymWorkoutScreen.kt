@@ -1,12 +1,16 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package org.racedaydreams.coach.strength
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -31,10 +35,15 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.coach.CoachHeading
 import org.racedaydreams.coach.CoachPage
+import org.racedaydreams.coach.CoachSpace
+import org.racedaydreams.coach.Panel
+import org.racedaydreams.coach.SectionTitle
 import org.racedaydreams.coach.SemanticCard
 import org.racedaydreams.coach.Tile
+import org.racedaydreams.coach.WhyDetails
 import org.racedaydreams.domain.strength.ExerciseSearch
 import org.racedaydreams.domain.strength.ExerciseSubstitutionEngine
 import org.racedaydreams.domain.strength.GymExecution
@@ -69,6 +78,7 @@ fun SharedGymWorkoutScreen(
         execution?.status() == GymExecution.Status.FINISHED ||
             execution?.status() == GymExecution.Status.DISCARDED
     val slot = execution?.slots()?.firstOrNull { it.id() == execution.selectedSlotId() }
+    var effortDetails by rememberSaveable(execution?.id(), slot?.id()) { mutableStateOf(false) }
     val currentSets =
         remember(execution?.actualSets(), slot) {
             execution?.actualSets()?.filter {
@@ -117,9 +127,9 @@ fun SharedGymWorkoutScreen(
                     style = MaterialTheme.typography.headlineSmall,
                 )
                 if (execution.status() == GymExecution.Status.FINISHED) {
-                    Text(
-                        "${execution.actualSets().count { !it.actual().warmUp() }} working sets recorded"
-                    )
+                    val working = execution.actualSets().count { !it.actual().warmUp() }
+                    val label = if (working == 1) "set" else "sets"
+                    Text("$working working $label recorded")
                     Text("Active time ${formatElapsed(execution.activeMillis())}")
                     if (execution.partial())
                         Text(
@@ -158,7 +168,9 @@ fun SharedGymWorkoutScreen(
                     .forEach { (exercise, rows) ->
                         SemanticCard(Tile.Strength) {
                             Text(exercise.name(), style = MaterialTheme.typography.titleMedium)
-                            rows.forEach { Text(formatActual(it.actual(), exercise)) }
+                            rows.forEachIndexed { index, row ->
+                                StrengthSetRow(index + 1, formatActual(row.actual(), exercise))
+                            }
                         }
                     }
             }
@@ -194,18 +206,37 @@ fun SharedGymWorkoutScreen(
             }
 
             if (slot != null) {
-                SemanticCard(Tile.Planned) {
-                    Text(slot.exercise().name(), style = MaterialTheme.typography.headlineSmall)
+                val previous =
+                    remember(state.recent, slot.exercise(), execution.id()) {
+                        state.recent
+                            .asSequence()
+                            .filter { it.id() != execution.id() }
+                            .mapNotNull { session ->
+                                val sets =
+                                    session
+                                        .exercises()
+                                        .filter { it.exercise() == slot.exercise() }
+                                        .flatMap { it.sets() }
+                                        .filterNot { it.warmUp() }
+                                if (sets.isEmpty()) null else sets
+                            }
+                            .firstOrNull()
+                    }
+                StrengthExerciseHeader(
+                    slot.exercise().name(),
+                    previous?.lastOrNull()?.let { formatActual(it, slot.exercise()) },
+                ) {
                     Text(formatExercise(slot.exercise()))
                     SharedPlainWorkoutTarget(slot, formatTarget)
                     val working = currentSets.count { !it.actual().warmUp() }
                     val target = slot.target()
                     Text(
-                        if (target == null) "$working working sets saved"
+                        if (target == null)
+                            "$working working ${if (working == 1) "set" else "sets"} saved"
                         else "$working of ${target.sets()} target working sets saved"
                     )
                     Text(
-                        "Targets and references are guidance. Record the load and repetitions, time or distance you actually perform.",
+                        "Targets are guidance. Log what you actually did.",
                         style = MaterialTheme.typography.bodySmall,
                     )
                     if (active) {
@@ -230,6 +261,15 @@ fun SharedGymWorkoutScreen(
                             modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
                         ) {
                             Text("Swap exercise")
+                        }
+                    }
+                    if (previous != null && previous.size > 1) {
+                        WhyDetails("Previous working sets") {
+                            previous.take(6).forEachIndexed { index, set ->
+                                StrengthSetRow(index + 1, formatActual(set, slot.exercise()))
+                            }
+                            if (previous.size > 6)
+                                Text("${previous.size - 6} more working sets in that workout")
                         }
                     }
                 }
@@ -278,134 +318,136 @@ fun SharedGymWorkoutScreen(
                         }
                 }
 
-                val previous =
-                    remember(state.recent, slot.exercise(), execution.id()) {
-                        state.recent
-                            .asSequence()
-                            .filter { it.id() != execution.id() }
-                            .mapNotNull { session ->
-                                val sets =
-                                    session
-                                        .exercises()
-                                        .filter { it.exercise() == slot.exercise() }
-                                        .flatMap { it.sets() }
-                                        .filterNot { it.warmUp() }
-                                if (sets.isEmpty()) null else sets
-                            }
-                            .firstOrNull()
-                    }
-                if (previous != null) {
-                    SemanticCard(Tile.Neutral) {
-                        Text(
-                            "Previous comparable performance",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                        previous.take(6).forEach { Text(formatActual(it, slot.exercise())) }
-                        if (previous.size > 6)
-                            Text("${previous.size - 6} more working sets in that workout")
-                        Text(
-                            "Exact exercise and measurement. These values are not entered as your current actual sets.",
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                if (currentSets.isNotEmpty()) {
+                    Text(
+                        "Saved sets",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                    )
+                    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
+                        currentSets.forEachIndexed { index, set ->
+                            StrengthSetRow(index + 1, formatActual(set.actual(), set.exercise()))
+                        }
                     }
                 }
 
-                SemanticCard(Tile.Strength) {
-                    Text("Current set", style = MaterialTheme.typography.titleLarge)
-                    Text(
-                        org.racedaydreams.domain.presentation.AthleteLanguage.measurement(
-                            slot.exercise()
-                        )
-                    )
+                Panel {
+                    SectionTitle("Current set", "Set ${currentSets.size + 1}")
                     val profile = slot.exercise().measurement()
-                    if (
+                    val hasLoad =
                         profile.usesLoad() &&
                             slot.exercise().mode() != StrengthExercise.Mode.BODYWEIGHT
-                    )
-                        GymActualField(
-                            state.form.kilograms,
-                            { value -> model.updateForm { it.copy(kilograms = value) } },
-                            "Actual load · ${org.racedaydreams.domain.presentation.MassText.symbol(state.massUnit)}",
-                            KeyboardType.Decimal,
-                            enabled && active,
-                        )
-                    if (profile.usesReps())
-                        GymActualField(
-                            state.form.repetitions,
-                            { value -> model.updateForm { it.copy(repetitions = value) } },
-                            "Actual repetitions",
-                            KeyboardType.Number,
-                            enabled && active,
-                        )
-                    if (profile.usesDuration())
-                        GymActualField(
-                            state.form.seconds,
-                            { value -> model.updateForm { it.copy(seconds = value) } },
-                            "Actual duration · seconds",
-                            KeyboardType.Number,
-                            enabled && active,
-                        )
-                    if (profile.usesDistance())
-                        GymActualField(
-                            state.form.metres,
-                            { value -> model.updateForm { it.copy(metres = value) } },
-                            "Actual distance · metres",
-                            KeyboardType.Decimal,
-                            enabled && active,
-                        )
-                    if (profile.usesReps()) {
-                        Row(
-                            Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            OutlinedButton(
-                                onClick = { model.updateForm { it.copy(rir = false) } },
-                                enabled = enabled && active && state.form.rir,
-                                modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                    StrengthSetFields(
+                        load =
+                            if (hasLoad)
+                                { modifier ->
+                                    GymActualField(
+                                        state.form.kilograms,
+                                        { value ->
+                                            model.updateForm { it.copy(kilograms = value) }
+                                        },
+                                        "Actual load · ${org.racedaydreams.domain.presentation.MassText.symbol(state.massUnit)}",
+                                        KeyboardType.Decimal,
+                                        enabled && active,
+                                        modifier,
+                                    )
+                                }
+                            else null,
+                        amount = { modifier ->
+                            Column(
+                                modifier,
+                                verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
                             ) {
-                                Text(if (state.form.rir) "Use RPE" else "RPE selected")
+                                if (profile.usesReps())
+                                    GymActualField(
+                                        state.form.repetitions,
+                                        { value ->
+                                            model.updateForm { it.copy(repetitions = value) }
+                                        },
+                                        "Actual repetitions",
+                                        KeyboardType.Number,
+                                        enabled && active,
+                                    )
+                                if (profile.usesDuration())
+                                    GymActualField(
+                                        state.form.seconds,
+                                        { value -> model.updateForm { it.copy(seconds = value) } },
+                                        "Actual duration · seconds",
+                                        KeyboardType.Number,
+                                        enabled && active,
+                                    )
+                                if (profile.usesDistance())
+                                    GymActualField(
+                                        state.form.metres,
+                                        { value -> model.updateForm { it.copy(metres = value) } },
+                                        "Actual distance · metres",
+                                        KeyboardType.Decimal,
+                                        enabled && active,
+                                    )
                             }
-                            OutlinedButton(
-                                onClick = { model.updateForm { it.copy(rir = true) } },
-                                enabled = enabled && active && !state.form.rir,
-                                modifier = Modifier.weight(1f).heightIn(min = 48.dp),
+                        },
+                    )
+                    val detailsLabel =
+                        if (state.form.warmUp) "Warm-up set · effort options"
+                        else "Warm-up and effort (optional)"
+                    StrengthDetailsToggle(detailsLabel, effortDetails) {
+                        effortDetails = !effortDetails
+                    }
+                    if (effortDetails) {
+                        if (profile.usesReps()) {
+                            FlowRow(
+                                Modifier.selectableGroup(),
+                                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
+                                verticalArrangement = Arrangement.spacedBy(CoachSpace.Chip),
                             ) {
-                                Text(if (state.form.rir) "RIR selected" else "Use RIR")
+                                listOf(false, true).forEach { useRir ->
+                                    val selected = state.form.rir == useRir
+                                    val scale = if (useRir) "RIR" else "RPE"
+                                    CoachFilterChip(
+                                        selected = selected,
+                                        onClick = {
+                                            if (!selected)
+                                                model.updateForm { it.copy(rir = useRir) }
+                                        },
+                                        label = { Text(if (selected) scale else "Use $scale") },
+                                        enabled = enabled && active,
+                                    )
+                                }
                             }
                         }
-                    }
-                    Text(
-                        if (state.form.rir && profile.usesReps())
-                            "RIR counts how many more repetitions you could have completed. Leave it blank if you do not know."
-                        else
-                            "RPE is how hard the set felt, from 1 to 10. Leave it blank if you do not know."
-                    )
-                    GymActualField(
-                        state.form.effort,
-                        { value -> model.updateForm { it.copy(effort = value) } },
-                        if (state.form.rir && profile.usesReps()) "RIR · optional"
-                        else "RPE · optional",
-                        KeyboardType.Decimal,
-                        enabled && active,
-                    )
-                    Row(Modifier.fillMaxWidth()) {
-                        Checkbox(
-                            checked = state.form.warmUp,
-                            onCheckedChange = { value ->
-                                model.updateForm { it.copy(warmUp = value) }
-                            },
-                            enabled = enabled && active,
-                            modifier =
-                                Modifier.semantics {
-                                    contentDescription = "Mark this set as a warm-up"
-                                },
+                        Text(
+                            if (state.form.rir && profile.usesReps())
+                                "RIR counts how many more repetitions you could have completed. Leave it blank if you do not know."
+                            else
+                                "RPE is how hard the set felt, from 1 to 10. Leave it blank if you do not know."
                         )
-                        Column(Modifier.weight(1f).padding(top = 12.dp)) {
-                            Text("Warm-up set")
-                            Text(
-                                "Excluded from working-set totals and PBs.",
-                                style = MaterialTheme.typography.bodySmall,
+                        GymActualField(
+                            state.form.effort,
+                            { value -> model.updateForm { it.copy(effort = value) } },
+                            if (state.form.rir && profile.usesReps()) "RIR · optional"
+                            else "RPE · optional",
+                            KeyboardType.Decimal,
+                            enabled && active,
+                        )
+                        Row(Modifier.fillMaxWidth()) {
+                            Checkbox(
+                                checked = state.form.warmUp,
+                                onCheckedChange = { value ->
+                                    model.updateForm { it.copy(warmUp = value) }
+                                },
+                                enabled = enabled && active,
+                                modifier =
+                                    Modifier.semantics {
+                                        contentDescription = "Mark this set as a warm-up"
+                                    },
                             )
+                            Column(Modifier.weight(1f).padding(top = 12.dp)) {
+                                Text("Warm-up set")
+                                Text(
+                                    "Excluded from working-set totals and PBs.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                )
+                            }
                         }
                     }
                     Button(
@@ -418,18 +460,6 @@ fun SharedGymWorkoutScreen(
                     if (!active) Text("Resume the workout before recording another set.")
                 }
 
-                if (currentSets.isNotEmpty()) {
-                    SemanticCard(Tile.Progress) {
-                        Text(
-                            "Saved sets",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
-                        )
-                        currentSets.forEachIndexed { index, set ->
-                            Text("${index + 1}. ${formatActual(set.actual(), set.exercise())}")
-                        }
-                    }
-                }
                 if (beforeSwap.isNotEmpty()) {
                     SemanticCard(Tile.Neutral) {
                         Text("Before this swap", style = MaterialTheme.typography.titleMedium)
@@ -702,15 +732,17 @@ private fun GymActualField(
     label: String,
     keyboard: KeyboardType,
     enabled: Boolean,
+    modifier: Modifier = Modifier.fillMaxWidth(),
 ) {
     OutlinedTextField(
         value,
         change,
         label = { Text(label) },
+        shape = MaterialTheme.shapes.medium,
         enabled = enabled,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     )
 }
 

@@ -8,13 +8,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import java.time.*
 import java.util.UUID
+import org.racedaydreams.coach.strength.StrengthDetailsToggle
+import org.racedaydreams.coach.strength.StrengthExerciseHeader
+import org.racedaydreams.coach.strength.StrengthSetFields
+import org.racedaydreams.coach.strength.StrengthSetRow
 import org.racedaydreams.domain.UnitSystem
 import org.racedaydreams.domain.body.MassUnit
 import org.racedaydreams.domain.strength.StrengthMeasurements
@@ -189,230 +196,279 @@ internal fun StrengthForm(
         error = null
     }
 
-    CoachCard {
-        Text("Completed strength workout", style = MaterialTheme.typography.titleMedium)
-        ExercisePicker(s, selected, { switchExercise(it) })
-        if (previous != null) {
-            Text("Last time", style = MaterialTheme.typography.labelLarge)
+    Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Card)) {
+        ScreenHeader(
+            Discipline.STRENGTH,
+            Glyph.DUMBBELL,
+            if (editing != null) "Workout history" else "Past workout",
+            if (editing != null) "Edit strength workout" else "Log strength workout",
+        )
+        DateInput("Session date", date, { date = it }, latest = today)
+        StrengthExerciseHeader(
+            exercise.name(),
             previousWorking?.let {
-                Text(
-                    StrengthMeasurements.display(
-                        it,
-                        unit,
-                        if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC,
-                    )
+                StrengthMeasurements.display(
+                    it,
+                    unit,
+                    if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC,
                 )
-            }
-            OutlinedButton(
-                onClick = { if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true },
-                modifier = Modifier.heightIn(min = CoachSpace.Touch),
-            ) {
-                Text("Use previous sets")
-            }
-            if (confirmReuse)
-                AlertDialog(
-                    onDismissRequest = { confirmReuse = false },
-                    title = { Text("Replace these draft sets?") },
-                    text = {
-                        Text(
-                            "Copy the sets from your last workout. Review them against what you did before saving."
-                        )
-                    },
-                    confirmButton = {
-                        TextButton(
-                            onClick = {
-                                confirmReuse = false
-                                reuse()
-                            }
-                        ) {
-                            Text("Replace draft sets")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { confirmReuse = false }) { Text("Cancel") }
-                    },
-                )
-        }
-        if (copied)
-            Text(
-                "Copied as a draft. Keep only the sets you actually did.",
-                style = MaterialTheme.typography.bodySmall,
+            },
+        ) {
+            ExercisePicker(
+                s,
+                selected,
+                { switchExercise(it) },
+                "Change exercise",
+                showExclusionNotice = true,
             )
-
-        sets.forEachIndexed { index, line ->
-            val set = decodeSet(line)
-            if (index > 0) HorizontalDivider()
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                itemVerticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-            ) {
+            if (previous != null) {
+                FilledTonalButton(
+                    onClick = { if (sets.isEmpty() && !dirty) reuse() else confirmReuse = true },
+                    modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
+                ) {
+                    Text("Use previous sets")
+                }
+            }
+        }
+        if (confirmReuse)
+            AlertDialog(
+                onDismissRequest = { confirmReuse = false },
+                title = { Text("Replace these draft sets?") },
+                text = { Text("Copy the sets from your last workout. Review them before saving.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            confirmReuse = false
+                            reuse()
+                        }
+                    ) {
+                        Text("Replace draft sets")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { confirmReuse = false }) { Text("Cancel") }
+                },
+            )
+        if (sets.isNotEmpty()) {
+            SectionTitle("Draft sets", "${sets.size} in this exercise")
+            if (copied)
                 Text(
-                    "${index + 1}: ${StrengthMeasurements.display(set, unit, if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC)}" +
-                        if (set.warmUp()) " · warm-up" else ""
+                    "Copied as a draft. Keep only the sets you actually did.",
+                    style = MaterialTheme.typography.bodySmall,
                 )
-
-                TextButton(
-                    onClick = { readIntoEntry(set, index) },
-                    modifier = Modifier.semantics { contentDescription = "Edit set ${index + 1}" },
-                    enabled = editingSet == null && !dirty,
-                ) {
-                    Text("Edit")
-                }
-                TextButton(
-                    onClick = { sets = ArrayList(sets.filterIndexed { i, _ -> i != index }) },
-                    modifier =
-                        Modifier.semantics { contentDescription = "Remove set ${index + 1}" },
-                    enabled = editingSet == null && !dirty,
-                ) {
-                    Text("Remove")
-                }
-            }
-        }
-        val weightLabel =
-            if (selected == "farmers-carry" || selected == "suitcase-carry") "Load per hand"
-            else "Weight"
-        val measureLabel =
-            when {
-                profile.usesReps() -> "Reps"
-                profile.usesDuration() -> "Duration (seconds or m:ss)"
-                else -> distanceLabel
-            }
-        BoxWithConstraints(Modifier.fillMaxWidth().bringIntoViewRequester(editorLocation)) {
-            val sideBySide =
-                profile.usesLoad() && maxWidth >= 280.dp && LocalDensity.current.fontScale < 1.5f
-            val weight: @Composable (Modifier) -> Unit = { modifier ->
-                SetInput(
-                    "$weightLabel (${unit.name.lowercase()})",
-                    load,
-                    {
-                        load = it
-                        dirty = true
-                    },
-                    modifier,
-                )
-            }
-            val amount: @Composable (Modifier) -> Unit = { modifier ->
-                SetInput(
-                    measureLabel,
-                    measure,
-                    {
-                        measure = it
-                        dirty = true
-                    },
-                    modifier,
-                    if (profile.usesDuration()) KeyboardType.Text
-                    else if (profile.usesReps()) KeyboardType.Number else KeyboardType.Decimal,
-                )
-            }
-            if (sideBySide) {
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    weight(Modifier.weight(1f))
-                    amount(Modifier.weight(1f))
-                }
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (profile.usesLoad()) weight(Modifier.fillMaxWidth())
-                    amount(Modifier.fillMaxWidth())
-                }
-            }
-        }
-        if (sets.isEmpty() && !dirty && previousWorking != null) {
-            TextButton(onClick = { readIntoEntry(previousWorking) }) {
-                Text("Use last working set values")
-            }
-        }
-        TextButton(onClick = { setDetails = !setDetails }) {
-            Text(if (setDetails) "Hide set details" else "Warm-up and effort (optional)")
-        }
-        if (setDetails) {
-            if (profile.usesReps())
-                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(false, true).forEach { useRir ->
-                        CoachFilterChip(
-                            rir == useRir,
-                            {
-                                rir = useRir
-                                effort = ""
-                                dirty = true
+            Column(
+                Modifier.testTag("draft-strength-sets"),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
+            ) {
+                sets.forEachIndexed { index, line ->
+                    val set = decodeSet(line)
+                    val number = index + 1
+                    val editable = editingSet == null && !dirty
+                    var showActions by remember(set.id()) { mutableStateOf(false) }
+                    StrengthSetRow(
+                        number,
+                        StrengthMeasurements.display(
+                            set,
+                            unit,
+                            if (imperial) UnitSystem.IMPERIAL else UnitSystem.METRIC,
+                        ),
+                        detail =
+                            when {
+                                editingSet == index -> "Editing this set"
+                                set.warmUp() -> "Warm-up"
+                                else -> null
                             },
-                            { Text(if (useRir) "RIR" else "RPE") },
-                        )
+                        editing = editingSet == index,
+                    ) {
+                        TextButton(
+                            onClick = { readIntoEntry(set, index) },
+                            modifier =
+                                Modifier.heightIn(min = CoachSpace.Touch).semantics {
+                                    contentDescription = "Edit set $number"
+                                },
+                            enabled = editable,
+                        ) {
+                            Text("Edit")
+                        }
+                        Box {
+                            IconButton(
+                                onClick = { showActions = true },
+                                enabled = editable,
+                                modifier =
+                                    Modifier.size(CoachSpace.Touch).semantics {
+                                        contentDescription = "Set $number options"
+                                    },
+                            ) {
+                                Text(
+                                    "⋮",
+                                    Modifier.clearAndSetSemantics {},
+                                    style = MaterialTheme.typography.titleLarge,
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = showActions,
+                                onDismissRequest = { showActions = false },
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text("Remove set $number") },
+                                    onClick = {
+                                        showActions = false
+                                        sets = ArrayList(sets.filterIndexed { i, _ -> i != index })
+                                    },
+                                )
+                            }
+                        }
                     }
                 }
-            CoachInput(
-                if (rir && profile.usesReps()) "Reps in reserve (optional)"
-                else "Set RPE 0–10 (optional)",
-                effort,
-                {
-                    effort = it
-                    dirty = true
-                },
-                true,
-            )
-            CheckRow(
-                "Warm-up set",
-                warmUp,
-                {
-                    warmUp = it
-                    dirty = true
-                },
-            )
+            }
         }
         val operation = editingSet
-        FilledTonalButton(
-            onClick = {
-                try {
-                    val usingRir = rir && profile.usesReps()
-                    val effortValue = effort.takeIf { it.isNotBlank() }?.toDouble()
-                    val pending =
-                        ActualSet(
-                            operation?.let { decodeSet(sets[it]).id() } ?: UUID.randomUUID().toString(),
-                            if (profile.usesReps()) measure.toInt() else 0,
-                            if (profile.usesLoad()) unit.toKilograms(load.toDouble()) else 0.0,
-                            effortValue.takeUnless { usingRir },
-                            warmUp,
-                            if (profile.usesDuration()) StrengthMeasurements.seconds(measure) else null,
-                            if (profile.usesDistance()) measure.toDouble() * metresPerUnit else null,
-                            effortValue.takeIf { usingRir },
-                        )
-                    val revised = sets.map(::decodeSet).toMutableList()
-                    if (operation == null) revised.add(pending) else revised[operation] = pending
-                    StrengthSession.ExerciseSets(exercise, revised)
-                    sets = ArrayList(revised.map(::encodeSet))
-                    dirty = false
-                    editingSet = null
-                    error = null
-                } catch (e: IllegalArgumentException) {
-                    error = e.message ?: "Check your weight, amount and effort."
+        Panel {
+            SectionTitle(if (operation == null) "Current set" else "Editing set ${operation + 1}")
+            val weightLabel =
+                if (selected == "farmers-carry" || selected == "suitcase-carry") "Load per hand"
+                else "Weight"
+            val measureLabel =
+                when {
+                    profile.usesReps() -> "Reps"
+                    profile.usesDuration() -> "Duration (seconds or m:ss)"
+                    else -> distanceLabel
                 }
-            },
-            modifier = Modifier.heightIn(min = CoachSpace.Touch),
-        ) { Text(if (operation == null) "Add set" else "Update set") }
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            if (operation != null || dirty) {
-                TextButton(
-                    onClick = {
-                        clearEntry()
-                        error = null
-                    }
-                ) {
-                    Text(if (operation == null) "Clear set entry" else "Cancel set edit")
-                }
-            } else if (sets.size in 1..99) {
-                TextButton(
-                    onClick = {
-                        sets =
-                            ArrayList(
-                                sets +
-                                    encodeSet(
-                                        decodeSet(sets.last())
-                                            .copy(id = UUID.randomUUID().toString())
-                                    )
+            StrengthSetFields(
+                modifier = Modifier.bringIntoViewRequester(editorLocation),
+                load =
+                    if (profile.usesLoad())
+                        { modifier ->
+                            SetInput(
+                                "$weightLabel (${unit.name.lowercase()})",
+                                load,
+                                {
+                                    load = it
+                                    dirty = true
+                                },
+                                modifier,
                             )
-                        error = null
-                    }
+                        }
+                    else null,
+                amount = { modifier ->
+                    SetInput(
+                        measureLabel,
+                        measure,
+                        {
+                            measure = it
+                            dirty = true
+                        },
+                        modifier,
+                        if (profile.usesDuration()) KeyboardType.Text
+                        else if (profile.usesReps()) KeyboardType.Number else KeyboardType.Decimal,
+                    )
+                },
+            )
+            if (sets.isEmpty() && !dirty && previousWorking != null)
+                TextButton(
+                    onClick = { readIntoEntry(previousWorking) },
+                    modifier = Modifier.heightIn(min = CoachSpace.Touch),
                 ) {
-                    Text("Duplicate previous set")
+                    Text("Use last working set values")
+                }
+            StrengthDetailsToggle("Warm-up and effort (optional)", setDetails) {
+                setDetails = !setDetails
+            }
+            if (setDetails) {
+                if (profile.usesReps())
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        listOf(false, true).forEach { useRir ->
+                            CoachFilterChip(
+                                rir == useRir,
+                                {
+                                    rir = useRir
+                                    effort = ""
+                                    dirty = true
+                                },
+                                { Text(if (useRir) "RIR" else "RPE") },
+                            )
+                        }
+                    }
+                CoachInput(
+                    if (rir && profile.usesReps()) "Reps in reserve (optional)"
+                    else "Set RPE 0–10 (optional)",
+                    effort,
+                    {
+                        effort = it
+                        dirty = true
+                    },
+                    true,
+                )
+                CheckRow(
+                    "Warm-up set",
+                    warmUp,
+                    {
+                        warmUp = it
+                        dirty = true
+                    },
+                )
+            }
+            FilledTonalButton(
+                onClick = {
+                    try {
+                        val usingRir = rir && profile.usesReps()
+                        val effortValue = effort.takeIf { it.isNotBlank() }?.toDouble()
+                        val pending =
+                            ActualSet(
+                                operation?.let { decodeSet(sets[it]).id() }
+                                    ?: UUID.randomUUID().toString(),
+                                if (profile.usesReps()) measure.toInt() else 0,
+                                if (profile.usesLoad()) unit.toKilograms(load.toDouble()) else 0.0,
+                                effortValue.takeUnless { usingRir },
+                                warmUp,
+                                if (profile.usesDuration()) StrengthMeasurements.seconds(measure)
+                                else null,
+                                if (profile.usesDistance()) measure.toDouble() * metresPerUnit
+                                else null,
+                                effortValue.takeIf { usingRir },
+                            )
+                        val revised = sets.map(::decodeSet).toMutableList()
+                        if (operation == null) revised.add(pending)
+                        else revised[operation] = pending
+                        StrengthSession.ExerciseSets(exercise, revised)
+                        sets = ArrayList(revised.map(::encodeSet))
+                        dirty = false
+                        editingSet = null
+                        error = null
+                    } catch (e: IllegalArgumentException) {
+                        error = e.message ?: "Check your weight, amount and effort."
+                    }
+                },
+                modifier = Modifier.fillMaxWidth().heightIn(min = CoachSpace.Touch),
+            ) {
+                Text(if (operation == null) "Add set" else "Update set")
+            }
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (operation != null || dirty) {
+                    TextButton(
+                        onClick = {
+                            clearEntry()
+                            error = null
+                        }
+                    ) {
+                        Text(if (operation == null) "Clear set entry" else "Cancel set edit")
+                    }
+                } else if (sets.size in 1..99) {
+                    TextButton(
+                        onClick = {
+                            sets =
+                                ArrayList(
+                                    sets +
+                                        encodeSet(
+                                            decodeSet(sets.last())
+                                                .copy(id = UUID.randomUUID().toString())
+                                        )
+                                )
+                            error = null
+                        }
+                    ) {
+                        Text("Duplicate previous set")
+                    }
                 }
             }
         }
@@ -439,16 +495,34 @@ internal fun StrengthForm(
                 }
             }
         }
-        DateInput("Session date", date, { date = it }, latest = today)
-        TextButton(onClick = { sessionDetails = !sessionDetails }) {
-            Text(if (sessionDetails) "Hide session details" else "Session details (optional)")
+        StrengthDetailsToggle("Session details (optional)", sessionDetails) {
+            sessionDetails = !sessionDetails
         }
-        if (sessionDetails) {
-            CoachInput("Duration (minutes)", minutes, { minutes = it }, true)
-            CoachInput("Session RPE 0–10 (optional)", rpe, { rpe = it }, true)
-            CoachInput("Notes (optional)", notes, { notes = it })
+        if (sessionDetails)
+            Panel {
+                CoachInput("Duration (minutes)", minutes, { minutes = it }, true)
+                CoachInput("Session RPE 0–10 (optional)", rpe, { rpe = it }, true)
+                CoachInput("Notes (optional)", notes, { notes = it })
+            }
+        error?.let {
+            SemanticCard(Tile.Warning) {
+                Text(it, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite })
+            }
         }
-        error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
+        val exerciseCount = otherBlocks.size + if (sets.isEmpty()) 0 else 1
+        if (exerciseCount > 0) {
+            val setCount =
+                sets.size +
+                    otherBlocks.sumOf { (_, block) ->
+                        block.substringAfter('\t').count { it == ';' } + 1
+                    }
+            val exercisesLabel = if (exerciseCount == 1) "exercise" else "exercises"
+            val setsLabel = if (setCount == 1) "set" else "sets"
+            SectionTitle(
+                "Workout summary",
+                "$exerciseCount $exercisesLabel · $setCount $setsLabel in draft",
+            )
+        }
         Button(
             onClick = {
                 try {
@@ -494,7 +568,7 @@ internal fun StrengthForm(
                 }
             },
             enabled = !saving && !s.busy,
-            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp),
+            modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
         ) {
             Text("Save strength workout")
         }
@@ -514,6 +588,7 @@ private fun SetInput(
         onValueChange = change,
         modifier = modifier,
         label = { Text(label) },
+        shape = MaterialTheme.shapes.medium,
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = keyboard),
     )

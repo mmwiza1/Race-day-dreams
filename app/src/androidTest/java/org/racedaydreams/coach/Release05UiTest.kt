@@ -43,20 +43,46 @@ class Release05UiTest {
         val duration=Duration.ofSeconds(3017)
         val e=requireNotNull(ExerciseCatalog.definition("back-squat")).exercise()
         CoachingStore(context).saveStrength(StrengthSession("precise",at,ZoneOffset.UTC,duration,7.0,"Keep this note",listOf(StrengthSession.ExerciseSets(e,listOf(StrengthSession.SetEntry("kept-set-id",5,80.0,7.0,false))))))
-        launch();compose.onNodeWithText("View activity history").performScrollTo().performClick();await("Workout history")
-        compose.waitUntil(20000){compose.onAllNodes(hasText(friendlyDate(date)) and hasClickAction()).fetchSemanticsNodes().isNotEmpty()}
-        compose.onNode(hasText(friendlyDate(date)) and hasClickAction()).performClick();await("Edit source workout")
-        compose.onNodeWithText("1: 80.0 kg × 5 reps").performScrollTo().assertExists()
+        fun openSavedWorkout() {
+            compose.onNodeWithText("View activity history").performScrollTo().performClick()
+            await("Workout history")
+            val source = hasText(friendlyDate(date)) and hasClickAction()
+            compose.waitUntil(20_000) { compose.onAllNodes(source).fetchSemanticsNodes().isNotEmpty() }
+            compose.onNode(source).performClick()
+            await("Edit source workout")
+        }
+        launch()
+        openSavedWorkout()
+        compose.onNode(hasText("1: 80.0 kg × 5 reps") and hasAnyAncestor(hasTestTag("draft-strength-sets"))).performScrollTo().assertIsDisplayed()
         compose.onNodeWithContentDescription("Edit set 1").performScrollTo().performClick()
         compose.onNodeWithText("Weight (kg)").performScrollTo().performTextReplacement("85")
-        compose.onNodeWithText("Update set").performScrollTo().performClick()
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithText("Update set").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "historical-edit")
+        compose.onNodeWithText("Update set").performClick()
+        compose.onNode(hasText("1: 85.0 kg × 5 reps") and hasAnyAncestor(hasTestTag("draft-strength-sets")))
+            .performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Duplicate previous set").performScrollTo().performClick()
-        compose.onNodeWithContentDescription("Remove set 2").performScrollTo().performClick()
+        compose.onNodeWithContentDescription("Set 2 options").performScrollTo().performClick()
+        compose.onNodeWithText("Remove set 2").performClick()
         compose.onNodeWithText("Save strength workout").performScrollTo().performClick()
         compose.waitUntil(20000){CoachingStore(context).strength().single().exercises()[0].sets()[0].kilograms()==85.0}
         val saved=CoachingStore(context).strength().single()
         Assert.assertEquals(at,saved.startedAt());Assert.assertEquals(duration,saved.duration())
         Assert.assertEquals("kept-set-id",saved.exercises()[0].sets()[0].id());Assert.assertEquals("Keep this note",saved.notes())
+        Assert.assertEquals(1, saved.exercises()[0].sets().size)
+        await("Workout saved")
+        compose.onNodeWithText("Workout saved").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("1: 85.0 kg × 5 reps").performScrollTo().assertIsDisplayed()
+        scenario?.close()
+        launch()
+        openSavedWorkout()
+        compose.onNodeWithText("Recorded sets").performScrollTo().assertIsDisplayed()
+        compose.onNode(
+            hasText("1: 85.0 kg × 5 reps") and hasAnyAncestor(hasTestTag("draft-strength-sets"))
+        ).performScrollTo().assertIsDisplayed()
+        capturePart2(context, "historical-reopened")
+        Assert.assertEquals(saved, CoachingStore(context).strength().single())
     }
 
 }

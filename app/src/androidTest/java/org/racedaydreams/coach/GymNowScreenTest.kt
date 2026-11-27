@@ -130,7 +130,10 @@ class GymNowScreenTest {
 
     @Test
     fun openWorkoutSavesOnlyEnteredActualsAndPauseRequiresExplicitResume() {
-        install()
+        val dark =
+            androidx.test.platform.app.InstrumentationRegistry.getArguments()
+                .getString("part2Evidence") == "dark"
+        install(largeDark = dark)
         click("Start open workout")
         await { execution()?.origin() == GymExecution.Origin.FREE }
         assertTrue(execution()!!.actualSets().isEmpty())
@@ -145,13 +148,21 @@ class GymNowScreenTest {
         assertEquals("", model.state.value.form.repetitions)
         enter("Actual load · kg", "65")
         enter("Actual repetitions", "7")
+        compose.onNodeWithText("RPE · optional").assertDoesNotExist()
+        androidx.test.espresso.Espresso.closeSoftKeyboard()
+        compose.onNodeWithText("Current set").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-current-set")
+        click("Warm-up and effort (optional)")
         click("Use RIR")
+        compose.onNodeWithText("RIR").assertIsSelected()
         enter("RIR · optional", "3")
         click("Save actual set")
         await { execution()?.actualSets()?.size == 1 && model.state.value.form.kilograms.isEmpty() }
         assertNotEquals(originalInputId, model.state.value.form.id)
         assertEquals("", model.state.value.form.repetitions)
         assertEquals("", model.state.value.form.effort)
+        compose.onNodeWithText("Saved sets").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-saved-set")
         val entered = execution()!!.actualSets().single().actual()
         assertEquals(65.0, entered.kilograms(), 0.0)
         assertEquals(7, entered.reps())
@@ -168,6 +179,7 @@ class GymNowScreenTest {
         click("Finish and save workout")
         await { execution()?.status() == GymExecution.Status.FINISHED }
         compose.onNodeWithText("Workout saved").performScrollTo().assertIsDisplayed()
+        capturePart2(application, "gym-completion")
         val saved = io { CoachingStore(application).strength().single() }
         assertEquals(execution()!!.id(), saved.id())
         assertEquals(entered, saved.exercises().single().sets().single())
