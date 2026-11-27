@@ -1,6 +1,6 @@
 # UI Redesign v2 handoff
 
-**Piece 5 is complete. Pause for owner review before Piece 6.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
+**Phase 5A visual remediation is active. The owner review gate follows 5A.2 Strength.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
 
 ## Eight-piece roadmap
 
@@ -129,7 +129,20 @@ canonical gallery refresh for integration.
 Native iOS builds and renders, manual TalkBack/VoiceOver and wallpaper-derived colours
 remain unverified. The full device matrix and canonical gallery refresh remain integration work.
 
+## Phase 5A · Visual remediation
+
+The owner requested a substantial visual redesign of Phases 2–5. The earlier
+functional improvements remain the baseline. Their visual acceptance is pending.
+All six approved images were reviewed alongside the published app and the current branch.
+
+- 5A.1 implementation `76a2af5045ba965a644f1ac7d9bfedd8fe412b90` adds the neutral activity header,
+  differentiated action roles and tabular metric typography. The existing Strength
+  header and previous-set action demonstrate the foundation in both themes. The
+  debug build and two API 28 historical logging tests passed. The table and dense
+  logging workspace are still outstanding. [Before, target and after](design-review/5a-1-foundations/README.md).
+
 ## Next safe step
 
-Wait for owner approval before Piece 6. Fetch and verify the existing redesign branch and
-follow the exact scope approved. Keep the published build and redesign checkpoint distinct in the [continuation guide](../CONTINUE_CODEX.md).
+Complete 5A.2 Strength, publish its actual-render evidence, then wait for owner
+approval before 5A.3, 5A.4 or Phase 6. Use the existing branch and the
+[continuation guide](../CONTINUE_CODEX.md).

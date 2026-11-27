@@ -15,17 +15,17 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — UI Redesign v2, Piece 5
+## Active task — UI Redesign v2, Phase 5A · MAJOR
 
-- Work on the single `feature/rdd-ui-v2` branch in `/workspace/scratch/rdd-ui-v2`.
-  The verified Piece 4 starting point is `1f479c901d6b94d5464d1ebb3718bcccaaa0d619`.
-  Use the [benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md) and [UI standards](docs/UI_DESIGN_STANDARDS.md).
-- The owner approved Bouldering. The [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md)
-  records the shared screen changes. Keep grades, timer and attempt semantics, history,
-  persistence, statistics and configured discipline colours intact.
-- Piece 5 verification is complete. The handoff lists five focused Android API 28 tests,
-  six SQLite tests and the before/after visual review. Pause for owner review before Piece 6.
-  No PR, release, merge or manual CI run is part of this checkpoint.
+- Use the single `feature/rdd-ui-v2` branch in `/workspace/scratch/rdd-ui-v2`.
+  The owner requested visual remediation of Phases 2–5. Start from Piece 5
+  `a0222559bc32655b57c804434201bbfe9aab8290` and preserve the existing behaviour.
+- 5A.1 foundation implementation is `76a2af5045ba965a644f1ac7d9bfedd8fe412b90`. Read the
+  [review evidence](docs/design-review/5a-1-foundations/README.md) and
+  [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md).
+- Continue with 5A.2 Strength. Push the checkpoint and stop for owner review. Running
+  and Today, Bouldering remediation and Phase 6 follow a later explicit approval.
+  This task authorises branch pushes. No PR, main merge, release or manual CI run.
 
 ## Previous task — Parts 1–4 integration and 0.17.0-test1 publication
 
