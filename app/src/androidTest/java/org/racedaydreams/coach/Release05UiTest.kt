@@ -56,8 +56,21 @@ class Release05UiTest {
         compose.onNodeWithTag("strength-set-draft-1").performScrollTo().assertIsDisplayed()
             .assert(hasContentDescription("Load (kg) 80") and hasContentDescription("Reps 5"))
         compose.onNodeWithContentDescription("Edit set 1").performScrollTo().performClick()
-        compose.onNodeWithText("Weight (kg)").performScrollTo().performClick().performTextReplacement("85")
-        capturePart2(context, "strength-keyboard")
+        val loadField = compose.onNodeWithText("Weight (kg)").performScrollTo()
+        loadField.performTouchInput { click() }.performTextReplacement("85")
+        val evidence = androidx.test.platform.app.InstrumentationRegistry.getArguments().getString("part2Evidence")
+        if (evidence in setOf("light", "dark")) {
+            compose.waitUntil(10_000) {
+                var visible = false
+                scenario?.onActivity { activity ->
+                    val decor = activity.window.decorView
+                    visible = androidx.core.view.ViewCompat.getRootWindowInsets(decor)
+                        ?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == true
+                }
+                visible
+            }
+            capturePart2(context, "strength-keyboard")
+        }
         androidx.test.espresso.Espresso.closeSoftKeyboard()
         compose.onNodeWithText("Update set").performScrollTo().assertIsDisplayed()
         capturePart2(context, "historical-edit")

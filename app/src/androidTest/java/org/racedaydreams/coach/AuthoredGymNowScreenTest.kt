@@ -170,6 +170,7 @@ class AuthoredGymNowScreenTest {
         compose.runOnIdle { page.value = "hub" }
         compose.onNodeWithText("Completed").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Start early").assertDoesNotExist()
+        compose.waitUntil(20_000) { !model.state.value.busy }
         val reopened = mutableStateOf(false)
         compose.runOnIdle { model.startPlanned("session") { reopened.value = true } }
         compose.waitUntil(20_000) { reopened.value || model.state.value.error != null }
