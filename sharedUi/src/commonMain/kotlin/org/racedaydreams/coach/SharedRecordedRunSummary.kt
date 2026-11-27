@@ -11,8 +11,8 @@ import org.racedaydreams.domain.activity.ActivityRecord
 
 /**
  * Presentation only: source summaries retain their original distance and timing semantics. The
- * headline figures lead (elapsed time, then distance and elapsed pace in their measure hues) on a
- * borderless panel under a glyph-labelled section heading.
+ * headline distance leads, with elapsed time and pace in their measure hues on a borderless panel
+ * under a glyph-labelled section heading.
  */
 @Composable
 fun SharedRecordedRunSummary(
@@ -30,20 +30,20 @@ fun SharedRecordedRunSummary(
             org.racedaydreams.domain.activity.RunEnvironment.INDOOR -> Text("Indoor run")
             null -> Unit
         }
-        Panel(contentPadding = PaddingValues(20.dp)) {
+        Panel(contentPadding = PaddingValues(CoachSpace.Inset)) {
             MeasureFigure(
-                "Elapsed time",
-                PaceCalculator.formatTime(activity.elapsedTime()),
-                ChartHue.TEAL,
+                "Distance",
+                activity.distanceMetres()?.let(formatDistance) ?: "Distance unavailable",
+                ChartHue.BLUE,
                 large = true,
             )
             Spacer(Modifier.height(4.dp))
             MeasureFigureRow(
                 listOf(
                     Triple(
-                        "Distance",
-                        activity.distanceMetres()?.let(formatDistance) ?: "Distance unavailable",
-                        ChartHue.BLUE,
+                        "Elapsed time",
+                        PaceCalculator.formatTime(activity.elapsedTime()),
+                        ChartHue.TEAL,
                     ),
                     Triple(
                         "Elapsed average pace",
@@ -59,7 +59,7 @@ fun SharedRecordedRunSummary(
                 )
             }
             Text(
-                "Elapsed time includes pauses. Average pace uses the whole elapsed time and recorded distance. Moving time, when available, is reported separately by the recording or provider.",
+                "Elapsed time includes pauses. Average pace uses elapsed time and distance. Moving time is shown when recorded.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

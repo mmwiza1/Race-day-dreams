@@ -3381,7 +3381,12 @@ class CoachingScreenshotTest {
                 compose.onNodeWithTag("live-elapsed").performScrollTo().assertIsDisplayed()
                 compose.onNodeWithText("Pause").assertIsDisplayed()
                 compose.onNodeWithText("Finish & save").assertIsDisplayed()
+                compose.onNodeWithText("Live run").performScrollTo().assertIsDisplayed()
                 capture("live-refined-statistics$suffix")
+                compose.onNodeWithText("Finish & save").performClick()
+                compose.onNodeWithText("Keep recording").assertIsDisplayed()
+                capturePart2(context, "piece4-live-finish$suffix")
+                compose.onNodeWithText("Keep recording").performClick()
 
                 compose.onNodeWithTag("live-route-tab").performScrollTo().performClick()
                 compose.waitUntil(20000) {
@@ -3417,7 +3422,7 @@ class CoachingScreenshotTest {
                 await("PAUSED")
                 compose.onNodeWithText("Resume").assertIsDisplayed()
                 compose.onNodeWithText("Finish & save").assertIsDisplayed()
-                compose.onNodeWithTag("live-elapsed").performScrollTo()
+                compose.onNodeWithText("PAUSED").performScrollTo().assertIsDisplayed()
                 capture("live-refined-paused$suffix")
                 Assert.assertEquals(originalPoints, store.points(sessionId))
             } finally {
@@ -3632,7 +3637,7 @@ class CoachingScreenshotTest {
             val paragraph = paragraphs.single()
             Assert.assertEquals("10:28:14", paragraph.layoutInput.text.text)
             Assert.assertFalse(
-                "Long elapsed time must not overflow horizontally",
+                "Long elapsed time must not overflow horizontally: ${paragraph.size}, ${paragraph.layoutInput.constraints}",
                 paragraph.didOverflowWidth,
             )
             Assert.assertFalse(

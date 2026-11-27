@@ -132,7 +132,7 @@ private fun RunningTodayScreen(
         Discipline.RUNNING,
         Glyph.RUN,
         when {
-            today == null -> "Nothing planned"
+            today == null -> "No run planned"
             completed -> "Done today"
             else -> "Today's run"
         },
@@ -182,7 +182,11 @@ private fun RunningTodayScreen(
                     else null,
                 )
             )
-            if (completed) Text("Completed training is retained. No catch-up mileage.")
+            if (completed)
+                Text(
+                    "Completed training is retained. No catch-up mileage.",
+                    style = MaterialTheme.typography.bodyMedium,
+                )
             if (!completed && hasRoute("execute"))
                 HeroPrimaryAction(Discipline.RUNNING, "Start with Live Coach") {
                     quick(
@@ -204,9 +208,13 @@ private fun RunningTodayScreen(
                 style = MaterialTheme.typography.bodyLarge,
             )
             upcoming.firstOrNull()?.let { next ->
-                Text(
-                    "Next: ${presentation.workoutName(next.category())} · ${presentation.shortDate(next.date())}",
-                    style = MaterialTheme.typography.bodyMedium,
+                HeroSecondaryActions(
+                    listOf(
+                        "Next run · ${presentation.workoutName(next.category())} · ${presentation.shortDate(next.date())}" to
+                            {
+                                workout(next.id())
+                            }
+                    )
                 )
             }
             gymToday?.let { gym ->

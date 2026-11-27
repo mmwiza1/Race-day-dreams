@@ -47,12 +47,21 @@ class SharedActiveRunPanelTest {
                     { "${decimal(it / 1000)} km" },
                     { Text("Persisted platform route") },
                     {},
+                    diagnostics = { Text("Existing diagnostics controls") },
                 )
             }
         }
         compose.onNodeWithTag("live-elapsed").assertExists()
-        compose.onNodeWithTag("live-route-tab").performClick()
-        compose.onNodeWithText("Persisted platform route").assertIsDisplayed()
+        compose.onNodeWithText("Existing diagnostics controls").assertDoesNotExist()
+        compose.onNodeWithTag("live-gps-troubleshooting").performScrollTo().performClick()
+        compose
+            .onNodeWithText("Existing diagnostics controls")
+            .performScrollTo()
+            .assertIsDisplayed()
+        compose.onNodeWithTag("live-gps-troubleshooting").performScrollTo().performClick()
+        compose.onNodeWithText("Existing diagnostics controls").assertDoesNotExist()
+        compose.onNodeWithTag("live-route-tab").performScrollTo().performClick()
+        compose.onNodeWithText("Persisted platform route").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("5.0 km").performScrollTo().assertIsDisplayed()
         compose.runOnIdle {
             assertTrue(commands.isEmpty())

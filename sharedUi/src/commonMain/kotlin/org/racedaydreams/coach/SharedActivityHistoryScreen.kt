@@ -179,9 +179,18 @@ fun SharedActivityHistoryScreen(
                             )
                             pace?.let { HistoryFigure(it, "elapsed average pace") }
                         }
-                        RowDetail(
-                            "Source: ${org.racedaydreams.domain.activity.ActivitySources.friendly(activity.source())}"
-                        )
+                        val source =
+                            org.racedaydreams.domain.activity.ActivitySources.friendly(
+                                activity.source()
+                            )
+                        val environment =
+                            when (activity.environment()) {
+                                org.racedaydreams.domain.activity.RunEnvironment.TREADMILL ->
+                                    "Treadmill"
+                                org.racedaydreams.domain.activity.RunEnvironment.INDOOR -> "Indoor"
+                                null -> null
+                            }
+                        RowDetail(listOfNotNull(environment, "Source: $source").joinToString(" · "))
                         val score =
                             remember(activity, state.runResponses, state.planVersions) {
                                 val response =
@@ -204,7 +213,7 @@ fun SharedActivityHistoryScreen(
                                         .score()
                             }
                         score?.let { RowDetail("Run Score $it/10") }
-                        RowDetail("Completed · tap for details")
+                        RowDetail("Completed")
                     }
                 }
             }

@@ -82,11 +82,19 @@ class CoachingInteractionTest {
     @Test fun plannedTreadmillEntryKeepsItsPrescriptionAndNoRouteEvidence() {
         seedToday()
         launch()
+        await("Start with Live Coach")
+        capturePart2(context, "piece4-today")
+        compose.onNodeWithText("Start with Live Coach").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece4-today-action")
         compose.onNodeWithText("Plan").performClick()
         compose.waitUntil(20_000) {
             compose.onAllNodesWithContentDescription("View workout and purpose").fetchSemanticsNodes().isNotEmpty()
         }
         compose.onNodeWithContentDescription("View workout and purpose").performScrollTo().performClick()
+        await("Start with Live Coach")
+        capturePart2(context, "piece4-planned-workout")
+        compose.onNodeWithText("Start with Live Coach").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece4-planned-workout-action")
         await("Record actual run")
         compose.onNodeWithText("Record actual run").performScrollTo().performClick()
         compose.onNodeWithText("Indoor treadmill run").performScrollTo().performClick()
@@ -105,6 +113,11 @@ class CoachingInteractionTest {
         Assert.assertNull(result.movingTime())
         Assert.assertEquals(5.0, CoachingStore(context).current()!!.plan().workouts().single().distanceKm()!!, 0.0)
         Assert.assertEquals("test-version", CoachingStore(context).responses().single().planVersionId())
+        await("Recorded summary")
+        compose.onNodeWithText("Recorded summary").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece4-run-summary")
+        compose.onNodeWithText("Elapsed average pace").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece4-run-metrics")
     }
 
     @Test fun actualRunFormPreservesPrescriptionAndShowsPurposeScore(){

@@ -73,23 +73,17 @@ fun SharedPlannedWorkoutScreen(
                 "The current programme no longer contains this workout. Completed prescriptions remain linked to their preserved version."
             )
         } else {
-            CoachHeading(presentation.workoutName(workout.category()))
-            Text("${dates.label(workout.date())} · plan version ${version.version()}")
-            Text(
+            val target =
                 workout.distanceKm()?.let { presentation.distance(it * 1000) }
                     ?: workout.duration()?.let { "${it.getSeconds() / 60} min" }
                     ?: "Runner-owned race"
-            )
-            if (
+            val estimatedDistance =
                 workout.distanceKm() != null &&
                     workout.segments().any {
                         it.kind() == WorkoutSegment.Kind.RECOVERY &&
                             it.distanceKm() == null &&
                             it.duration() != null
                     }
-            ) {
-                Text("The total includes an estimate for timed recoveries. Recover by time.")
-            }
             val briefing =
                 org.racedaydreams.domain.coaching.WorkoutContext.briefing(
                     workout,
@@ -98,12 +92,21 @@ fun SharedPlannedWorkoutScreen(
                     state.strengthSessions,
                     state.weeklyReview,
                 )
-            CoachCard {
-                Text("Today’s focus", style = MaterialTheme.typography.titleMedium)
-                Text(requireNotNull(briefing.title()))
-                WhyDetails(
-                    requireNotNull(briefing.observations()).joinToString("\n"),
-                    "Before you run",
+            HeroSurface(Discipline.RUNNING, Glyph.RUN, dates.label(workout.date())) {
+                HeroTitle(presentation.workoutName(workout.category()))
+                StatRow(listOf(Stat("Planned target", target)))
+                Text(requireNotNull(briefing.title()), style = MaterialTheme.typography.bodyLarge)
+                if (estimatedDistance)
+                    Text(
+                        "The total includes an estimate for timed recoveries. Recover by time.",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+            }
+            WhyDetails("Before you run") {
+                Text(requireNotNull(briefing.observations()).joinToString("\n"))
+                Text(
+                    "Plan version ${version.version()}",
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
             if (
@@ -111,7 +114,9 @@ fun SharedPlannedWorkoutScreen(
                     state.activities.none { it.plannedWorkoutId() == workout.id() }
             )
                 recovery(if (workout.category() == WorkoutCategory.RACE) null else workout.id())
-            CoachButton("Start with Live Coach") { startRun(version.id(), workout.id()) }
+            HeroPrimaryAction(Discipline.RUNNING, "Start with Live Coach") {
+                startRun(version.id(), workout.id())
+            }
             val warm =
                 org.racedaydreams.domain.support.RunningRoutines.warmup(
                     workout.category(),
@@ -361,7 +366,7 @@ private fun SharedCompletionForm(
     var time by rememberSaveable { mutableStateOf("08:00") }
     var notes by rememberSaveable { mutableStateOf("") }
     var error by rememberSaveable { mutableStateOf<String?>(null) }
-    CoachCard {
+    Panel(contentPadding = PaddingValues(CoachSpace.Inset)) {
         Text(
             if (treadmill) "Indoor treadmill run" else "Actual workout — manually entered",
             style = MaterialTheme.typography.titleMedium,
@@ -401,12 +406,15 @@ private fun SharedCompletionForm(
         } else input("Actual duration (mm:ss or h:mm:ss)", duration, { duration = it }, false)
         if (treadmillOnly) {
             Text(
-                if (details)
-                    "Use the actual start time for an older run or to match a watch recording."
-                else "Defaults to finishing now.",
-                style = MaterialTheme.typography.bodyMedium,
+                if (details) "Enter the start time to match an earlier recording."
+                else "The run will be logged as finishing now.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            TextButton(onClick = { details = !details }) {
+            TextButton(
+                onClick = { details = !details },
+                modifier = Modifier.heightIn(min = CoachSpace.Touch),
+            ) {
                 Text(if (details) "Use the current finish time" else "Set start time or add notes")
             }
         }

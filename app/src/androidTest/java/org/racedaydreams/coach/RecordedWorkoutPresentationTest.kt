@@ -1,9 +1,13 @@
 package org.racedaydreams.coach
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneOffset
@@ -27,16 +31,22 @@ class RecordedWorkoutPresentationTest {
         val run = run("labelled-run", 7200.0)
         var opened: String? = null
         compose.setContent {
-            RaceDayTheme(dynamicColour = false) {
-                ActivityHistoryScreen(
-                    CoachUiState(
-                        loading = false,
-                        activities = listOf(run),
-                        strengthSessions = listOf(strength()),
-                    ),
-                    { opened = it },
-                    loadSummaryPage = { _, _, _ -> listOf(run) },
-                )
+            RaceDayTheme(
+                darkTheme =
+                    InstrumentationRegistry.getArguments().getString("part2Evidence") == "dark",
+                dynamicColour = false,
+            ) {
+                Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                    ActivityHistoryScreen(
+                        CoachUiState(
+                            loading = false,
+                            activities = listOf(run),
+                            strengthSessions = listOf(strength()),
+                        ),
+                        { opened = it },
+                        loadSummaryPage = { _, _, _ -> listOf(run) },
+                    )
+                }
             }
         }
         compose.waitUntil(20000) {
@@ -62,8 +72,10 @@ class RecordedWorkoutPresentationTest {
                 hasText("Recorded run") and
                 hasText("7.2 km distance") and
                 hasText("0:30:00 elapsed") and
-                hasText("Completed · tap for details")
+                hasText("Completed")
         compose.onNode(hasScrollToIndexAction()).performScrollToNode(row)
+        compose.onNode(row).assertIsDisplayed()
+        capturePart2(InstrumentationRegistry.getInstrumentation().targetContext, "piece4-history")
         compose.onNode(row).performClick()
         compose.runOnIdle { assertEquals(run.id(), opened) }
     }
@@ -80,9 +92,7 @@ class RecordedWorkoutPresentationTest {
         }
         compose.onNode(hasText("Recorded summary") and isHeading()).assertIsDisplayed()
         // Each figure is read as one item: label and value together.
-        compose
-            .onNode(hasText("Elapsed time") and hasText("0:30:00"))
-            .assertIsDisplayed()
+        compose.onNode(hasText("Elapsed time") and hasText("0:30:00")).assertIsDisplayed()
         compose.onNode(hasText("Distance") and hasText("5.0 km")).assertIsDisplayed()
         compose.onNode(hasText("Elapsed average pace") and hasText("6:00/km")).assertExists()
         compose
@@ -91,7 +101,9 @@ class RecordedWorkoutPresentationTest {
             .assertIsDisplayed()
         compose.onNode(hasText("Recorded heart rate") and isHeading()).assertExists()
         compose
-            .onNodeWithText("Average and maximum heart-rate summaries are unavailable for this run.")
+            .onNodeWithText(
+                "Average and maximum heart-rate summaries are unavailable for this run."
+            )
             .performScrollTo()
             .assertIsDisplayed()
     }

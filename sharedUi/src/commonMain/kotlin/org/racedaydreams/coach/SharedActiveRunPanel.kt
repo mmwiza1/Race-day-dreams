@@ -10,10 +10,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import org.racedaydreams.domain.execution.WorkoutExecutionEngine
 import org.racedaydreams.domain.recording.RunMetricsEngine
@@ -38,6 +39,7 @@ fun SharedActiveRunPanel(
     formatDistance: (Double) -> String,
     routeContent: @Composable () -> Unit,
     dreamContent: @Composable () -> Unit,
+    diagnostics: (@Composable () -> Unit)? = null,
 ) {
     val gps = s.gps() ?: "GPS status unavailable"
     var routeView by rememberSaveable { mutableStateOf(false) }
@@ -45,33 +47,73 @@ fun SharedActiveRunPanel(
     Column(
         Modifier.fillMaxSize()
             .testTag("live-running-panel")
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .semantics { paneTitle = "Live run" }
+            .padding(horizontal = CoachSpace.Inset, vertical = CoachSpace.Related),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Column(
             Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
         ) {
-            Text(
-                if (s.paused()) "PAUSED"
-                else
-                    w?.let {
-                        if (it.complete()) "Workout steps finished"
-                        else "Step ${it.index()+1} of ${it.total()}"
-                    } ?: "Recording",
-                style = MaterialTheme.typography.headlineMedium,
-            )
-            Text(
-                gps,
-                modifier =
-                    Modifier.semantics {
-                        // Ordinary quality fluctuations stay readable without repeated speech.
-                        if (!s.paused() && gps.contains("temporarily lost"))
-                            liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
-                    },
-            )
-            if (gps == "GPS signal weak")
-                Text("Your pace may be temporarily inaccurate. Continue by effort.")
+            FlowRow(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                itemVerticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "Live run",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Surface(
+                    shape = MaterialTheme.shapes.small,
+                    color =
+                        if (s.paused()) MaterialTheme.colorScheme.secondaryContainer
+                        else MaterialTheme.colorScheme.primaryContainer,
+                    contentColor =
+                        if (s.paused()) MaterialTheme.colorScheme.onSecondaryContainer
+                        else MaterialTheme.colorScheme.onPrimaryContainer,
+                ) {
+                    Text(
+                        if (s.paused()) "PAUSED" else "Recording",
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+            }
+            val pace =
+                s.secondsPerKm()
+                    ?.takeIf { s.hasReliablePace() }
+                    ?.let {
+                        "${formatPace(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"
+                    } ?: "Pace unavailable"
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    gps,
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier =
+                        Modifier.semantics {
+                            if (!s.paused() && gps.contains("temporarily lost"))
+                                liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                        },
+                )
+                if (gps == "GPS signal weak")
+                    Text(
+                        "Your pace may be temporarily inaccurate. Continue by effort.",
+                        style = MaterialTheme.typography.bodySmall,
+                    )
+                notice?.let {
+                    Text(
+                        it,
+                        modifier =
+                            Modifier.semantics {
+                                liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite
+                            },
+                    )
+                }
+            }
+            if (!routeView) LivePrimaryMetrics(s, pace, largeText, formatTime, formatDistance)
             BoxWithConstraints(Modifier.fillMaxWidth()) {
                 if (largeText && maxWidth < 360.dp) {
                     Column(
@@ -119,71 +161,18 @@ fun SharedActiveRunPanel(
             }
             if (routeView) {
                 routeContent()
-                RunMetric("Elapsed time", formatTime(s.elapsedMillis()))
-            } else {
-                Surface(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    shape = MaterialTheme.shapes.extraLarge,
-                    modifier = Modifier.fillMaxWidth().testTag("live-elapsed"),
-                ) {
-                    Column(
-                        Modifier.fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 24.dp)
-                            .semantics(mergeDescendants = true) {},
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        Text("Elapsed time", style = MaterialTheme.typography.labelLarge)
-                        BoxWithConstraints(Modifier.fillMaxWidth()) {
-                            // Select an existing type role for the available width. Android's
-                            // requested font scale still applies in full to every role.
-                            val timeStyle =
-                                when {
-                                    maxWidth < 300.dp -> MaterialTheme.typography.headlineLarge
-                                    maxWidth < 400.dp -> MaterialTheme.typography.displayMedium
-                                    else -> MaterialTheme.typography.displayLarge
-                                }
-                            Text(
-                                formatTime(s.elapsedMillis()),
-                                modifier = Modifier.fillMaxWidth(),
-                                style =
-                                    timeStyle.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        fontFeatureSettings = "tnum",
-                                    ),
-                                textAlign = TextAlign.Center,
-                            )
-                        }
-                        Text(
-                            "Active ${formatTime(s.movingMillis())}",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                    }
-                }
+                LivePrimaryMetrics(s, pace, largeText, formatTime, formatDistance)
             }
-            if (w != null && !w.complete()) LiveWorkoutProgress(w, imperial, formatDecimal)
+            if (w?.complete() == true)
+                Text("Workout steps finished", style = MaterialTheme.typography.titleMedium)
+            else if (w != null) LiveWorkoutProgress(w, imperial, formatDecimal)
             FlowRow(
                 Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
                 maxItemsInEachRow = if (largeText) 1 else 2,
             ) {
-                LiveMetricCard(
-                    "Distance",
-                    formatDistance(s.metres()),
-                    Modifier.weight(1f),
-                    prominent = true,
-                )
-                LiveMetricCard(
-                    "Current pace",
-                    s.secondsPerKm()
-                        ?.takeIf { s.hasReliablePace() }
-                        ?.let {
-                            "${formatPace(it*if(imperial)1.609344 else 1.0)} /${if(imperial)"mi"else"km"}"
-                        } ?: "Pace unavailable",
-                    Modifier.weight(1f),
-                )
+                LiveMetricCard("Active time", formatTime(s.movingMillis()), Modifier.weight(1f))
                 if (s.metres() > 0 && s.movingMillis() > 0)
                     LiveMetricCard(
                         "Active average pace",
@@ -218,15 +207,11 @@ fun SharedActiveRunPanel(
                         formatPace,
                     )
             }
-            notice?.let { Text(it) }
-            var details by remember { mutableStateOf(false) }
-            TextButton(
-                onClick = { details = !details },
-                modifier = Modifier.heightIn(min = 48.dp),
+            ExpandableSection(
+                "Workout details / controls",
+                "Workout steps, pace and coaching",
+                "live-workout-details",
             ) {
-                Text(if (details) "Hide details" else "Workout details / controls")
-            }
-            if (details) {
                 Text(
                     "Current pace reflects recent reliable GPS movement. Average pace summarises the run using the timing shown. Weak GPS can make current pace unavailable; no missing movement is invented."
                 )
@@ -261,6 +246,15 @@ fun SharedActiveRunPanel(
                     "You can finish early. Unobserved distance and incomplete steps are never filled in."
                 )
             }
+            ExpandableSection(
+                "GPS troubleshooting",
+                "Review recording and signal information",
+                "live-gps-troubleshooting",
+            ) {
+                Text("If the signal drops, keep recording and use your effort to guide your pace.")
+                if (diagnostics != null) diagnostics()
+                else Text("Find recording reports in Settings under Data and storage.")
+            }
         }
         var confirmFinish by rememberSaveable { mutableStateOf(false) }
         FlowRow(
@@ -286,11 +280,7 @@ fun SharedActiveRunPanel(
             AlertDialog(
                 onDismissRequest = { confirmFinish = false },
                 title = { Text("Finish this run?") },
-                text = {
-                    Text(
-                        "Save the distance and time recorded so far. You can keep recording instead."
-                    )
-                },
+                text = { Text("Save the distance and time recorded so far.") },
                 confirmButton = {
                     TextButton(
                         onClick = {
@@ -309,18 +299,58 @@ fun SharedActiveRunPanel(
 }
 
 @Composable
-private fun RunMetric(label: String, value: String, prominent: Boolean = false) {
-    Column(
-        Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+private fun LivePrimaryMetrics(
+    status: RunMetricsEngine.Status,
+    pace: String,
+    largeText: Boolean,
+    formatTime: (Long) -> String,
+    formatDistance: (Double) -> String,
+) {
+    LiveDistance(formatDistance(status.metres()))
+    val elapsed = formatTime(status.elapsedMillis())
+    if (largeText) {
+        // Give each metric the whole row, including long elapsed values at 200% text.
+        Column(
+            Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+        ) {
+            LiveMetricCard("Elapsed time", elapsed, Modifier.fillMaxWidth().testTag("live-elapsed"))
+            LiveMetricCard("Current pace", pace, Modifier.fillMaxWidth())
+        }
+    } else {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Related),
+        ) {
+            LiveMetricCard("Elapsed time", elapsed, Modifier.weight(1f).testTag("live-elapsed"))
+            LiveMetricCard("Current pace", pace, Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun LiveDistance(distance: String) {
+    Surface(
+        color = MaterialTheme.colorScheme.primaryContainer,
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        shape = MaterialTheme.shapes.extraLarge,
+        modifier = Modifier.fillMaxWidth(),
     ) {
-        Text(label, style = MaterialTheme.typography.labelLarge)
-        Text(
-            value,
-            style =
-                if (prominent) MaterialTheme.typography.displaySmall
-                else MaterialTheme.typography.headlineMedium,
-        )
+        Column(
+            Modifier.fillMaxWidth().padding(CoachSpace.Inset).semantics(mergeDescendants = true) {},
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text("Distance", style = MaterialTheme.typography.labelLarge)
+            Text(
+                distance,
+                modifier = Modifier.fillMaxWidth(),
+                style =
+                    MaterialTheme.typography.displayMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontFeatureSettings = "tnum",
+                    ),
+            )
+        }
     }
 }
 
@@ -347,9 +377,12 @@ private fun LiveWorkoutProgress(
         shape = MaterialTheme.shapes.large,
         modifier = Modifier.fillMaxWidth().testTag("live-workout-progress"),
     ) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(
+            Modifier.padding(CoachSpace.Inset),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
-                step.kind().name.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() },
+                "Step ${w.index()+1} of ${w.total()} · ${step.kind().name.lowercase().replace('_', ' ')}",
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
@@ -374,20 +407,17 @@ private fun LiveWorkoutProgress(
 }
 
 @Composable
-private fun LiveMetricCard(
-    label: String,
-    value: String,
-    modifier: Modifier = Modifier,
-    prominent: Boolean = false,
-) {
+private fun LiveMetricCard(label: String, value: String, modifier: Modifier = Modifier) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         shape = MaterialTheme.shapes.large,
         modifier = modifier,
     ) {
         Column(
-            Modifier.fillMaxWidth().padding(16.dp).semantics(mergeDescendants = true) {},
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            Modifier.fillMaxWidth().padding(CoachSpace.Related).semantics(
+                mergeDescendants = true
+            ) {},
+            verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
                 label,
@@ -396,12 +426,12 @@ private fun LiveMetricCard(
             )
             Text(
                 value,
+                modifier = Modifier.fillMaxWidth(),
                 style =
-                    if (prominent) MaterialTheme.typography.headlineMedium
-                    else MaterialTheme.typography.headlineSmall,
-                color =
-                    if (prominent) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurface,
+                    MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontFeatureSettings = "tnum",
+                    ),
             )
         }
     }

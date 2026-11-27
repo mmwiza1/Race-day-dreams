@@ -22,6 +22,7 @@ fun ActiveRunPanel(
     notice: String?,
     imperial: Boolean,
     send: (String) -> Unit,
+    diagnostics: (@Composable () -> Unit)? = null,
 ) {
     SharedActiveRunPanel(
         s,
@@ -40,6 +41,7 @@ fun ActiveRunPanel(
                 if (imperial) " mi" else " km"
         },
         routeContent = { LiveRecordedRoute() },
+        diagnostics = diagnostics,
         dreamContent = {
             val dream by RunRecordingService.dreamRoute.collectAsState()
             dream?.let { route ->

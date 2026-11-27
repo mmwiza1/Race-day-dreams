@@ -79,7 +79,8 @@ class TreadmillEntryTest {
             .onNodeWithText("Actual distance (km)")
             .performScrollTo()
             .performTextReplacement("5.1")
-        compose.onNodeWithText("Duration").performScrollTo().performTextReplacement("33:30")
+        compose.onNodeWithText("Duration").performScrollTo().performClick()
+        compose.onNodeWithText("Duration").assertIsFocused().performTextReplacement("33:30")
         compose
             .onNodeWithText("For example, 33:30 or 1:05:00", useUnmergedTree = true)
             .assertExists()

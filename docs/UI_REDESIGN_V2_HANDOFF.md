@@ -1,17 +1,17 @@
 # UI Redesign v2 handoff
 
-**Piece 3 is complete. Pause for owner review before Piece 4.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
+**Piece 4 is complete. Pause for owner review before Piece 5.** The redesign uses `feature/rdd-ui-v2`, based on published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` (0.17.0-test1 / 30). Keep subsequent pieces on this branch in one development session. The branch has no PR.
 
 ## Eight-piece roadmap
 
-The owner approved Design Foundations, Themes and Shared Components, and Strength Experience as Pieces 1–3. The archive defines screen patterns without listing a numbered roadmap. The remaining sequence is proposed for review. Each later piece requires explicit approval.
+The owner approved Pieces 1–4. The archive defines screen patterns without listing a numbered roadmap. The remaining sequence is proposed for review. Each later piece requires explicit approval.
 
 | Piece | Focus | Expected checkpoint |
 | --- | --- | --- |
 | 1 | Design foundations | Completed. Publish the original six concepts, benchmark, mandatory standards and recovery notes. |
 | 2 | Themes and shared components | Give Progress its own portable accent, update the default identities, and refine shared component layout and states. |
 | 3 | Strength experience | Refine historical and planned logging, Gym Now, previous performance, draft and saved sets, exercise replacement context and workout review. |
-| 4 | Running | Proposed. Refine live recording hierarchy, glanceable metrics, trustworthy state, route presentation and safe controls. Review the running entry and Today surfaces as they relate to this flow. |
+| 4 | Running and Today | Refine live recording metrics, state and controls, Today, preparation, treadmill entry and recorded run review. |
 | 5 | Bouldering | Refine grade, attempt, outcome and session logging, with scannable recent climbs. |
 | 6 | Progress | Refine trends, comparisons and drill-downs across the supported disciplines. Preserve metric definitions and data sources. |
 | 7 | Supporting flows | Refine workout generation, Exercise Library, Settings and diagnostics within the approved scope. |
@@ -50,6 +50,46 @@ The owner approved Design Foundations, Themes and Shared Components, and Strengt
 - **Task clarity and hierarchy:** Date, exercise and last performance are grouped above the set workflow, with Add set and Save distinct. **Repeat-task efficiency:** Review and duplication retain draft values, and direct editing plus the set menu keep repetitive actions compact. **Progressive disclosure:** Set options and session details are collapsed by default. **Consistency and visual quality:** Both loggers share neutral rows, accent-led actions and a legible workflow. **Accessibility:** At 200%, inputs stack, effort chips wrap and the editing scroll targets the fields. **Functional integrity:** UI and storage checks cover save, reopen, programme association, duplicate prevention and replacement provenance.
 - Native iOS rendering, manual screen-reader checks and the full device matrix remain unverified. The existing PB-history snackbar can briefly accompany the historical save confirmation.
 
+## Piece 4 changes
+
+- Live recording leads with the recording state, GPS status, distance, elapsed time and current pace. Pause or Resume and the separately confirmed Finish remain available while the metrics scroll. The Route view retains existing route gaps and access to the same metrics. Workout controls and GPS troubleshooting use accessible disclosures. Android exposes the existing recording report reviewer and exporter. iOS identifies the existing Settings path.
+- Today links directly to the next planned run from a rest day. Workout preparation groups the planned distance or time with its briefing and keeps recovery and the timed-recovery distance caveat ahead of the Live Coach action.
+- Treadmill entry uses a neutral surface, short timestamp guidance and a larger details control. Run review leads with distance and labels elapsed average pace. History identifies indoor and treadmill entries alongside their source.
+- The recording engine, data and training-plan operations, Health Connect, duplicate decisions, bottom navigation and Dream Routes are unchanged.
+
+## Piece 4 verification and visual review
+
+- Android debug app and instrumentation APKs built. Debug lint, the pinned formatter for
+  changed in-scope Kotlin and diff checks passed. Initial API 28 runs passed 29 focused
+  functional checks, four dark 200% checks, and production route and timed-recovery checks.
+- A 320dp test at 200% found that Compose reported width overflow for a ten-hour clock.
+  The metric cards now stack at enlarged text and value text uses the available card width.
+  The final build passed the original long-clock, no-overflow, no-horizontal-scroll and
+  full-control visibility assertions. The final build passed 13 focused API 28 tests across
+  the long-clock check, production live route and state, light and dark 200% treadmill entry,
+  Today, workout preparation and recorded review. The dark capture includes the open keyboard.
+- The before/after review bundle is `Race-Day-Dreams-UI-v2-Piece-4-Android.zip`. The baseline
+  uses authentic published 0.17.0-test1 captures and the archived treadmill review. The
+  current images use a compact API 28 device around 360dp and a separate 320dp fixture.
+  Fixture values depict test workouts and routes.
+
+| Design check | Actual render and interaction review |
+| --- | --- |
+| Task clarity | The recording badge and GPS label establish state. Pause or Resume stays visible beside or above the separate Finish action. The confirmation names what will be saved. |
+| Visual hierarchy | As in both running references, distance leads and elapsed time and current pace follow. The plan card leads with the target and briefing. Recorded review uses the same order for elapsed metrics with explicit time semantics. |
+| Interaction efficiency | Tapping the next run opens its details from Today. The treadmill path starts with distance and duration and offers an optional start time and notes. |
+| Progressive disclosure | Workout controls and GPS troubleshooting expand on request. Android opens the existing diagnostics reviewer and exporter. |
+| Consistency | The running accent and Material 3 shapes carry across light and dark, and the neutral history and input surfaces match other disciplines. |
+| Visual quality | Compared the compact Statistics, Route, paused and Finish states, the plan and recorded summary, and the keyboard-open treadmill form. Used the benchmark's distance and action hierarchy with the app's offline route outline. |
+| Accessibility | The full `10:28:14` clock, `42.20 km` distance and both actions fit at 320dp and 200%. Secondary values and preparation content scroll. The existing shell can abbreviate the app name at this size. |
+| Functional integrity | Route switching preserves the staged point sequence and recorder state. Finish requires a second action. Treadmill saves retain the plan link and source, carry no GPS route and count once with an overlapping provider copy. |
+
+Native iOS, physical GPS, manual TalkBack/VoiceOver and wallpaper-derived accents on Android
+12 or later remain unverified. The focused checkpoint leaves the full device matrix and
+canonical gallery refresh for integration.
+
 ## Next safe step
 
-Wait for owner approval before Piece 4. Fetch and verify the existing branch and follow the owner’s exact scope. If authorised to work on Running, capture the existing flow first and use both running concepts. Preserve navigation, Dream Routes, branding, user-customisable discipline colours, recording behaviour and data contracts. Update the [continuation guide](../CONTINUE_CODEX.md) at meaningful checkpoints.
+Wait for owner approval before Piece 5. Fetch and verify the existing redesign branch, read the
+benchmark and follow the scope the owner approves. Keep the published build and active redesign
+checkpoint distinct in the [continuation guide](../CONTINUE_CODEX.md).

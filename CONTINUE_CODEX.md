@@ -15,18 +15,18 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — UI Redesign v2, Piece 3
+## Active task — UI Redesign v2, Piece 4
 
-- Use `feature/rdd-ui-v2` in `/workspace/scratch/rdd-ui-v2` and one development session.
-  Piece 1 was verified at `3d0ac1201c272ff198c276de190dab79c9c34818` and Piece 2 at
-  `bb372a1c36728a4e2945063c805218e1f3071fb1`. Read the [benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md)
-  and [mandatory UI standards](docs/UI_DESIGN_STANDARDS.md).
-- The owner designated Piece 3 as Strength Experience. The [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md)
-  records the historical logger, Gym Now and history changes, the tested save and review paths,
-  and remaining validation limits. Keep existing workout and storage contracts.
-- Piece 3 validation passed. The handoff records focused Android and storage results and the
-  before/after review bundle. Stop here and wait for owner approval before Piece 4. The checkpoint
-  authorises a branch push. PR paperwork, release and manual CI are outside this checkpoint.
+- Work on the single `feature/rdd-ui-v2` branch in `/workspace/scratch/rdd-ui-v2`. The verified
+  Piece 3 starting point is `816e427df195c0374efc86fb3ed27de9610d4807`. Use the
+  [benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md) and [UI standards](docs/UI_DESIGN_STANDARDS.md).
+- The owner approved Running and Today. The [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md)
+  records the changes and checkpoint evidence. Keep the existing recording engine and data
+  contracts, bottom navigation icons, Dream Routes and discipline accents.
+- Piece 4 verification is complete. The handoff records the 13 final focused API 28 checks,
+  the 320dp and 200% elapsed-time regression, the before/after evidence bundle and limitations.
+- The checkpoint authorises a branch push. Pause for owner review before Piece 5. No PR,
+  release, merge or manual CI run is part of this checkpoint.
 
 ## Previous task — Parts 1–4 integration and 0.17.0-test1 publication
 

@@ -30,7 +30,18 @@ import org.racedaydreams.data.RecordingStore
     val workout by RunRecordingService.workoutState.collectAsState()
     val cue by RunRecordingService.cue.collectAsState()
     val race by RunRecordingService.raceContext.collectAsState()
-    status?.let{ActiveRunPanel(it,workout,hr,cue,race,notice?:recovery,model.state.value.profile?.preferences()?.units()==org.racedaydreams.domain.UnitSystem.IMPERIAL,::send);return}
+    status?.let {
+        ActiveRunPanel(
+            it, workout, hr, cue, race, notice ?: recovery,
+            model.state.value.profile?.preferences()?.units() == org.racedaydreams.domain.UnitSystem.IMPERIAL,
+            ::send,
+            diagnostics = {
+                val state by model.state.collectAsState()
+                DiagnosticExport(state)
+            },
+        )
+        return
+    }
     CoachPage {
     if(running&&status==null)Text("Preparing recording…")
     CoachHeading(if(workoutId!=null)"Live Coach"else "Record a run")
