@@ -36,6 +36,7 @@ fun tileColour(tile: Tile): Color {
 fun SemanticCard(tile: Tile, content: @Composable ColumnScope.() -> Unit) {
     Card(
         Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
         colors =
             CardDefaults.cardColors(
                 containerColor = tileColour(tile),

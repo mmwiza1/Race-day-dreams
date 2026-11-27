@@ -42,14 +42,13 @@ fun SharedTrainingTrends(
         remember(activities, today, period) {
             RecordedWeekAggregation.weekly(activities, today, period.weeks, dateAt)
         }
-    // The same compact running header as Progress → Running: content, not an action, leads.
     ScreenHeader(
-        Discipline.RUNNING,
+        Discipline.PROGRESS,
         Glyph.TREND,
         eyebrow = "Weekly running",
         title = "Training trends",
     )
-    PeriodSelector(period, Discipline.RUNNING) { periodName = it.name }
+    PeriodSelector(period, Discipline.PROGRESS) { periodName = it.name }
     weeks.firstOrNull()?.weekStart()?.let { first ->
         Text(
             "${friendlyDate(first)} – ${friendlyDate(today)} · calendar weeks, this week in progress",

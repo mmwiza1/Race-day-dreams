@@ -43,6 +43,7 @@ enum class Discipline(val label: String) {
     RUNNING("Run"),
     STRENGTH("Strength"),
     RECOVERY("Recovery"),
+    PROGRESS("Progress"),
     BOULDERING("Bouldering"),
 }
 
@@ -95,6 +96,7 @@ fun Discipline.accent(): Color =
             Discipline.RUNNING -> org.racedaydreams.coach.theme.disciplineBaseScheme().primary
             Discipline.STRENGTH,
             Discipline.BOULDERING -> org.racedaydreams.coach.theme.disciplineBaseScheme().tertiary
+            Discipline.PROGRESS,
             Discipline.RECOVERY -> org.racedaydreams.coach.theme.disciplineBaseScheme().secondary
         }
 
@@ -107,6 +109,7 @@ fun Discipline.container(): Color =
             Discipline.STRENGTH,
             Discipline.BOULDERING ->
                 org.racedaydreams.coach.theme.disciplineBaseScheme().tertiaryContainer
+            Discipline.PROGRESS,
             Discipline.RECOVERY ->
                 org.racedaydreams.coach.theme.disciplineBaseScheme().secondaryContainer
         }
@@ -120,6 +123,7 @@ fun Discipline.onContainer(): Color =
             Discipline.STRENGTH,
             Discipline.BOULDERING ->
                 org.racedaydreams.coach.theme.disciplineBaseScheme().onTertiaryContainer
+            Discipline.PROGRESS,
             Discipline.RECOVERY ->
                 org.racedaydreams.coach.theme.disciplineBaseScheme().onSecondaryContainer
         }
@@ -131,6 +135,7 @@ internal fun Discipline.customAccent(): org.racedaydreams.coach.theme.AccentRole
             Discipline.RUNNING -> org.racedaydreams.domain.settings.ColourDiscipline.RUNNING
             Discipline.STRENGTH -> org.racedaydreams.domain.settings.ColourDiscipline.STRENGTH
             Discipline.BOULDERING -> org.racedaydreams.domain.settings.ColourDiscipline.BOULDERING
+            Discipline.PROGRESS -> org.racedaydreams.domain.settings.ColourDiscipline.PROGRESS
             Discipline.RECOVERY -> return null
         }
     return org.racedaydreams.coach.theme.currentAccent(target)
@@ -223,14 +228,20 @@ fun StatBlock(stat: Stat, modifier: Modifier = Modifier, large: Boolean = false)
 @Composable
 fun StatRow(stats: List<Stat>, modifier: Modifier = Modifier) {
     if (stats.isEmpty()) return
-    if (LocalDensity.current.fontScale >= 1.5f)
-        Column(modifier, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            stats.forEach { StatBlock(it) }
+    BoxWithConstraints(modifier.fillMaxWidth()) {
+        if (LocalDensity.current.fontScale >= 1.5f || maxWidth < 320.dp && stats.size > 2) {
+            Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Card)) {
+                stats.forEach { StatBlock(it) }
+            }
+        } else {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(CoachSpace.Inset),
+            ) {
+                stats.forEach { StatBlock(it, Modifier.weight(1f)) }
+            }
         }
-    else
-        Row(modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            stats.forEach { StatBlock(it, Modifier.weight(1f)) }
-        }
+    }
 }
 
 /** Completion state of one session on one day; the week strip draws it as a distinct shape. */
@@ -351,10 +362,12 @@ private fun DayColumn(
         Text(
             day.weekday,
             style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color =
+                if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 1,
         )
-        DayNumber(day, isToday)
+        DayNumber(day, isToday, isSelected)
         Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
             day.sessions.take(3).forEach { SessionDot(it) }
         }
@@ -362,7 +375,7 @@ private fun DayColumn(
 }
 
 @Composable
-private fun DayNumber(day: WeekDay, isToday: Boolean) {
+private fun DayNumber(day: WeekDay, isToday: Boolean, isSelected: Boolean) {
     Box(
         Modifier.size(32.dp)
             .clip(CircleShape)
@@ -373,8 +386,11 @@ private fun DayNumber(day: WeekDay, isToday: Boolean) {
             "${day.date.getDayOfMonth()}",
             style = MaterialTheme.typography.labelLarge,
             color =
-                if (isToday) MaterialTheme.colorScheme.onPrimary
-                else MaterialTheme.colorScheme.onSurface,
+                when {
+                    isToday -> MaterialTheme.colorScheme.onPrimary
+                    isSelected -> MaterialTheme.colorScheme.onSecondaryContainer
+                    else -> MaterialTheme.colorScheme.onSurface
+                },
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
@@ -400,7 +416,10 @@ private fun DayRow(day: WeekDay, isToday: Boolean, isSelected: Boolean, toggle: 
         Text(
             WeekAtAGlance.dayLabel(day.date) + if (isToday) " · Today" else "",
             style = MaterialTheme.typography.bodyMedium,
-            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+            fontWeight = if (isToday || isSelected) FontWeight.Bold else FontWeight.Normal,
+            color =
+                if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer
+                else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -689,21 +708,35 @@ fun CountdownCard(
 /** Section title with an optional quiet trailing summary, e.g. "This week · 2 of 4 done". */
 @Composable
 fun SectionTitle(title: String, trailing: String? = null) {
-    Row(
-        Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
+    val heading: @Composable (Modifier) -> Unit = { modifier ->
         Text(
             title,
             style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.semantics { heading() },
+            modifier = modifier.semantics { heading() },
         )
+    }
+    val summary: @Composable () -> Unit = {
         if (trailing != null)
             Text(
                 trailing,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+    }
+    if (trailing == null) heading(Modifier)
+    else if (LocalDensity.current.fontScale >= 1.5f) {
+        Column(verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny)) {
+            heading(Modifier)
+            summary()
+        }
+    } else {
+        FlowRow(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Tiny),
+        ) {
+            heading(Modifier.padding(end = CoachSpace.Related))
+            summary()
+        }
     }
 }

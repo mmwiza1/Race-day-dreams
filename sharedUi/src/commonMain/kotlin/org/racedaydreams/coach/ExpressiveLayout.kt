@@ -112,6 +112,7 @@ fun Discipline.onAccent(): Color =
             Discipline.RUNNING -> org.racedaydreams.coach.theme.disciplineBaseScheme().onPrimary
             Discipline.STRENGTH,
             Discipline.BOULDERING -> org.racedaydreams.coach.theme.disciplineBaseScheme().onTertiary
+            Discipline.PROGRESS,
             Discipline.RECOVERY -> org.racedaydreams.coach.theme.disciplineBaseScheme().onSecondary
         }
 
@@ -167,7 +168,7 @@ fun HeroPrimaryAction(discipline: Discipline, label: String, onClick: () -> Unit
                 containerColor = discipline.accent(),
                 contentColor = discipline.onAccent(),
             ),
-        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
+        contentPadding = PaddingValues(horizontal = CoachSpace.Inset, vertical = CoachSpace.Card),
         modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp),
     ) {
         GlyphIcon(Glyph.PLAY, discipline.onAccent(), 18.dp)
@@ -189,10 +190,10 @@ fun HeroSecondaryActions(actions: List<Pair<String, () -> Unit>>) {
             onClick = action,
             color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
             shape = RoundedCornerShape(20.dp),
-            modifier = m.heightIn(min = 52.dp),
+            modifier = m.heightIn(min = CoachSpace.Touch),
         ) {
             Row(
-                Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                Modifier.padding(horizontal = CoachSpace.Inset, vertical = CoachSpace.Card),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -360,13 +361,14 @@ fun ScreenHeader(
     val onContainer = discipline.onContainer()
     Surface(
         color = discipline.container(),
-        shape = RoundedCornerShape(24.dp),
+        contentColor = onContainer,
+        shape = RoundedCornerShape(CoachSpace.Section),
         modifier = Modifier.fillMaxWidth().testTag("screen-header"),
     ) {
         Row(
-            Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            Modifier.padding(horizontal = CoachSpace.Inset, vertical = CoachSpace.Card),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
+            horizontalArrangement = Arrangement.spacedBy(CoachSpace.Card),
         ) {
             GlyphDisc(glyph, discipline.accent(), discipline.onAccent(), 44.dp)
             Column(Modifier.weight(1f)) {
@@ -429,7 +431,7 @@ fun SectionLabel(
 @Composable
 fun Panel(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(20.dp),
+    contentPadding: PaddingValues = PaddingValues(CoachSpace.Inset),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
@@ -439,7 +441,7 @@ fun Panel(
     ) {
         Column(
             Modifier.padding(contentPadding),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
             content = content,
         )
     }
@@ -453,7 +455,7 @@ fun ExpressiveSection(
     hue: ChartHue,
     caption: String? = null,
     trailing: (@Composable () -> Unit)? = null,
-    contentPadding: PaddingValues = PaddingValues(20.dp),
+    contentPadding: PaddingValues = PaddingValues(CoachSpace.Inset),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {

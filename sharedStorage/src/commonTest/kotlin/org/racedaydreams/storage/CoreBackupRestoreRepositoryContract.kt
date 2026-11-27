@@ -27,6 +27,20 @@ abstract class CoreBackupRestoreRepositoryContract {
     }
 
     @Test
+    fun previousBackupWithoutProgressKeepsExplicitGreenSettings() = storage { source, target ->
+        val settings = SqliteSettings(source)
+        DisciplineColours.save(settings, ColourDiscipline.SETTINGS, AccentColour.GREEN)
+        val backup = SqliteCoreBackup(source).snapshot().data
+        SqliteCoreBackupRestore(target).populate(CoreBackupDataJson.decode(backup))
+        val restored = SqliteSettings(target)
+        assertEquals(
+            mapOf(ColourDiscipline.SETTINGS to AccentColour.GREEN),
+            DisciplineColours.read(restored),
+        )
+        assertNull(restored.getSetting(ColourDiscipline.PROGRESS.key))
+    }
+
+    @Test
     fun disciplineColoursRestoreIndependentlyAndResetToDefaults() = storage { source, target ->
         val settings = SqliteSettings(source)
         assertTrue(DisciplineColours.read(settings).isEmpty())
@@ -35,14 +49,20 @@ abstract class CoreBackupRestoreRepositoryContract {
                 ColourDiscipline.RUNNING to AccentColour.TEAL,
                 ColourDiscipline.STRENGTH to AccentColour.BLUE,
                 ColourDiscipline.BOULDERING to AccentColour.AMBER,
-                ColourDiscipline.SETTINGS to AccentColour.VIOLET,
+                ColourDiscipline.SETTINGS to AccentColour.GREEN,
             )
         selections.forEach { (discipline, colour) ->
             DisciplineColours.save(settings, discipline, colour)
         }
         assertEquals(selections, DisciplineColours.read(SqliteSettings(source)))
-        SqliteCoreBackupRestore(target).populate(SqliteCoreBackup(source).snapshot().core)
+        val withProgress = selections + (ColourDiscipline.PROGRESS to AccentColour.VIOLET)
+        DisciplineColours.save(settings, ColourDiscipline.PROGRESS, AccentColour.VIOLET)
+        assertEquals(withProgress, DisciplineColours.read(SqliteSettings(source)))
+        val backup = SqliteCoreBackup(source).snapshot().data
+        SqliteCoreBackupRestore(target).populate(CoreBackupDataJson.decode(backup))
         val restored = SqliteSettings(target)
+        assertEquals(withProgress, DisciplineColours.read(restored))
+        DisciplineColours.save(restored, ColourDiscipline.PROGRESS, null)
         assertEquals(selections, DisciplineColours.read(restored))
         DisciplineColours.save(restored, ColourDiscipline.STRENGTH, null)
         assertEquals(selections - ColourDiscipline.STRENGTH, DisciplineColours.read(restored))

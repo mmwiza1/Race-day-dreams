@@ -5,6 +5,7 @@ enum class ColourDiscipline(val key: String, val label: String) {
     RUNNING("appearance.accent.running", "Running"),
     STRENGTH("appearance.accent.strength", "Gym / Strength"),
     BOULDERING("appearance.accent.bouldering", "Bouldering"),
+    PROGRESS("appearance.accent.progress", "Progress"),
     SETTINGS("appearance.accent.settings", "Settings"),
 }
 

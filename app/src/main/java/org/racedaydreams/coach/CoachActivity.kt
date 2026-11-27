@@ -333,6 +333,7 @@ private fun android.content.Intent?.consumeOpenUpdates(): Boolean {
 private fun routeDiscipline(route: String?): ColourDiscipline? {
     val root = route?.substringBefore('/')?.substringBefore('?')
     return when {
+        root == "progress" -> ColourDiscipline.PROGRESS
         root == "settings" -> ColourDiscipline.SETTINGS
         root == "bouldering" -> ColourDiscipline.BOULDERING
         root?.startsWith("gym") == true ||
@@ -356,7 +357,7 @@ private fun routeDiscipline(route: String?): ColourDiscipline? {
                 "assessment",
                 "manual",
                 "goals",
-            ) || route in setOf("progress/trends", "progress/pbs") -> ColourDiscipline.RUNNING
+            ) -> ColourDiscipline.RUNNING
         else -> null
     }
 }

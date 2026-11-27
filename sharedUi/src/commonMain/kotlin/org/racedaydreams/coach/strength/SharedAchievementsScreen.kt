@@ -44,7 +44,7 @@ fun SharedAchievementsScreen(
         QuietNote(
             "Recognise your training without streaks, penalties or pressure to train through a break."
         )
-        if (loading) CircularProgressIndicator()
+        if (loading) CoachLoading("Loading milestones…")
         error?.let { SemanticCard(Tile.Warning) { Text(it) } }
         notice?.let {
             SemanticCard(Tile.Progress) {
@@ -54,11 +54,7 @@ fun SharedAchievementsScreen(
         }
         if (!loading && awards.isEmpty())
             Panel {
-                Text(
-                    "No eligible milestones recorded yet.",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
+                SectionTitle("No eligible milestones recorded yet.")
                 QuietNote(
                     "A completed workout with a working set, or a recorded run, is enough to begin. Historical training can qualify; no maximal test is needed."
                 )

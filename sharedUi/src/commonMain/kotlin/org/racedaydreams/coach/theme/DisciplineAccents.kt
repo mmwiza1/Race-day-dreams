@@ -44,13 +44,22 @@ private val LocalBaseScheme = compositionLocalOf<ColorScheme?> { null }
 internal fun disciplineBaseScheme(): ColorScheme =
     LocalBaseScheme.current ?: MaterialTheme.colorScheme
 
+private fun ColourDiscipline.defaultColour(): AccentColour? =
+    when (this) {
+        ColourDiscipline.RUNNING -> null // Follow the existing Running primary and Material You.
+        ColourDiscipline.STRENGTH -> AccentColour.VIOLET
+        ColourDiscipline.BOULDERING -> AccentColour.PLUM
+        ColourDiscipline.PROGRESS -> AccentColour.GREEN
+        ColourDiscipline.SETTINGS -> AccentColour.AMBER
+    }
+
 private val LocalAccents = compositionLocalOf<Map<ColourDiscipline, AccentColour>> { emptyMap() }
 
 @Composable
 internal fun currentAccent(discipline: ColourDiscipline): AccentRoles? =
-    (LocalAccents.current[discipline]
-            ?: AccentColour.GREEN.takeIf { discipline == ColourDiscipline.SETTINGS })
-        ?.roles(MaterialTheme.colorScheme.surface.luminance() < 0.5f)
+    (LocalAccents.current[discipline] ?: discipline.defaultColour())?.roles(
+        MaterialTheme.colorScheme.surface.luminance() < 0.5f
+    )
 
 @Composable
 fun DisciplineAppearance(
@@ -109,7 +118,10 @@ fun DisciplineColourSettings(
         CoachFilterChip(
             selected == null,
             { if (selected != null) select(discipline, null) },
-            { Text(if (discipline == ColourDiscipline.SETTINGS) "Default (green)" else "Default") },
+            {
+                val default = discipline.defaultColour()
+                Text(if (default == null) "Default" else "Default (${default.label.lowercase()})")
+            },
             enabled = !busy,
         )
         AccentColour.entries.forEach { colour ->

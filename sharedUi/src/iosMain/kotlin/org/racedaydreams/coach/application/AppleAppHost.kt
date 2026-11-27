@@ -205,6 +205,9 @@ private enum class ApplePage {
 private fun ApplePage.colourDiscipline(): ColourDiscipline? =
     when (this) {
         ApplePage.SETTINGS -> ColourDiscipline.SETTINGS
+        ApplePage.PROGRESS,
+        ApplePage.RUNNING_TRENDS,
+        ApplePage.RESULTS -> ColourDiscipline.PROGRESS
         ApplePage.BOULDERING,
         ApplePage.BOULDERING_SESSION,
         ApplePage.BOULDERING_REVIEW,
@@ -225,8 +228,6 @@ private fun ApplePage.colourDiscipline(): ColourDiscipline? =
         ApplePage.MANUAL_BASELINE,
         ApplePage.ASSESSMENT,
         ApplePage.RACE,
-        ApplePage.RUNNING_TRENDS,
-        ApplePage.RESULTS,
         ApplePage.ACTIVITY -> ColourDiscipline.RUNNING
         else -> null
     }

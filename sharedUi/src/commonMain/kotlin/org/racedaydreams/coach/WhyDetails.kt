@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.unit.dp
 
@@ -33,6 +34,7 @@ fun WhyDetails(title: String, content: @Composable ColumnScope.() -> Unit) {
                 ),
             modifier =
                 Modifier.fillMaxWidth()
+                    .clip(MaterialTheme.shapes.medium)
                     .heightIn(min = 56.dp)
                     .semantics { stateDescription = if (expanded) "Expanded" else "Collapsed" }
                     .clickable(
@@ -44,8 +46,8 @@ fun WhyDetails(title: String, content: @Composable ColumnScope.() -> Unit) {
         )
         if (expanded)
             Column(
-                Modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                Modifier.padding(horizontal = CoachSpace.Inset, vertical = CoachSpace.Related),
+                verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
                 content = content,
             )
     }

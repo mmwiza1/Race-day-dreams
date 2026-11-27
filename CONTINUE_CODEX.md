@@ -15,18 +15,17 @@ This file is a durable recovery procedure, not a frozen task list. Live reposito
 5. Preserve valid uncommitted and remote work. Do not reset, clean, overwrite unrelated edits, force-push, or rewrite history without explicit owner authorisation. If work is ambiguous or conflicting, explain the blocker before destructive action.
 6. Continue from the smallest safe unfinished step, completing coherent implementation and regression tests. Keep an accurate progress checkpoint in this file if work must stop again.
 
-## Active task — UI Redesign v2, Piece 1
+## Active task — UI Redesign v2, Piece 2
 
-- The owner approved the [visual benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md)
-  on 27 November 2026. Use only `feature/rdd-ui-v2` for this redesign. The branch was
-  created from published main `ce2efe6806caca0eeb26530f1edc20e1b31944ac` in
-  `/workspace/scratch/rdd-ui-v2`. Use one development session.
-- Piece 1 is complete. The six original PNGs are in `docs/design-reference/`, and
-  [the standards](docs/UI_DESIGN_STANDARDS.md) now require eight acceptance questions
-  and actual-render review. This checkpoint changes documentation and references only.
-- [Redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md) records the roadmap, its sequencing
-  assumption, validation scope and next step. Stop for review. Start Piece 2 only after
-  explicit owner approval. This checkpoint authorises a branch push only.
+- Use `feature/rdd-ui-v2` and one development session. The branch is based on published
+  main `ce2efe6806caca0eeb26530f1edc20e1b31944ac`. Piece 1 was verified at
+  `3d0ac1201c272ff198c276de190dab79c9c34818`. The six reference images, [benchmark](docs/RACE_DAY_DREAMS_DESIGN_BENCHMARK.md)
+  and [mandatory acceptance standards](docs/UI_DESIGN_STANDARDS.md) are on the same branch.
+- The owner designated Piece 2 as Themes and Shared Components. Progress is an independent
+  accent through the existing backup-compatible settings repository. Defaults and shared
+  UI changes are described in the [redesign handoff](docs/UI_REDESIGN_V2_HANDOFF.md).
+- Stop at the Piece 2 branch checkpoint. Wait for owner approval before Piece 3. This
+  checkpoint authorises a branch push. PR paperwork, release and manual CI are out of scope.
 
 ## Previous task — Parts 1–4 integration and 0.17.0-test1 publication
 

@@ -14,7 +14,6 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalContentColor
@@ -37,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import org.racedaydreams.coach.ChartHue
 import org.racedaydreams.coach.CoachFilterChip
 import org.racedaydreams.coach.CoachHeading
+import org.racedaydreams.coach.CoachLoading
 import org.racedaydreams.coach.CoachPage
 import org.racedaydreams.coach.CoachSpace
 import org.racedaydreams.coach.Discipline
@@ -108,7 +108,7 @@ fun SharedGymNowScreen(
             "Overview" -> Unit
             else -> ScreenHeader(Discipline.STRENGTH, sectionGlyph(section), "Gym Now", section)
         }
-        if (state.loading) CircularProgressIndicator()
+        if (state.loading) CoachLoading("Loading workout…")
         if (state.busy && !state.loading)
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         state.error?.let { message ->

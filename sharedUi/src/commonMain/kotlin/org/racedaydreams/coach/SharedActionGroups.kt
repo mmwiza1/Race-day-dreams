@@ -58,6 +58,7 @@ fun ActionRow(
     tag: String? = null,
     onClick: () -> Unit,
 ) {
+    val largeText = LocalDensity.current.fontScale >= 1.5f
     Surface(
         onClick = onClick,
         color = Color.Transparent,
@@ -78,11 +79,14 @@ fun ActionRow(
                         supporting,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
+                        maxLines = if (largeText) Int.MAX_VALUE else 2,
                         overflow = TextOverflow.Ellipsis,
                     )
+                if (largeText && value != null)
+                    Text(value, style = MaterialTheme.typography.titleMedium)
             }
-            if (value != null) Text(value, style = MaterialTheme.typography.titleMedium)
+            if (!largeText && value != null)
+                Text(value, style = MaterialTheme.typography.titleMedium)
             Text(
                 "›",
                 style = MaterialTheme.typography.titleLarge,
@@ -156,8 +160,8 @@ fun ExpandableSection(
         ) {
             Row(
                 Modifier.fillMaxWidth()
-                    .heightIn(min = 64.dp)
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                    .heightIn(min = 56.dp)
+                    .padding(horizontal = CoachSpace.Inset, vertical = CoachSpace.Related),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
@@ -178,7 +182,7 @@ fun ExpandableSection(
         }
         if (expanded)
             Column(
-                Modifier.fillMaxWidth().padding(start = 8.dp),
+                Modifier.fillMaxWidth().padding(start = CoachSpace.Related),
                 verticalArrangement = Arrangement.spacedBy(CoachSpace.Card),
                 content = content,
             )

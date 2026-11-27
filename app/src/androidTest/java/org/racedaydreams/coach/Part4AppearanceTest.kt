@@ -6,6 +6,8 @@ import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,69 +55,132 @@ class Part4AppearanceTest {
         compose.onNodeWithText("Plum").performScrollTo().performClick().assertIsSelected()
         compose.onNodeWithText("Bouldering").performScrollTo().performClick()
         compose.onNodeWithText("Amber").performScrollTo().performClick().assertIsSelected()
-        compose.onNodeWithText("Settings").performScrollTo().performClick()
+        compose.onNodeWithText("Progress").performScrollTo().performClick()
         compose.onNodeWithText("Default (green)").performScrollTo().assertIsSelected()
+        compose.onNodeWithText("Blue").performScrollTo().performClick().assertIsSelected()
+        compose.onNodeWithText("Settings").performScrollTo().performClick()
+        compose.onNodeWithText("Default (amber)").performScrollTo().assertIsSelected()
         capturePart2(context, "accent-settings-default")
         compose.onNodeWithText("Violet").performScrollTo().performClick().assertIsSelected()
         capturePart2(context, "accent-selected")
         compose
-            .onNodeWithText("Default (green)")
+            .onNodeWithText("Default (amber)")
             .performScrollTo()
             .performClick()
             .assertIsSelected()
         compose.onNodeWithText("Running").performScrollTo().performClick()
         compose.onNodeWithText("Teal").performScrollTo().assertIsSelected()
-        assertEquals(3, colours.value.size)
+        compose.onNodeWithText("Progress").performScrollTo().performClick()
+        compose.onNodeWithText("Blue").performScrollTo().assertIsSelected()
+        assertEquals(4, colours.value.size)
     }
 
     @Test
     fun curatedPairsKeepTextAndControlsReadableInBothThemes() {
         val dark = mutableStateOf(false)
         val colour = mutableStateOf<AccentColour?>(null)
+        val page = mutableStateOf(ColourDiscipline.SETTINGS)
         lateinit var base: ColorScheme
         lateinit var applied: ColorScheme
         var running = Color.Unspecified
+        var distance = Color.Unspecified
+        var warning = Color.Unspecified
         compose.setContent {
             RaceDayTheme(darkTheme = dark.value, dynamicColour = false) {
                 val default = MaterialTheme.colorScheme
                 DisciplineAppearance(
-                    colour.value?.let { mapOf(ColourDiscipline.SETTINGS to it) }.orEmpty(),
-                    ColourDiscipline.SETTINGS,
+                    colour.value?.let { mapOf(page.value to it) }.orEmpty(),
+                    page.value,
                 ) {
                     val current = MaterialTheme.colorScheme
                     val runningAccent = Discipline.RUNNING.accent()
+                    val distanceAccent = chartAccent(ChartHue.BLUE).strong
+                    val warningColour = tileColour(Tile.Warning)
                     SideEffect {
                         base = default
                         applied = current
                         running = runningAccent
+                        distance = distanceAccent
+                        warning = warningColour
                     }
                 }
             }
         }
+        val defaults = mapOf(
+            ColourDiscipline.STRENGTH to AccentColour.VIOLET,
+            ColourDiscipline.BOULDERING to AccentColour.PLUM,
+            ColourDiscipline.PROGRESS to AccentColour.GREEN,
+            ColourDiscipline.SETTINGS to AccentColour.AMBER,
+        )
         for (useDark in listOf(false, true)) {
-            for (option in listOf(null) + AccentColour.entries) {
+            for (discipline in ColourDiscipline.entries) {
                 compose.runOnIdle {
                     dark.value = useDark
-                    colour.value = option
+                    page.value = discipline
+                    colour.value = null
                 }
-                compose.runOnIdle {
-                    assertEquals(base.primary, running)
-                    assertEquals(base.surface, applied.surface)
-                    assertTrue(
-                        "accent against surface",
-                        contrast(applied.primary, applied.surface) >= 4.5,
-                    )
-                    assertTrue(
-                        "label against accent",
-                        contrast(applied.onPrimary, applied.primary) >= 4.5,
-                    )
-                    assertTrue(
-                        "label against container",
-                        contrast(applied.onPrimaryContainer, applied.primaryContainer) >= 4.5,
-                    )
+                val defaultPrimary = compose.runOnIdle { applied.primary }
+                for (option in AccentColour.entries) {
+                    compose.runOnIdle { colour.value = option }
+                    compose.runOnIdle {
+                        if (discipline != ColourDiscipline.RUNNING) assertEquals(base.primary, running)
+                        if (option == defaults[discipline]) assertEquals(defaultPrimary, applied.primary)
+                        assertEquals(base.surface, applied.surface)
+                        assertEquals(base.error, applied.error)
+                        assertEquals(base.errorContainer, warning)
+                        assertEquals(ChartHue.BLUE.strong(useDark), distance)
+                        assertTrue("accent against surface", contrast(applied.primary, applied.surface) >= 4.5)
+                        assertTrue("label against accent", contrast(applied.onPrimary, applied.primary) >= 4.5)
+                        assertTrue("label against container", contrast(applied.onPrimaryContainer, applied.primaryContainer) >= 4.5)
+                    }
                 }
             }
         }
+    }
+
+    @Test
+    fun sharedComponentsReadAndRespondAtCompactWidths() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val dark = InstrumentationRegistry.getArguments().getString("part2Evidence") == "dark"
+        val saved = mutableStateOf(false)
+        compose.setContent {
+            RaceDayTheme(darkTheme = dark, dynamicColour = false) {
+                DisciplineAppearance(emptyMap(), ColourDiscipline.PROGRESS) {
+                    Surface(Modifier.fillMaxSize()) {
+                        CoachPage {
+                            ScreenHeader(Discipline.PROGRESS, Glyph.TREND, "Training summary", "Progress")
+                            SectionTitle("This week", "Selected period · Four weeks")
+                            Panel {
+                                StatRow(listOf(Stat("Distance", "12.8", "km"), Stat("Elapsed time", "1:26:34"), Stat("Average pace", "6:46", "/km")))
+                            }
+                            var notes by androidx.compose.runtime.remember { mutableStateOf("") }
+                            ExpandableSection("Advanced training preferences", "Optional workout notes", "benchmark-advanced") {
+                                CoachTextInput("Workout notes", notes, { notes = it })
+                            }
+                            HeroSecondaryActions(listOf("Review history" to { saved.value = false }))
+                            CoachButton("Save session") { saved.value = true }
+                            if (saved.value) {
+                                SemanticCard(Tile.Warning) { androidx.compose.material3.Text("Review the missing effort data") }
+                                Panel { SectionTitle("No comparison recorded yet") }
+                            } else CoachLoading("Loading comparisons…")
+                        }
+                    }
+                }
+            }
+        }
+        compose.onNodeWithText("Progress").assertIsDisplayed()
+        compose.onNodeWithText("Distance").assertIsDisplayed()
+        capturePart2(context, "piece2-progress-components")
+        compose.onNodeWithText("Workout notes").assertDoesNotExist()
+        compose.onNodeWithTag("benchmark-advanced").performScrollTo().performClick()
+        compose.onNodeWithText("Workout notes").performScrollTo().performTextInput("Easy effort")
+        compose.onNodeWithText("Review history").performScrollTo().assertHasClickAction()
+        compose.onNodeWithText("Save session").performScrollTo().performClick()
+        compose.onNodeWithText("Review the missing effort data").performScrollTo().assertIsDisplayed()
+        compose.onNodeWithText("No comparison recorded yet").performScrollTo().assertIsDisplayed()
+        capturePart2(context, "piece2-action-feedback")
+        compose.onNodeWithTag("benchmark-advanced").performScrollTo().performClick()
+        compose.onNodeWithText("Workout notes").assertDoesNotExist()
     }
 
     @Test

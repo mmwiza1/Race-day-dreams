@@ -46,14 +46,20 @@ class CoachingInteractionTest {
         compose.onNodeWithText("Gym / Strength").performScrollTo().performClick()
         compose.onNodeWithText("Amber").performScrollTo().performClick()
         compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.strength") == "AMBER" }
+        compose.onNodeWithText("Progress").performScrollTo().performClick()
+        compose.onNodeWithText("Default (green)").performScrollTo().assertIsSelected()
+        compose.onNodeWithText("Plum").performScrollTo().performClick()
+        compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.progress") == "PLUM" }
         scenario?.close()
         launch()
         openAppearance()
         compose.onNodeWithText("Teal").performScrollTo().assertIsSelected()
         compose.onNodeWithText("Gym / Strength").performScrollTo().performClick()
         compose.onNodeWithText("Amber").performScrollTo().assertIsSelected()
-        compose.onNodeWithText("Default").performScrollTo().performClick()
+        compose.onNodeWithText("Default (violet)").performScrollTo().performClick()
         compose.waitUntil(15_000) { FeatureStore(context).getSetting("appearance.accent.strength") == null }
+        compose.onNodeWithText("Progress").performScrollTo().performClick()
+        compose.onNodeWithText("Plum").performScrollTo().assertIsSelected()
         Assert.assertEquals("TEAL", FeatureStore(context).getSetting("appearance.accent.running"))
     }
 

@@ -189,14 +189,9 @@ fun SharedProgressDashboard(
         }
     var tabName by rememberSaveable(tabs) { mutableStateOf(tabs.firstOrNull()?.name) }
     val tab = tabName?.let { ProgressTab.valueOf(it) } ?: ProgressTab.RUNNING
-    // Hero: Progress's identity, tinted by the discipline of the selected tab.
-    // Compact: Progress has no primary action, so the charts, not the header, lead the screen.
+    // The page accent identifies Progress. The charts retain their own metric colours.
     ScreenHeader(
-        when (tab) {
-            ProgressTab.STRENGTH -> Discipline.STRENGTH
-            ProgressTab.OVERVIEW -> Discipline.RECOVERY
-            ProgressTab.RUNNING -> Discipline.RUNNING
-        },
+        Discipline.PROGRESS,
         if (tab == ProgressTab.STRENGTH) Glyph.DUMBBELL else Glyph.TREND,
         eyebrow = if (tabs.size > 1) tab.label else "Running",
         title = "Progress",
@@ -220,14 +215,8 @@ fun SharedProgressDashboard(
     val strengthRecords: (() -> Unit)? =
         if (ProgressLink.STRENGTH_ANALYTICS in links) ({ open(ProgressLink.STRENGTH_ANALYTICS) })
         else null
-    val tabDiscipline =
-        when (tab) {
-            ProgressTab.STRENGTH -> Discipline.STRENGTH
-            ProgressTab.OVERVIEW -> Discipline.RECOVERY
-            ProgressTab.RUNNING -> Discipline.RUNNING
-        }
     val periodSelector: @Composable () -> Unit = {
-        PeriodSelector(period, tabDiscipline) { periodName = it.name }
+        PeriodSelector(period, Discipline.PROGRESS) { periodName = it.name }
     }
     when (tab) {
         // Strength (V3): exercise progression with actual lifts first, then volume, workload,
